@@ -21,12 +21,17 @@ const KakaoMap = () => {
     const script = document.createElement("script");
     script.async = true;
     script.src =
-      "https://dapi.kakao.com/v2/maps/sdk.js?appkey=89730aca4ca56bd725e48019977366cc&autoload=false";
+      //"https://dapi.kakao.com/v2/maps/sdk.js?appkey=89730aca4ca56bd725e48019977366cc&autoload=false";
+      // "https://dapi.kakao.com/v2/local/geo/coord2address.{format}"
+      // "https://dapi.kakao.com/v2/maps/sdk.js?appkey=055c0b47b89c99ddb22be1896a688442&autoload=false";
+      "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=127.0337&y=37.4994&input_coord=WGS84&appkey=055c0b47b89c99ddb22be1896a688442";
 
     document.head.appendChild(script);
 
     script.onload = () => {
       window.kakao.maps.load(() => {
+        // Kakao 지도 API 로드 후 실행되는 코드
+
         const mapContainer = document.getElementById("map");
         const mapOption = {
           center: new window.kakao.maps.LatLng(37.4994, 127.0337),
@@ -34,6 +39,26 @@ const KakaoMap = () => {
         };
         const map = new window.kakao.maps.Map(mapContainer, mapOption);
 
+        const positions = [
+          new window.kakao.maps.LatLng(37.4993, 127.0332),
+          new window.kakao.maps.LatLng(37.4996, 127.0336),
+          new window.kakao.maps.LatLng(37.499, 137.0329),
+        ];
+
+        const geocoder = new window.kakao.maps.services.Geocoder();
+
+        positions.forEach((position) => {
+          geocoder.coord2RegionCode(
+            position.getLng(),
+            position.getLat(),
+            (result, status) => {
+              if (status === window.kakao.maps.services.Status.OK) {
+                console.log("지역 명칭 : " + result[0].address_name);
+                console.log("행정구역 코드 : " + result[0].code);
+              }
+            }
+          );
+        });
         const markerSize = new window.kakao.maps.Size(
           MARKER_WIDTH,
           MARKER_HEIGHT
@@ -51,13 +76,6 @@ const KakaoMap = () => {
           SPRITE_WIDTH,
           SPRITE_HEIGHT
         ); // 스프라이트 이미지의 크기
-
-        const positions = [
-          // 마커의 위치
-          new window.kakao.maps.LatLng(37.4993, 127.0332),
-          new window.kakao.maps.LatLng(37.4996, 127.0336),
-          new window.kakao.maps.LatLng(37.499, 137.0329),
-        ];
 
         var selectedMarker = null; // 클릭한 마커를 담을 변수
 
@@ -151,7 +169,6 @@ const KakaoMap = () => {
               spriteSize: spriteImageSize, // 스프라이트 이미지의 크기
             }
           );
-
           return markerImage;
         }
       });

@@ -5,7 +5,7 @@ import KakaoLoginButton from "./Component/KakaoLoginButton";
 function App() {
   return (
     <div>
-      <KakaoLoginButton />
+      <Banner />
     </div>
   );
 }

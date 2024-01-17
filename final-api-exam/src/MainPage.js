@@ -25,7 +25,7 @@ function MainContent() {
           title: board.study_title,
         }));
         setBoards(boardsData);
-      })
+      })s
       .catch((error) => {
         console.log("데이터없음", error);
       });
