@@ -22,6 +22,15 @@ const MapApi = () => {
 
         const geocoder = new window.kakao.maps.services.Geocoder();
 
+        const callback = function (result, status) {
+          if (status === window.kakao.maps.services.Status.OK) {
+            console.log("지역 명칭 : " + result[0].address_name);
+            console.log("행정구역 코드 : " + result[0].code);
+          }
+        };
+
+        geocoder.coord2RegionCode(126.9786567, 37.566826, callback);
+
         geocoder.addressSearch(
           "경기 성남시 분당구 판교역로 235 에이치스퀘어",
           function (result, status) {
@@ -47,7 +56,7 @@ const MapApi = () => {
               // 인포윈도우로 장소에 대한 설명을 표시합니다
               const infowindow = new window.kakao.maps.InfoWindow({
                 content:
-                  '<div style="width:150px;text-align:center;padding:6px 0;">장소</div>',
+                  '<div style="width:150px;text-align:center;padding:6px 0;">집</div>',
               });
               infowindow.open(map, marker);
               // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
