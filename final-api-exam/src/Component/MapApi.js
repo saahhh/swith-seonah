@@ -22,14 +22,14 @@ const MapApi = () => {
 
         const geocoder = new window.kakao.maps.services.Geocoder();
 
-        const callback = function (result, status) {
+        /*const callback = function (result, status) {
           if (status === window.kakao.maps.services.Status.OK) {
             console.log("지역 명칭 : " + result[0].address_name);
             console.log("행정구역 코드 : " + result[0].code);
           }
         };
 
-        geocoder.coord2RegionCode(126.9786567, 37.566826, callback);
+        geocoder.coord2RegionCode(126.9786567, 37.566826, callback);*/
 
         geocoder.addressSearch(
           "경기 성남시 분당구 판교역로 235 에이치스퀘어",
