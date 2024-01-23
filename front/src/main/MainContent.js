@@ -9,12 +9,23 @@ import SearchIcon from "./img/search.png";
 import DeleteIcon from "./img/delete.png";
 import axios from "axios";
 import usersUserinfoAxios from "../token/tokenAxios";
-// import RetrieveAllPostsForPostNoApi from "../Api/MainPageApi";
 
 function MainContent() {
   const [boards, setBoards] = useState([]);
-  const [userData, setUserData] = useState("");
+  useEffect(() => {
+    const fetchBoards = async () => {
+      try {
+        const response = await usersUserinfoAxios.get("/post_list");
+        setBoards(response.data);
+      } catch (error) {
+        console.error("Error fetching boards:", error);
+      }
+    };
 
+    fetchBoards();
+  }, []);
+
+  const [userData, setUserData] = useState("");
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -102,21 +113,19 @@ function MainContent() {
 
   return (
     <div className="Welcome">
+      <h2>Dashboard</h2>
+      {userData ? (
+        <div>
+          <p>
+            Welcome to the Dashboard, {userData.nickname}님! You are logged in.
+          </p>
+        </div>
+      ) : (
+        <p>You are not logged in.</p>
+      )}
+
       <div className="banner">
         <div className="banner_all">
-          <div>
-            <h2>Dashboard</h2>
-            {userData ? (
-              <div>
-                <p>
-                  Welcome to the Dashboard, {userData.nickname}님! You are
-                  logged in.
-                </p>
-              </div>
-            ) : (
-              <p>You are not logged in.</p>
-            )}
-          </div>
           <KakaoMap />
         </div>
       </div>
@@ -590,11 +599,11 @@ function MainContent() {
 
         <ul className="board_box_section">
           {boards.map((board) => (
-            <a key={board.id} className="board_box" href="/">
+            <a key={board.post_no} className="board_box" href="/">
               <li>
                 <div className="study_sort_badge">
                   <div className="study_sort_badge_content">
-                    {board.category}
+                    {board.recruit_type}
                   </div>
                   <HeartButton
                     className="heart_button"
@@ -605,13 +614,15 @@ function MainContent() {
                 <div className="study_schedule">
                   <p className="">마감일</p>
                   <p>|</p>
-                  <p>{board.deadline}</p>
+                  <p>{board.recruit_deadline}</p>
                 </div>
                 <div>
-                  <h1 className="board_title">{board.title}</h1>
+                  <h1 className="board_title">{board.study_title}</h1>
                 </div>
                 <ul className="skill_icon_section">
-                  <li>{board.skill}</li>
+                  {board.studyPostWithSkills.map((skill, index) => (
+                    <li key={index}>{skill.skill_name}</li>
+                  ))}
                 </ul>
                 <div className="board_content_border"></div>
                 <section className="board_info_section">
@@ -625,7 +636,7 @@ function MainContent() {
                         alt="Profile"
                       />
                     </div>
-                    <div>{board.username}</div>
+                    <div>{board.nickname}</div>
                   </div>
                   <div className="board_info_right">
                     <div className="comment_count_section">

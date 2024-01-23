@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/KakaoMap.css";
 import usersUserinfoAxios from "../token/tokenAxios";
-
 const KakaoMap = () => {
   const [userData, setUserData] = useState("");
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
