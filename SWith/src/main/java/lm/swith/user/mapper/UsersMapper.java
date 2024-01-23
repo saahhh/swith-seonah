@@ -1,9 +1,7 @@
 package lm.swith.user.mapper;
 
 import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
-
 import lm.swith.user.model.SwithUser;
 
 @Mapper

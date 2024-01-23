@@ -99,4 +99,6 @@ public class StudyPostController {
     	model.addAttribute("studyPosts", studyPosts);
     	return "/";
     }
+    
+    
 }

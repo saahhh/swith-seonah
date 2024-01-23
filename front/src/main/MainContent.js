@@ -14,6 +14,7 @@ import usersUserinfoAxios from "../token/tokenAxios";
 function MainContent() {
   const [boards, setBoards] = useState([]);
   const [userData, setUserData] = useState("");
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -108,7 +109,7 @@ function MainContent() {
             {userData ? (
               <div>
                 <p>
-                  Welcome to the Dashboard, {userData.username}님! You are
+                  Welcome to the Dashboard, {userData.useraddress}님! You are
                   logged in.
                 </p>
               </div>

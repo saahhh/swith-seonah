@@ -1,11 +1,11 @@
 package lm.swith.user.controller;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins="http://localhost:3000", allowCredentials = "true")
 public class RegisterController {
 	private final UserService userService;
-
 	private final TokenProvider tokenProvider;
 	
 	private final PasswordEncoder passwordEncoder;
@@ -34,6 +33,7 @@ public class RegisterController {
 		SwithDTO userDTO = new SwithDTO();
 		userDTO.setEmail(user.getEmail());
 		userDTO.setUser_no(user.getUser_no());
+		userDTO.setUseraddress(user.getUseraddress());
         userDTO.setUsername(user.getUsername());
         // 필요한 경우, 다른 필드도 추가로 복사
 
@@ -52,6 +52,7 @@ public class RegisterController {
 					.email(user.getEmail())
 					.user_no(user.getUser_no())
 					.username(user.getUsername())
+					.useraddress(user.getUseraddress())
 					.token(token)          //반환된 토큰 적용
 					.build();
 			return ResponseEntity.ok().body(responseUserDTO);
@@ -89,8 +90,17 @@ public class RegisterController {
 	      return "/";
 	  }
 	  
-	 
-
+	  
+	  @GetMapping("/register")
+	  public String showRegisterForm(Model model) {
+		  model.addAttribute("users",new SwithUser());
+		  return "register";
+	  }
+	/*@GetMapping("/register")
+	public List<SwithUser> findUsersAll() {
+		return userService.findUsersAll();
+	}
+	*/	
 	@PostMapping("/register")
 	public ResponseEntity<SwithUser> registerUser(@RequestBody SwithUser swithUser){
 		SwithUser createUser = userService.signUpUser(swithUser);
