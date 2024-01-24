@@ -47,6 +47,13 @@
         <collection property="studyPostWithSkills" resultMap="SkillResult"/>
     </resultMap>
     
+      <resultMap type="lm.swith.main.model.Cafes" id="findAllCafes">
+    	<result property="bplcm" column="BPLCNM" />
+    	<result property="sitewhladdr" column="SITEWHLADDR" />
+    	<result property="x" column="X" />
+    	<result property="y" column="Y" />
+	</resultMap>
+    
 
 	<select id="getAllStudyPostWithSkills" resultMap="studyPostWithSkills">
 	    SELECT sp.*, s.skill_name, s.skill_img
@@ -143,6 +150,17 @@
 	    SELECT * FROM study_post 
 	    WHERE study_title LIKE '%' || #{keyword} || '%'
 	    OR study_content LIKE '%' || #{keyword} || '%'
+	</select>
+	
+		<!-- 스터디 게시글 작성 내 첫모임 장소 검색 -->
+	<select id="findAllCafes" resultType="lm.swith.main.model.Cafes">
+	    SELECT * FROM cafes
+	</select>
+		
+	<select id="searchCafes" resultType="lm.swith.main.model.Cafes">
+		SELECT * FROM cafes
+	    WHERE bplcnm LIKE '%' || #{keyword} || '%'
+	    OR sitewhladdr LIKE '%' || #{keyword} || '%'
 	</select>
 	
 	
