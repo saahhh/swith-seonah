@@ -25,7 +25,7 @@ export default function Control() {
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterUser />} />
-          <Route path="/detail" element={<StudyDetail />} />
+          <Route path="/post_detail/:post_no" element={<StudyDetail />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -21,7 +21,6 @@ export default function MainPage() {
       <Header />
       <MainContent />
       {/* <Login /> */}
-      <Route exact path="/post_detail/:post_no" component={StudyDetail} />
     </div>
   );
 }
