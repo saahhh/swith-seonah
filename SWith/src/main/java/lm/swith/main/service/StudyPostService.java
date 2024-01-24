@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lm.swith.main.mapper.StudyPostMapper;
+import lm.swith.main.model.Cafes;
 import lm.swith.main.model.StudyPost;
 
 @Service
@@ -56,6 +57,16 @@ public class StudyPostService {
     public void deleteStudyPost(Long post_no) {
     	studyPostMapper.deleteStudyPost(post_no);
     }
-	  
+    
+    // 스터디 게시글 작성 내 첫모임 장소 카페 리스트
+    public List<Cafes> findAllCafes() {
+    	return studyPostMapper.findAllCafes();
+    }
+
+    // 스터디 게시글 작성 내 첫모임 장소 검색
+    public List<Cafes> searchCafes(String keyword) {
+    	return studyPostMapper.searchCafes(keyword);
+    	
+    }
 
 }

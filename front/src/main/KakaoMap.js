@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/KakaoMap.css";
 import usersUserinfoAxios from "../token/tokenAxios";
+
 const KakaoMap = () => {
-  const [userData, setUserData] = useState("");
+  const [userData, setUserData] = useState([]);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -29,12 +30,33 @@ const KakaoMap = () => {
 
     script.onload = () => {
       window.kakao.maps.load(() => {
-        const mapContainer = document.getElementById("map");
-        const mapOption = {
+        var mapContainer = document.getElementById("map");
+
+        var mapOption = {
+          //맵
           center: new window.kakao.maps.LatLng(37.502, 127.026581),
           level: 4,
         };
-        const map = new window.kakao.maps.Map(mapContainer, mapOption);
+        var map = new window.kakao.maps.Map(mapContainer, mapOption);
+        var geocoder = new window.kakao.maps.services.Geocoder(); //입력한 주소에 마커
+        geocoder.addressSearch(userData.useraddress, (result, status) => {
+          if (status === window.kakao.maps.services.Status.OK) {
+            var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+
+            var marker = new window.kakao.maps.Marker({
+              //마커로 표시
+              map: map,
+              position: coords,
+            });
+            // 장소에 대한 설명을 표시합니다
+            var infowindow = new window.kakao.maps.InfoWindow({
+              content:
+                '<div style="width:150px;text-align:center;padding:6px 0;">나의 집</div>',
+            });
+            infowindow.open(map, marker);
+            map.setCenter(coords);
+          }
+        });
 
         var content =
           '<div class="overlaybox">' +

@@ -33,7 +33,7 @@ function RegisterUser() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8082/users/mail",
+        "http://localhost:8080/users/mail",
         swithUser,
         {
           withCredentials: true,

@@ -1,8 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import Header from "./Header";
 import "../css/StudyDetail.css";
+import "../css/NewBoard.css";
+import usersUserinfoAxios from "../token/tokenAxios";
+import axios from "axios";
 
 function StudyDetail() {
+  const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
+
+  const [detailPages, setDetailPage] = useState([]);
+
+  useEffect(() => {
+    const fetchStudyDetail = async () => {
+      try {
+        const response = await usersUserinfoAxios.get(
+          `/post_detail/${post_no}`
+        );
+        setDetailPage(response.data);
+        console.log(detailPages);
+        console.log(post_no.study_title);
+      } catch (error) {
+        console.log("Error fetching study detail: ", error);
+      }
+    };
+
+    fetchStudyDetail();
+  }, [post_no]); // post_no가 변경될 때마다 실행
+
   return (
     <div>
       <Header />
@@ -19,7 +44,9 @@ function StudyDetail() {
           >
             <path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"></path>
           </svg>
-          <div className="studyContent_title">여기에 제목이 들어가여</div>
+
+          <div className="studyContent_title">{setDetailPage.study_title}</div>
+
           <div className="studyContent_user_date">
             <div className="studyContent_user">
               <img
@@ -28,20 +55,20 @@ function StudyDetail() {
                 height="30px"
                 alt="Profile"
               />
-              <div className="username">유저닉네임</div>
+              <div className="username"></div>
             </div>
             <div className="studyContent_seperator"></div>
-            <div className="studyContent_registerDate">2024.01.22</div>
+            <div className="studyContent_registerDate"></div>
           </div>
           <section>
             <ul className="studyContent_grid">
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집구분</span>
-                <span className="studyInfo_title_a">프로젝트</span>
+                <span className="studyInfo_title_a"></span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">진행방식</span>
-                <span className="studyInfo_title_a">오프라인</span>
+                <span className="studyInfo_title_a"></span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집인원</span>
@@ -49,19 +76,19 @@ function StudyDetail() {
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">시작예정일</span>
-                <span className="studyInfo_title_a">2024.02.11</span>
+                <span className="studyInfo_title_a"></span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">예상기간</span>
-                <span className="studyInfo_title_a">3개월</span>
+                <span className="studyInfo_title_a"></span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집마감</span>
-                <span className="studyInfo_title_a">2024.02.01</span>
+                <span className="studyInfo_title_a"></span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">지역</span>
-                <span className="studyInfo_title_a">강남/역삼/삼성</span>
+                <span className="studyInfo_title_a"></span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">기술스택</span>

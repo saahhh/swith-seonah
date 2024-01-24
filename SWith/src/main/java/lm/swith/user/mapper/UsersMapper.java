@@ -1,7 +1,10 @@
 package lm.swith.user.mapper;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
+
+import lm.swith.main.model.Cafes;
 import lm.swith.user.model.SwithUser;
 
 @Mapper
@@ -19,6 +22,6 @@ public interface UsersMapper {
 	Boolean existsByEmail(String email);
 
 	SwithUser findByEmailAndPassword(String email, String password);
-	
+
 
 }

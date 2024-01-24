@@ -87,6 +87,7 @@ public class RegisterController {
         System.out.println("usernameDT : " + userDTO.getUsername());
         return ResponseEntity.ok(userDTO);
     }
+	
 	  @GetMapping("/")
 	  public String MailPage(){
 	      return "/";

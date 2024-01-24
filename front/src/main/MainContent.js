@@ -1,4 +1,3 @@
-import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../css/MainPageCss.css";
 import KakaoMap from "./KakaoMap";
@@ -9,6 +8,7 @@ import SearchIcon from "./img/search.png";
 import DeleteIcon from "./img/delete.png";
 import axios from "axios";
 import usersUserinfoAxios from "../token/tokenAxios";
+import StudyDetail from "./StudyDetail";
 
 function MainContent() {
   const [boards, setBoards] = useState([]);
@@ -470,14 +470,6 @@ function MainContent() {
                   <li className="skillToggle">
                     <img
                       className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/NEXT_JS.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">NextJS</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
                       src={process.env.PUBLIC_URL + "../img/NODE_JS.png"}
                       alt="skillLogo"
                     />
@@ -599,7 +591,11 @@ function MainContent() {
 
         <ul className="board_box_section">
           {boards.map((board) => (
-            <a key={board.post_no} className="board_box" href="/">
+            <a
+              key={board.post_no}
+              className="board_box"
+              href={`/post_detail/${board.post_no}`}
+            >
               <li>
                 <div className="study_sort_badge">
                   <div className="study_sort_badge_content">
