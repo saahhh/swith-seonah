@@ -64,16 +64,28 @@
 	
 	
 	
+
 	<!-- 스터디 상세 페이지 -->
 	<!-- 특정 post_no에 해당하는 스터디 포스트 및 기술 스택 정보 조회 -->
 	<select id="getStudyPostByPostNo" resultMap="studyPostWithSkills">
-	    SELECT sp.*, s.skill_name, s.skill_img
+	    SELECT sp.*, s.skill_name, s.skill_img,
+	    CASE 
+	        WHEN sp.RECRUIT_TYPE IN ('프로젝트', '스터디') THEN sa.MAX_STUDY_APPLICANTS
+	        WHEN sp.RECRUIT_TYPE = '멘토/멘티' THEN m.MAX_MENTOR_APPLICANTS
+	        ELSE NULL  -- 필요에 따라 조정하세요
+	    END AS MAX_APPLICANTS,
+	    CASE 
+	        WHEN sp.RECRUIT_TYPE IN ('프로젝트', '스터디') THEN sa.CURRENT_STUDY_APPLICANTS
+	        WHEN sp.RECRUIT_TYPE = '멘토/멘티' THEN m.CURRENT_MENTOR_APPLICANTS
+	        ELSE NULL  -- 필요에 따라 조정하세요
+	    END AS CURRENT_APPLICANTS
 	    FROM study_post sp
 	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
 	    LEFT JOIN skill s ON pts.skill_no = s.skill_no
+	    LEFT JOIN study_application sa ON sp.post_no = sa.post_no
+	    LEFT JOIN mentor m ON sp.post_no = m.post_no
 	    WHERE sp.post_no = #{post_no}
 	</select>
-	
 	
 	
 	
@@ -97,12 +109,32 @@
         #{study_start}, #{recruit_deadline},
         #{study_likes}, #{study_location}, #{first_study}
     )
-
+    
     <!-- 두 번째 쿼리: post_tech_stacks 테이블에 기술 스택 정보 삽입 -->
     <foreach collection="skills" item="skill" separator=";">
         INSERT INTO post_tech_stacks (post_no, skill_no)
         VALUES (#{post_no}, #{skill})
     </foreach>
+
+    <!-- 조건에 따라 멘토/멘티 또는 스터디 신청 정보 삽입 -->
+    <choose>
+        <!-- '멘토/멘티'인 경우 -->
+        <when test="recruit_type == '멘토/멘티'">
+            <!-- 멘토 정보 삽입 -->
+            INSERT INTO mentor (MENTOR_NO, USER_NO, POST_NO, MAX_MENTOR_APPLICANTS, MENTOR_STATUS)
+            VALUES (MENTOR_SEQ.NEXTVAL, #{user_no}, #{post_no}, #{max_mentor_applicants}, '대기중');
+            
+            <!-- 멘티 정보 삽입 -->
+            INSERT INTO mentee (MENTEE_NO, USER_NO, POST_NO, MAX_MENTEE_APPLICANTS, MENTEE_STATUS)
+            VALUES (MENTEE_SEQ.NEXTVAL, #{user_no}, #{post_no}, #{max_mentee_applicants}, '대기중');
+        </when>
+        <!-- '스터디' 또는 '프로젝트'인 경우 -->
+        <otherwise>
+            <!-- 스터디 신청 정보 삽입 -->
+            INSERT INTO study_application (APPLICATION_NO, POST_NO, USER_NO, STATUS, MAX_STUDY_APPLICANTS, CURRENT_STUDY_APPLICANTS)
+            VALUES (APPLICATION_SEQ.NEXTVAL, #{post_no}, #{user_no}, '대기중', #{max_study_applicants}, 1);
+        </otherwise>
+    </choose>
 </insert>
 
 	

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import "../css/NewBoard.css";
 import StuduyProject from "./StudyProject";
 import FormFour from "./FormFour";
+import MentoMenti from "./MentoMenti";
+import usersUserinfoAxios from "../token/tokenAxios";
 
 function NewBoard() {
   const [selectedItem1, setSelectedItem1] = useState(null);
@@ -14,18 +16,6 @@ function NewBoard() {
     } else {
       // 아니면 새로운 아이템 선택
       setSelectedItem1(item1);
-    }
-  };
-
-  const [selectedItem2, setSelectedItem2] = useState(null);
-
-  const handleItem2Click = (item2) => {
-    if (selectedItem2 === item2) {
-      // 클릭된 아이템이 현재 선택된 아이템과 같으면 선택 해제
-      setSelectedItem2(null);
-    } else {
-      // 아니면 새로운 아이템 선택
-      setSelectedItem2(item2);
     }
   };
 
@@ -71,47 +61,12 @@ function NewBoard() {
           </ul>
           <br />
           <br />
-          <div className="post_1">
-            <span className="post_1_title">2</span>
-            <h2 className="post_title">S.With 진행 방식을 골라주세요.</h2>
-          </div>
-          <ul className="postToggle_ul">
-            <li
-              className={`postToggle ${
-                selectedItem2 === "온라인" ? "clicked" : ""
-              }`}
-              onClick={() => handleItem2Click("온라인")}
-            >
-              <span className="postToggle_text">온라인</span>
-            </li>
-            <li
-              className={`postToggle ${
-                selectedItem2 === "오프라인" ? "clicked" : ""
-              }`}
-              onClick={() => handleItem2Click("오프라인")}
-            >
-              <span className="postToggle_text">오프라인</span>
-            </li>
-          </ul>
-          <br />
-          <br />
+
           {/* Conditionally render StuduyProject based on the selected item */}
           {selectedItem1 === "스터디" || selectedItem1 === "프로젝트" ? (
             <StuduyProject />
           ) : null}
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <FormFour />
+          {selectedItem1 === "멘토/멘티" ? <MentoMenti /> : null}
         </section>
       </div>
     </div>
