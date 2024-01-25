@@ -43,6 +43,4 @@ public class StudyPost {
         return user != null ? user.getNickname() : null;
     }
 
-    
-
 }

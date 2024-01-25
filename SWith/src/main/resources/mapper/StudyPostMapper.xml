@@ -72,13 +72,13 @@
 	    CASE 
 	        WHEN sp.RECRUIT_TYPE IN ('프로젝트', '스터디') THEN sa.MAX_STUDY_APPLICANTS
 	        WHEN sp.RECRUIT_TYPE = '멘토/멘티' THEN m.MAX_MENTOR_APPLICANTS
-	        ELSE NULL  -- 필요에 따라 조정하세요
+	        ELSE NULL  
 	    END AS MAX_APPLICANTS,
 	    CASE 
 	        WHEN sp.RECRUIT_TYPE IN ('프로젝트', '스터디') THEN sa.CURRENT_STUDY_APPLICANTS
 	        WHEN sp.RECRUIT_TYPE = '멘토/멘티' THEN m.CURRENT_MENTOR_APPLICANTS
-	        ELSE NULL  -- 필요에 따라 조정하세요
-	    END AS CURRENT_APPLICANTS
+	        ELSE NULL  
+	    END AS CURRENT_STUDY_APPLICANTS
 	    FROM study_post sp
 	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
 	    LEFT JOIN skill s ON pts.skill_no = s.skill_no

@@ -118,6 +118,7 @@ function StudyDetail() {
           <h2 className="postInfo">{detailPages.study_title}</h2>
           <p className="postContent">{detailPages.study_content}</p>
         </div>
+
         <div style={{ paddingBottom: "80px" }}>
           <div className="commentInput">
             <div className="commentInput_comment">
@@ -139,6 +140,7 @@ function StudyDetail() {
               <button className="commentInput_buttonComplete" name="register">
                 댓글 등록
               </button>
+              <button>게시글 수정하기</button>
             </div>
           </div>
         </div>

@@ -133,14 +133,8 @@ export default function StuduyProject() {
           <label className="post_3_label">
             기술스택 :
             <select
-              multiple={true} // 다중 선택을 허용
               value={techStack}
-              onChange={(e) =>
-                setTechStack(
-                  Array.from(e.target.selectedOptions, (option) => option.value)
-                )
-              }
-              style={{ height: "100px" }}
+              onChange={(e) => setTechStack(e.target.value)}
             >
               <option value="Angular">Angular</option>
               <option value="bell">bell</option>
@@ -177,14 +171,6 @@ export default function StuduyProject() {
               <option value="Flask">Zeplin</option>
             </select>
           </label>
-          <div>
-            <p>선택된 기술스택:</p>
-            <ul>
-              {techStack.map((stack, index) => (
-                <li key={index}>{stack}</li>
-              ))}
-            </ul>
-          </div>
 
           <label className="post_3_label">
             모집마감 :
