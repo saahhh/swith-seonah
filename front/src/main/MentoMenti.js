@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../css/NewBoard.css";
+import DeleteIcon from "./img/delete.png";
 import FormFour from "./FormFour";
 import Modal from "react-modal";
 import usersUserinfoAxios from "../token/tokenAxios";
@@ -155,6 +156,7 @@ export default function MentoMenti() {
           <label className="post_3_label">
             기술스택 :
             <select value={techStack} onChange={handleTechStackChange}>
+              <option>기술스택을 선택하세요</option>
               <option value="Angular">Angular</option>
               <option value="C">C</option>
               <option value="C++">C++</option>
@@ -195,8 +197,14 @@ export default function MentoMenti() {
             <label className="stack_form">
               <div>
                 {techStack.map((stack, index) => (
-                  <span className="tech-stack-item" key={index}>
-                    {stack}
+                  <span className="selected_2" key={index}>
+                    <span className="tech-stack-item">{stack}</span>
+                    <img
+                      src={DeleteIcon}
+                      className="delete_img"
+                      alt="deleteButton"
+                      onClick={() => handleTechStackChange(stack)}
+                    />
                   </span>
                 ))}
               </div>

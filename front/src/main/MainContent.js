@@ -67,9 +67,24 @@ function MainContent() {
 
   const [like, setLike] = useState(false);
 
-  const toggleContentSkill = (skill) => {
+  const [filteredBoards, setFilteredBoards] = useState([]);
+
+  // 클릭된 상태를 관리하는 상태 추가
+  const [isSkillClicked, setSkillClicked] = useState(false);
+
+  const handleToggle = (toggle) => {
+    setSelectedSkill((prevToggles) =>
+      prevToggles.includes(toggle)
+        ? prevToggles.filter((selected) => selected !== toggle)
+        : [...prevToggles, toggle]
+    );
+  };
+
+  const toggleContentSkill = (skill, e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setSkillVisible(!isSkillVisible);
-    setSelectedSkill(skill);
   };
 
   const toggleContentCity = (city) => {
@@ -105,10 +120,84 @@ function MainContent() {
     "기타",
   ];
 
+  const skills = [
+    "Angular",
+    "C",
+    "C++",
+    "Django",
+    "Docker",
+    "Express",
+    "Figma",
+    "Firebase",
+    "Flask",
+    "Flutter",
+    "Git",
+    "Flask",
+    "Go",
+    "GraphQL",
+    "Java Script",
+    "Java",
+    "Kubernetes",
+    "MongoDB",
+    "mySql",
+    "NestJS",
+    "NodeJS",
+    "Php",
+    "Python",
+    "R",
+    "React",
+    "React Native",
+    "Spring",
+    "Svelte",
+    "Swift",
+    "Type Script",
+    "Unity",
+    "Vue",
+    "Zeplin",
+  ];
+
   const recruits = ["프로젝트", "스터디", "멘토/멘티"];
 
   const toggleLike = () => {
     setLike(!like);
+  };
+
+  // 클릭된 상태를 관리하는 배열 추가
+  const [clickedSkills, setClickedSkills] = useState([]);
+
+  // 클릭 이벤트 핸들러 업데이트
+  const handleClickSkill = (skill) => {
+    if (clickedSkills.includes(skill)) {
+      // 클릭된 스킬이 이미 배열에 있다면 제거
+      setClickedSkills(clickedSkills.filter((clicked) => clicked !== skill));
+    } else {
+      if (clickedSkills.length > 4) {
+        // 클릭된 스킬이 5개 이상이면 추가 클릭을 방지하고 경고 메시지를 표시
+        alert("최대 5개까지만 선택 가능합니다.");
+      } else {
+        // 클릭된 스킬이 배열에 없다면 추가
+        setClickedSkills([...clickedSkills, skill]);
+      }
+    }
+    // 모든 클릭된 스킬을 선택된 스킬로 설정
+    setSelectedSkill(clickedSkills);
+  };
+
+  useEffect(() => {
+    // 모든 클릭된 스킬을 선택된 스킬로 설정
+    setSelectedSkill(clickedSkills);
+  }, [clickedSkills]);
+
+  const EllipsisText = ({ text, maxLength }) => {
+    const [displayText, setDisplayText] = useState(text);
+
+    useEffect(() => {
+      if (text.length > maxLength) {
+        setDisplayText(`${text.substring(0, maxLength)}...`);
+      }
+    }, [text, maxLength]);
+
+    return <span>{displayText}</span>;
   };
 
   return (
@@ -145,7 +234,14 @@ function MainContent() {
                       aria-expanded={isSkillVisible ? "true" : "false"}
                       onClick={() => toggleContentSkill("")}
                     >
-                      기술스택
+                      {clickedSkills.length <= 0 ? (
+                        "기술스택"
+                      ) : (
+                        <EllipsisText
+                          text={clickedSkills.join(", ")}
+                          maxLength={7}
+                        />
+                      )}
                       <svg
                         height="20"
                         width="20"
@@ -315,280 +411,54 @@ function MainContent() {
             {isSkillVisible && (
               <div className="region_section">
                 <ul className="skill">
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Angular.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Angular</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/C.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">C</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/C++.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">C++</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Django.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Django</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Docker.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Docker</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Express.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Express</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Figma.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Figma</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Firebase.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Firebase</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Flask.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Flask</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Flutter.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Flutter</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Git.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Git</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Go.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Go</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/GRAPH_QL.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">GraphQL</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/JAVA_SCRIPT.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Java Script</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Java.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Java</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Kubernetes.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Kubernetes</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/MONGO_DB.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">MongoDB</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/mySql.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">mySql</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/NEST_JS.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">NestJS</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/NODE_JS.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">NodeJS</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Php.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Php</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Python.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Python</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/R.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">R</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/react.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">React</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/REACT_NATIVE.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">React Native</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Spring.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Spring</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Svelte.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Svelte</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Swift.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Swift</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/TYPE_SCRIPT.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Type Script</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Unity.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Unity</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Vue.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Vue</span>
-                  </li>
-                  <li className="skillToggle">
-                    <img
-                      className="skill_logo"
-                      src={process.env.PUBLIC_URL + "../img/Zeplin.png"}
-                      alt="skillLogo"
-                    />
-                    <span className="skill_text">Zeplin</span>
-                  </li>
+                  {skills.map((skill) => (
+                    <li
+                      key={skill}
+                      className={`skillToggle ${
+                        clickedSkills.includes(skill) ? "clicked" : ""
+                      }`}
+                      onClick={(e) => {
+                        toggleContentSkill(skill, e);
+                        handleClickSkill(skill);
+                        setSkillVisible(true);
+                      }}
+                    >
+                      <img
+                        className="skill_logo"
+                        src={`${process.env.PUBLIC_URL}/img/${skill}.png`}
+                        alt="skillLogo"
+                      />
+                      <span className="skill_text">{skill}</span>
+                    </li>
+                  ))}
                 </ul>
                 <div className="selected">
                   <ul className="selected_1">
-                    <li className="selected_2">
-                      <span className="selected_text">React</span>
-                      <img
-                        src={DeleteIcon}
-                        className="delete_img"
-                        alt="deleteButton"
-                      />
-                    </li>
+                    {Array.isArray(selectedSkill) &&
+                    selectedSkill.length > 0 ? (
+                      selectedSkill.map((selectedSkillItem, index) => (
+                        <li key={index} className="selected_2">
+                          <span className="selected_text">
+                            {selectedSkillItem}
+                          </span>
+                          <img
+                            src={DeleteIcon}
+                            className="delete_img"
+                            alt="deleteButton"
+                            onClick={() => handleClickSkill(selectedSkillItem)}
+                          />
+                        </li>
+                      ))
+                    ) : (
+                      // 그렇지 않으면 선택된 값이 없음을 나타내는 메시지 표시
+                      <p>선택된 값이 없습니다.</p>
+                    )}
                   </ul>
                 </div>
               </div>
             )}
           </div>
         </div>
-
         <ul className="board_box_section">
           {boards.map((board) => (
             <a

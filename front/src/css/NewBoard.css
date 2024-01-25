@@ -251,7 +251,25 @@
 .tech-stack-item {
   font-size: 18px;
   font-family: "SejonghospitalBold", sans-serif;
-  margin-right: 8px; /* 기술 스택 값 사이에 원하는 간격 설정 */
-  width: 250px;
-  height: 150px;
+  color: #313131;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.selected_2 {
+  display: flex;
+  grid-gap: 10px;
+  gap: 10px;
+  background: #f2f2f2;
+  padding: 5px 10px;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+}
+
+.delete_img {
+  width: 20px;
+  height: 20px;
 }
