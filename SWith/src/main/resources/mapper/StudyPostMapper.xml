@@ -1,3 +1,4 @@
+
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace = "lm.swith.main.mapper.StudyPostMapper">
@@ -11,10 +12,29 @@
         <result property="skill_img" column="skill_img"/>
     </resultMap>
 
-    <resultMap type="lm.swith.main.model.PostTechStacks" id="PostTechStackReuslt">
+    <resultMap type="lm.swith.main.model.PostTechStacks" id="PostTechStackResult">
         <result property="post_no" column="POST_NO" />
         <result property="skill_no" column="SKILL_NO" />
     </resultMap>
+    
+    <resultMap type="lm.swith.main.model.Mentor" id="MentorResult">
+    	<result property="user_no" column="USER_NO" />
+    	<result property="mentor_status" column="MENTOR_STATUS" />
+    	<result property="max_mentor_applicants" column="MAX_MENTOR_APPLICANTS" />
+    </resultMap>
+    
+    <resultMap type="lm.swith.main.model.Mentee" id="MenteeResult">
+    	<result property="user_no" column="USER_NO" />
+    	<result property="mentee_status" column="MENTEE_STATUS" />
+    	<result property="max_mentee_applicants" column="MAX_MENTEE_APPLICANTS" />
+    </resultMap>
+    
+    <resultMap type="lm.swith.main.model.StudyApplication" id="StudyApplicationResult">
+    	<result property="user_no" column="USER_NO" />
+    	<result property="status" column="STATUS" />
+    	<result property="max_study_applicants" column="MAX_STUDY_APPLICANTS" />    	
+    </resultMap>
+    
     
     <resultMap type="lm.swith.main.model.Users" id="UsersResult">
     	<id property="user_no" column="user_no" />
@@ -43,16 +63,15 @@
         <result property="study_location" column="STUDY_LOCATION" />
         <result property="first_study" column="FIRST_STUDY" />
         <result property="study_post_time" column="STUDY_POST_TIME" />
+        <result property="mentorCount" column="mentor_count"/>
+    	<result property="menteeCount" column="mentee_count"/>
+    	<result property="applicationCount" column="application_count"/>
         <association property="user" resultMap="UsersResult"/>
+        <association property="mentor" resultMap="MentorResult" />
+        <association property="mentee" resultMap="MenteeResult" />
+        <association property="studyApplication" resultMap="StudyApplicationResult" />
         <collection property="studyPostWithSkills" resultMap="SkillResult"/>
     </resultMap>
-    
-      <resultMap type="lm.swith.main.model.Cafes" id="findAllCafes">
-    	<result property="bplcm" column="BPLCNM" />
-    	<result property="sitewhladdr" column="SITEWHLADDR" />
-    	<result property="x" column="X" />
-    	<result property="y" column="Y" />
-	</resultMap>
     
 
 	<select id="getAllStudyPostWithSkills" resultMap="studyPostWithSkills">
@@ -64,78 +83,159 @@
 	
 	
 	
-
 	<!-- 스터디 상세 페이지 -->
 	<!-- 특정 post_no에 해당하는 스터디 포스트 및 기술 스택 정보 조회 -->
-	<select id="getStudyPostByPostNo" resultMap="studyPostWithSkills">
-	    SELECT sp.*, s.skill_name, s.skill_img,
-	    CASE 
-	        WHEN sp.RECRUIT_TYPE IN ('프로젝트', '스터디') THEN sa.MAX_STUDY_APPLICANTS
-	        WHEN sp.RECRUIT_TYPE = '멘토/멘티' THEN m.MAX_MENTOR_APPLICANTS
-	        ELSE NULL  
-	    END AS MAX_APPLICANTS,
-	    CASE 
-	        WHEN sp.RECRUIT_TYPE IN ('프로젝트', '스터디') THEN sa.CURRENT_STUDY_APPLICANTS
-	        WHEN sp.RECRUIT_TYPE = '멘토/멘티' THEN m.CURRENT_MENTOR_APPLICANTS
-	        ELSE NULL  
-	    END AS CURRENT_STUDY_APPLICANTS
-	    FROM study_post sp
-	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-	    LEFT JOIN skill s ON pts.skill_no = s.skill_no
-	    LEFT JOIN study_application sa ON sp.post_no = sa.post_no
-	    LEFT JOIN mentor m ON sp.post_no = m.post_no
-	    WHERE sp.post_no = #{post_no}
+<select id="getStudyPostByPostNo" resultSets="studyPost,mentor,mentee,application" resultMap="studyPostWithSkills">
+    SELECT 
+        sp.*,
+        s.skill_name,
+        s.skill_img,
+        m.USER_NO AS mentor_user_no,
+        m.MENTOR_STATUS,
+        m.MAX_MENTOR_APPLICANTS,
+        me.USER_NO AS mentee_user_no,
+        me.MENTEE_STATUS,
+        me.MAX_MENTEE_APPLICANTS,
+        sa.USER_NO AS application_user_no,
+        sa.STATUS,
+        sa.MAX_STUDY_APPLICANTS,
+        (
+            SELECT COUNT(DISTINCT m.USER_NO)
+            FROM mentor m
+            WHERE m.POST_NO = #{post_no} AND m.MENTOR_STATUS = '승인'
+        ) AS mentor_count,
+        (
+            SELECT COUNT(DISTINCT me.USER_NO)
+            FROM mentee me
+            WHERE me.POST_NO = #{post_no} AND me.MENTEE_STATUS = '승인'
+        ) AS mentee_count,
+        (
+            SELECT COUNT(DISTINCT sa.USER_NO)
+            FROM study_application sa
+            WHERE sa.POST_NO = #{post_no} AND sa.STATUS = '승인'
+        ) AS application_count
+    FROM study_post sp
+    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+    LEFT JOIN skill s ON pts.skill_no = s.skill_no
+    LEFT JOIN mentor m ON sp.post_no = m.POST_NO
+    LEFT JOIN mentee me ON sp.post_no = me.POST_NO
+    LEFT JOIN study_application sa ON sp.post_no = sa.POST_NO
+    WHERE sp.post_no = #{post_no}
+</select>
+
+	
+	
+	
+	<!-- 댓글 불러오기 -->
+	<!-- 댓글과 사용자 정보를 함께 매핑하는 resultMap -->
+	<resultMap type="lm.swith.main.model.Comments" id="commentWithUser">
+	    <id property="comment_no" column="COMMENT_NO"/>
+	    <result property="user_no" column="USER_NO"/>
+	    <result property="post_no" column="POST_NO"/>
+	    <result property="comment_content" column="COMMENT_CONTENT"/>
+	    <result property="comment_post_time" column="COMMENT_POST_TIME"/>
+	    <association property="user" resultMap="userResult"/> <!-- 사용자 정보를 association으로 매핑 -->
+	</resultMap>
+	
+	<!-- 사용자 정보를 매핑하는 resultMap -->
+	<resultMap type="lm.swith.main.model.Users" id="userResult">
+	    <id property="user_no" column="USER_NO"/>
+	    <result property="nickname" column="NICKNAME"/>
+	</resultMap>
+	
+	<select id="getCommentsByPostNo" resultMap="commentWithUser">
+	    SELECT c.*, u.NICKNAME
+	    FROM COMMENTS c
+	    JOIN USERS u ON c.USER_NO = u.USER_NO
+	    WHERE c.POST_NO = #{post_no}
 	</select>
 	
 	
 	
 	
-<!-- 스터디 등록 -->
-<insert id="insertStudyPost" parameterType="lm.swith.main.model.StudyPost">
-    <selectKey keyProperty="post_no" resultType="Long" order="BEFORE">
-        SELECT post_no_seq.NEXTVAL FROM DUAL
-    </selectKey>
-    
-    <!-- 첫 번째 쿼리: study_post 테이블에 스터디 정보 삽입 -->
-    INSERT INTO study_post (
-        POST_NO, USER_NO, NICKNAME, STUDY_TITLE, STUDY_CONTENT,
-        STUDY_METHOD, RECRUIT_TYPE, STUDY_PERIOD,
-        STUDY_START, RECRUIT_DEADLINE,
-        STUDY_LIKES, STUDY_LOCATION, FIRST_STUDY
-    ) VALUES (
-        #{post_no}, #{user_no}, (SELECT NICKNAME FROM USERS WHERE USER_NO = #{user_no}),
-        #{study_title}, #{study_content},
-        #{study_method}, #{recruit_type}, #{study_period},
-        #{study_start}, #{recruit_deadline},
-        #{study_likes}, #{study_location}, #{first_study}
-    )
-    
-    <!-- 두 번째 쿼리: post_tech_stacks 테이블에 기술 스택 정보 삽입 -->
-    <foreach collection="skills" item="skill" separator=";">
-        INSERT INTO post_tech_stacks (post_no, skill_no)
-        VALUES (#{post_no}, #{skill})
-    </foreach>
+	
+	<!-- 스터디 등록 -->
+	<!-- <insert id="insertStudyPost" parameterType="lm.swith.main.model.StudyPost">
+	    <selectKey keyProperty="post_no" resultType="Long" order="BEFORE">
+	        SELECT post_no_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	    
+	     첫 번째 쿼리: study_post 테이블에 스터디 정보 삽입 
+	    INSERT INTO study_post (
+	        POST_NO, USER_NO, NICKNAME, STUDY_TITLE, STUDY_CONTENT,
+	        STUDY_METHOD, RECRUIT_TYPE, STUDY_PERIOD,
+	        STUDY_START, RECRUIT_DEADLINE,
+	        STUDY_LIKES, STUDY_LOCATION, FIRST_STUDY
+	    ) VALUES (
+	        #{post_no}, #{user_no}, (SELECT NICKNAME FROM USERS WHERE USER_NO = #{user_no}),
+	        #{study_title}, #{study_content},
+	        #{study_method}, #{recruit_type}, #{study_period},
+	        #{study_start}, #{recruit_deadline},
+	        #{study_likes}, #{study_location}, #{first_study}
+	    )
+	
+	     두 번째 쿼리: post_tech_stacks 테이블에 기술 스택 정보 삽입 
+	    <foreach collection="skills" item="skill" separator=";">
+	        INSERT INTO post_tech_stacks (post_no, skill_no)
+	        VALUES (#{post_no}, #{skill})
+	    </foreach>
+	</insert>  -->
+	
+	
 
-    <!-- 조건에 따라 멘토/멘티 또는 스터디 신청 정보 삽입 -->
-    <choose>
-        <!-- '멘토/멘티'인 경우 -->
-        <when test="recruit_type == '멘토/멘티'">
-            <!-- 멘토 정보 삽입 -->
-            INSERT INTO mentor (MENTOR_NO, USER_NO, POST_NO, MAX_MENTOR_APPLICANTS, MENTOR_STATUS)
-            VALUES (MENTOR_SEQ.NEXTVAL, #{user_no}, #{post_no}, #{max_mentor_applicants}, '대기중');
-            
-            <!-- 멘티 정보 삽입 -->
-            INSERT INTO mentee (MENTEE_NO, USER_NO, POST_NO, MAX_MENTEE_APPLICANTS, MENTEE_STATUS)
-            VALUES (MENTEE_SEQ.NEXTVAL, #{user_no}, #{post_no}, #{max_mentee_applicants}, '대기중');
-        </when>
-        <!-- '스터디' 또는 '프로젝트'인 경우 -->
-        <otherwise>
-            <!-- 스터디 신청 정보 삽입 -->
-            INSERT INTO study_application (APPLICATION_NO, POST_NO, USER_NO, STATUS, MAX_STUDY_APPLICANTS, CURRENT_STUDY_APPLICANTS)
-            VALUES (APPLICATION_SEQ.NEXTVAL, #{post_no}, #{user_no}, '대기중', #{max_study_applicants}, 1);
-        </otherwise>
-    </choose>
-</insert>
+	<!-- 스터디 등록 -->
+	<insert id="insertStudyPost" parameterType="lm.swith.main.model.StudyPost">
+	    <selectKey keyProperty="post_no" resultType="Long" order="BEFORE">
+	        SELECT post_no_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	
+	    <!-- 첫 번째 쿼리: study_post 테이블에 스터디 정보 삽입 -->
+	    INSERT INTO study_post (
+	        POST_NO, USER_NO, NICKNAME, STUDY_TITLE, STUDY_CONTENT,
+	        STUDY_METHOD, RECRUIT_TYPE, STUDY_PERIOD,
+	        STUDY_START, RECRUIT_DEADLINE,
+	        STUDY_LIKES, STUDY_LOCATION, FIRST_STUDY
+	    ) VALUES (
+	        #{post_no}, #{user_no}, (SELECT NICKNAME FROM USERS WHERE USER_NO = #{user_no}),
+	        #{study_title}, #{study_content},
+	        #{study_method}, #{recruit_type}, #{study_period},
+	        #{study_start}, #{recruit_deadline},
+	        #{study_likes}, #{study_location}, #{first_study}
+	    )
+	
+	    <!-- 두 번째 쿼리: post_tech_stacks 테이블에 기술 스택 정보 삽입 -->
+	    <foreach collection="skills" item="skill" separator=";">
+	        INSERT INTO post_tech_stacks (post_no, skill_no)
+	        VALUES (#{post_no}, #{skill})
+	    </foreach>
+	
+	    <!-- 세 번째 쿼리: study_application 테이블에 정보 삽입 -->
+	    <choose>
+	        <when test="recruit_type == '멘토/멘티'">
+	            INSERT INTO mentor (MENTOR_NO, POST_NO, MAX_MENTOR_APPLICANTS)
+	            VALUES (MENTOR_SEQ.NEXTVAL, #{post_no}, #{max_mentor_applicants})
+	
+	            INSERT INTO mentee (MENTEE_NO, USER_NO, POST_NO, MAX_MENTEE_APPLICANTS, MENTEE_STATUS)
+	            VALUES (MENTEE_SEQ.NEXTVAL, #{post_no}, #{max_mentee_applicants})
+	            
+	            <if test = "mentor_check">
+					UPDATE mentor SET USER_NO = #{user_no} WHERE POST_NO = #{post_no};
+				</if>
+				<if test = "mentee_check">
+					UPDATE mentee SET USER_NO = #{user_no} WHERE POST_NO = #{post_no};
+				</if>
+	        </when>
+	        <otherwise>
+	            INSERT INTO study_application (
+	                POST_NO, USER_NO, STATUS, MAX_STUDY_APPLICANTS
+	            ) VALUES (
+	                #{post_no}, #{user_no}, '승인', #{max_study_applicants}
+	            )
+	        </otherwise>
+	    </choose>
+	</insert>
+
+	
 
 	
 	
@@ -182,17 +282,6 @@
 	    SELECT * FROM study_post 
 	    WHERE study_title LIKE '%' || #{keyword} || '%'
 	    OR study_content LIKE '%' || #{keyword} || '%'
-	</select>
-	
-		<!-- 스터디 게시글 작성 내 첫모임 장소 검색 -->
-	<select id="findAllCafes" resultType="lm.swith.main.model.Cafes">
-	    SELECT * FROM cafes
-	</select>
-		
-	<select id="searchCafes" resultType="lm.swith.main.model.Cafes">
-		SELECT * FROM cafes
-	    WHERE bplcnm LIKE '%' || #{keyword} || '%'
-	    OR sitewhladdr LIKE '%' || #{keyword} || '%'
 	</select>
 	
 	
