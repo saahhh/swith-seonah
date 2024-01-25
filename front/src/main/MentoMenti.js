@@ -203,7 +203,7 @@ export default function MentoMenti() {
                       src={DeleteIcon}
                       className="delete_img"
                       alt="deleteButton"
-                      onClick={() => handleTechStackChange(stack)}
+                      onClick={() => handleItem2Click(stack)}
                     />
                   </span>
                 ))}

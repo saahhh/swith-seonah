@@ -28,6 +28,13 @@ function StudyDetail() {
     fetchStudyDetail();
   }, [post_no]); // post_no가 변경될 때마다 실행
 
+  // studyPostWithSkills에 대한 중복제거 조건문 추가
+  const uniqueSkills = detailPages.studyPostWithSkills && [
+    ...new Set(
+      detailPages.studyPostWithSkills.map((skill) => skill.skill_name)
+    ),
+  ];
+
   return (
     <div>
       <Header />
@@ -105,9 +112,9 @@ function StudyDetail() {
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">기술스택</span>
                 <span className="studyInfo_title_a">
-                  {detailPages.studyPostWithSkills &&
-                    detailPages.studyPostWithSkills.map((skill, skill_no) => (
-                      <li key={skill_no}>{skill.skill_name}</li>
+                  {uniqueSkills &&
+                    uniqueSkills.map((skill, index) => (
+                      <li key={index}>{skill}</li>
                     ))}
                 </span>
               </li>
@@ -140,7 +147,9 @@ function StudyDetail() {
               <button className="commentInput_buttonComplete" name="register">
                 댓글 등록
               </button>
-              <button>게시글 수정하기</button>
+              <button className="commentInput_buttonComplete">
+                게시글 수정하기
+              </button>
             </div>
           </div>
         </div>

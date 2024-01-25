@@ -109,20 +109,18 @@ public class StudyPostController {
     }
     
     
-    @GetMapping("/cafe_list")
-    public ResponseEntity<List<Cafes>> findAllCafes() {
-        List<Cafes> cafes = studyPostService.findAllCafes();
-        if (cafes != null) {
-            return ResponseEntity.ok(cafes);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    // 카페 리스트
+    @GetMapping ("/cafe_list")
+    public ResponseEntity<List<Cafes>> getAllCafes(String bplcnm, String sitewhladdr, String x, String y) {
+        List<Cafes> cafes = studyPostService.getAllCafes(bplcnm, sitewhladdr, x, y);
+        return ResponseEntity.ok(cafes);
     }
     
+    // 검색 카페 목록
     @GetMapping("/KeywordCafes")
-	public String searchCafes(@RequestParam String keyword) {
-    	List<Cafes> cafes = studyPostService.searchCafes(keyword);
-    	return "/";
+    public List<Cafes> searchCafes(@RequestParam String keyword) {
+        return studyPostService.searchCafes(keyword);
     }
+
     
 }

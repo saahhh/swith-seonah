@@ -327,5 +327,17 @@
 	    
 	    <!-- 두 번째 쿼리: post_tech_stacks 테이블에서 해당 post_no에 대한 기술 스택 정보 삭제 -->
 	    DELETE FROM post_tech_stacks WHERE post_no = #{post_no}
+	    
+	    <!-- 세 번째 쿼리 : studyApplication 테이블에서 해당 post_no 대한 스터디 신청 정보 삭제  -->
+	    DELETE FROM study_application WHERE post_no = #{post_no}
+	    
+	    <!-- 네 번째 쿼리 : mentor 테이블에서 해당 post_no에 대한 멘토 정보 삭제 -->
+	    DELETE FROM mentor WHERE post_no = #{post_no}
+	    
+	    <!-- 다섯 번째 쿼리 : mentee 테이블에서 해당 post_no에 대한 멘티 정보 삭제 -->
+	    DELETE FROM mentee WHERE post_no = #{post_no}
+	    
+	    <!-- 여섯 번째 쿼리 : comments 테이블에서 해당 post_no에 대한 댓글 정보 삭제-->
+	    DELETE FROM comments WHERE post_no = #{post_no}
 	</delete>
 </mapper>

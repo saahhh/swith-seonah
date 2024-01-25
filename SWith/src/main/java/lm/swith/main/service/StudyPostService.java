@@ -59,14 +59,14 @@ public class StudyPostService {
     }
     
     // 스터디 게시글 작성 내 첫모임 장소 카페 리스트
-    public List<Cafes> findAllCafes() {
-    	return studyPostMapper.findAllCafes();
+    public List<Cafes> getAllCafes(String bplcnm, String sitewhladdr, String x, String y) {
+        return studyPostMapper.getAllCafes(bplcnm, sitewhladdr, x, y);
     }
-
+    
     // 스터디 게시글 작성 내 첫모임 장소 검색
     public List<Cafes> searchCafes(String keyword) {
-    	return studyPostMapper.searchCafes(keyword);
-    	
+        return studyPostMapper.searchCafes(keyword);
     }
+   
 
 }
