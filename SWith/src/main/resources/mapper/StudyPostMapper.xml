@@ -3,9 +3,8 @@
 
 <mapper namespace = "lm.swith.main.mapper.StudyPostMapper">
 
-
 	<!-- 스터디 전체 목록 -->
-	<!-- 스터디 포스트 및 기술 스택 정보 조회 -->	
+		<!-- 스터디 포스트 및 기술 스택 정보 조회 -->	
     <resultMap type="lm.swith.main.model.Skill" id="SkillResult">
         <id property="skill_no" column="skill_no"/>
         <result property="skill_name" column="skill_name"/>
@@ -43,9 +42,23 @@
     	<result property="password" column="password" />
     	<result property="username" column="username" />
     	<result property="user_profile" column="user_profile" />
-    	<result property="userintroduction" column="userintroduction" />
-    	<result property="userrole" column="userrole" />
+    	<result property="user_introduction" column="user_introduction" />
+    	<result property="user_role" column="user_role" />
     </resultMap>
+    
+    <resultMap type="lm.swith.main.model.Comments" id="commentWithUser">
+	    <id property="comment_no" column="COMMENT_NO"/>
+	    <result property="user_no" column="USER_NO"/>
+	    <result property="post_no" column="POST_NO"/>
+	    <result property="comment_content" column="COMMENT_CONTENT"/>
+	    <result property="comment_post_time" column="COMMENT_POST_TIME"/>
+	    <association property="user" resultMap="userResult"/> <!-- 사용자 정보를 association으로 매핑 -->
+	</resultMap>
+	
+	<resultMap type="lm.swith.main.model.Users" id="userResult">
+	    <id property="user_no" column="USER_NO"/>
+	    <result property="nickname" column="NICKNAME"/>
+	</resultMap>
 
     <resultMap type="lm.swith.main.model.StudyPost" id="studyPostWithSkills">
         <id property="post_no" column="POST_NO" />
@@ -123,35 +136,7 @@
     WHERE sp.post_no = #{post_no}
 </select>
 
-	
-	
-	
-	<!-- 댓글 불러오기 -->
-	<!-- 댓글과 사용자 정보를 함께 매핑하는 resultMap -->
-	<resultMap type="lm.swith.main.model.Comments" id="commentWithUser">
-	    <id property="comment_no" column="COMMENT_NO"/>
-	    <result property="user_no" column="USER_NO"/>
-	    <result property="post_no" column="POST_NO"/>
-	    <result property="comment_content" column="COMMENT_CONTENT"/>
-	    <result property="comment_post_time" column="COMMENT_POST_TIME"/>
-	    <association property="user" resultMap="userResult"/> <!-- 사용자 정보를 association으로 매핑 -->
-	</resultMap>
-	
-	<!-- 사용자 정보를 매핑하는 resultMap -->
-	<resultMap type="lm.swith.main.model.Users" id="userResult">
-	    <id property="user_no" column="USER_NO"/>
-	    <result property="nickname" column="NICKNAME"/>
-	</resultMap>
-	
-	<select id="getCommentsByPostNo" resultMap="commentWithUser">
-	    SELECT c.*, u.NICKNAME
-	    FROM COMMENTS c
-	    JOIN USERS u ON c.USER_NO = u.USER_NO
-	    WHERE c.POST_NO = #{post_no}
-	</select>
-	
-	
-	
+
 	
 	
 	<!-- 스터디 등록 -->
@@ -242,49 +227,53 @@
 	
 	
 	
-	<!-- 조건 select 문 parameterType="Map" -->
+<!-- 조건 sort 해서 검색 -->
 	<select id="getStudiesbySelect" parameterType="String" resultType="lm.swith.main.model.StudyPost">
     SELECT DISTINCT *
     FROM (
         <!-- 기술스택별 스터디 목록 -->
-        SELECT sp.*
+        SELECT sp.*, s.skill_name, s.skill_img
         FROM study_post sp
         JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+        LEFT JOIN skill s ON pts.skill_no = s.skill_no
         WHERE pts.skill_no = #{skill_no}
 
         UNION
 
         <!-- 모집구분별 스터디 목록 -->
-        SELECT *
-        FROM study_post
-        WHERE recruit_type = #{recruit_type}
+        SELECT sp.*, s.skill_name, s.skill_img
+        FROM study_post sp
+        JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+        LEFT JOIN skill s ON pts.skill_no = s.skill_no
+        WHERE sp.recruit_type = #{recruit_type}
 
         UNION
 
         <!-- 진행방식별 스터디 목록 -->
-        SELECT *
-        FROM study_post
-        WHERE study_method = #{study_method}
+        SELECT sp.*, s.skill_name, s.skill_img
+        FROM study_post sp
+        JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+        WHERE sp.study_method = #{study_method}
 
         UNION
 
         <!-- 지역별 스터디 목록 -->
-        SELECT *
-        FROM study_post 
-        WHERE study_location = #{study_location}
+        SELECT sp.*, s.skill_name, s.skill_img
+        FROM study_post sp
+        JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+        WHERE sp.study_location = #{study_location}
     ) AS uniqueStudies
 	</select>
 	
-	
-	
 	<!-- 키워드 검색결과 스터디 목록 -->
 	<select id="getStudiesByKeyword" resultType="lm.swith.main.model.StudyPost">
-	    SELECT * FROM study_post 
-	    WHERE study_title LIKE '%' || #{keyword} || '%'
-	    OR study_content LIKE '%' || #{keyword} || '%'
+	    SELECT sp.*, s.skill_name, s.skill_img 
+	    FROM study_post sp
+	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+	    LEFT JOIN skill s ON pts.skill_no = s.skill_no
+	    WHERE sp.study_title LIKE '%' || #{keyword} || '%'
+	    OR sp.study_content LIKE '%' || #{keyword} || '%'
 	</select>
-	
-	
 	
 	<!-- 스터디 수정 -->
 	<update id="updateStudyPost" parameterType="lm.swith.main.model.StudyPost">

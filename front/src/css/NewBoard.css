@@ -241,11 +241,13 @@
   width: 300px;
 }
 
-.stack_form {
+.stack_box {
   font-size: 18px;
   font-family: "SejonghospitalBold", sans-serif;
-  word-wrap: break-word; /* 길이를 초과하면 단어 단위로 줄바꿈 */
-  margin-left: 100px;
+  display: flex;
+  flex-direction: row; /* 기존의 기술스택이 가로로 나열되도록 변경 */
+  margin-left: 340px;
+  width: 800px;
 }
 
 .tech-stack-item {
@@ -256,20 +258,21 @@
   font-weight: 500;
 }
 
-.selected_2 {
-  display: flex;
+.selected {
+  height: 30px;
   grid-gap: 10px;
   gap: 10px;
-  background: #f2f2f2;
-  padding: 5px 10px;
-  border-radius: 10px;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.1s ease-in;
 }
 
 .delete_img {
   width: 20px;
   height: 20px;
+}
+.selected_2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  grid-gap: 30px;
+  gap: 10px;
+  background: #f2f2f2;
 }

@@ -30,7 +30,7 @@ public interface StudyPostMapper {
 	List<StudyPost> getStudiesBySelect(String recruit_type, String study_method, String study_location, Long skill_no);
 		
 	// 스터디 제목+내용 검색
-	List<StudyPost> getStudiesBySearch(String study_title, String study_content);
+	List<StudyPost> getStudiesByKeyword(String keyword);
 	
 	// 카페 목록
 	List<Cafes> getAllCafes(String bplcnm, String sitewhladdr, String x, String y);

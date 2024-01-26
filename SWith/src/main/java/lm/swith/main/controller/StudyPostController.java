@@ -102,12 +102,10 @@ public class StudyPostController {
     
     // 검색 스터디 목록
     @GetMapping("/KeywordStudy")
-	public String getStudiesByKeyword(String study_title, String study_content, Model model) {
-    	List<StudyPost> studyPosts = studyPostService.getStudiesByKeyword(study_title, study_content);
-    	model.addAttribute("studyPosts", studyPosts);
-    	return "/";
+	public List<StudyPost> getStudiesByKeyword(@RequestParam(required = false) String keyword) { 	  	
+    	return studyPostService.getStudiesByKeyword(keyword);
     }
-    
+      
     
     // 카페 리스트
     @GetMapping ("/cafe_list")

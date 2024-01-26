@@ -36,9 +36,11 @@ public class StudyPostService {
     }
     
     // 스터디 키워드 검색
-    public List<StudyPost> getStudiesByKeyword(String study_title, String study_content) {
-        return studyPostMapper.getStudiesBySearch(study_title, study_content);
-    }
+    public List<StudyPost> getStudiesByKeyword(String keyword) {
+        return studyPostMapper.getStudiesByKeyword(keyword);
+        }
+    
+    
 	
     
     

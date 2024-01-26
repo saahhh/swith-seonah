@@ -147,7 +147,10 @@ function StudyDetail() {
               <button className="commentInput_buttonComplete" name="register">
                 댓글 등록
               </button>
-              <button className="commentInput_buttonComplete">
+              <button
+                className="commentInput_buttonComplete"
+                name="post_update"
+              >
                 게시글 수정하기
               </button>
             </div>

@@ -62,6 +62,8 @@ export default function MentoMenti() {
     if (selectedItem2 === item2) {
       // 클릭된 아이템이 현재 선택된 아이템과 같으면 선택 해제
       setSelectedItem2(null);
+      // 선택된 기술스택 제거
+      setTechStack(techStack.filter((tech) => tech !== item2));
     } else {
       // 아니면 새로운 아이템 선택
       setSelectedItem2(item2);
@@ -85,6 +87,10 @@ export default function MentoMenti() {
       // 5개를 넘을 경우 알림창 표시
       alert("최대 5개까지만 선택 가능합니다.");
     }
+  };
+
+  const handleDeleteTech = (deletedTech) => {
+    setTechStack(techStack.filter((tech) => tech !== deletedTech));
   };
 
   return (
@@ -193,23 +199,24 @@ export default function MentoMenti() {
               {/* Add more options as needed */}
             </select>
           </label>
-          <div>
-            <label className="stack_form">
-              <div>
-                {techStack.map((stack, index) => (
-                  <span className="selected_2" key={index}>
-                    <span className="tech-stack-item">{stack}</span>
-                    <img
-                      src={DeleteIcon}
-                      className="delete_img"
-                      alt="deleteButton"
-                      onClick={() => handleItem2Click(stack)}
-                    />
-                  </span>
-                ))}
-              </div>
-            </label>
-          </div>
+
+          <label className="stack_box">
+            <div className="selected">
+              <br />
+              {techStack.map((stack, index) => (
+                <div className="selected_2" key={index}>
+                  <div className="tech-stack-item">{stack}</div>
+
+                  <img
+                    src={DeleteIcon}
+                    className="delete_img"
+                    alt="deleteButton"
+                    onClick={() => handleDeleteTech(stack)}
+                  />
+                </div>
+              ))}
+            </div>
+          </label>
 
           <label className="post_3_label">
             모집마감 :
@@ -219,6 +226,7 @@ export default function MentoMenti() {
               onChange={(e) => setDeadline(e.target.value)}
             />
           </label>
+
           <label className="post_3_label">
             지역구분 :
             <select value={region} onChange={(e) => setRegion(e.target.value)}>

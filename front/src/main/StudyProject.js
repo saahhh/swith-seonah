@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../css/NewBoard.css";
+import DeleteIcon from "./img/delete.png";
 import FormFour from "./FormFour";
 import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
@@ -50,7 +51,6 @@ export default function StuduyProject() {
   const [recruitmentCount, setRecruitmentCount] = useState("");
 
   const [duration, setDuration] = useState("");
-  const [techStack, setTechStack] = useState([]);
   const [deadline, setDeadline] = useState("");
   const [startDate, setStartDate] = useState("");
   const [region, setRegion] = useState("");
@@ -66,10 +66,35 @@ export default function StuduyProject() {
     if (selectedItem2 === item2) {
       // 클릭된 아이템이 현재 선택된 아이템과 같으면 선택 해제
       setSelectedItem2(null);
+      // 선택된 기술스택 제거
+      setTechStack(techStack.filter((tech) => tech !== item2));
     } else {
       // 아니면 새로운 아이템 선택
       setSelectedItem2(item2);
     }
+  };
+
+  // 기술스택 state를 배열로 변경
+  const [techStack, setTechStack] = useState([]);
+
+  const handleTechStackChange = (e) => {
+    const selectedTech = e.target.value;
+
+    // 이미 선택된 기술스택이 있는지 확인
+    if (techStack.includes(selectedTech)) {
+      // 이미 선택된 경우, 해당 기술스택을 배열에서 제거
+      setTechStack(techStack.filter((tech) => tech !== selectedTech));
+    } else if (techStack.length < 5) {
+      // 선택된 기술스택이 5개 미만인 경우에만 추가
+      setTechStack([...techStack, selectedTech]);
+    } else {
+      // 5개를 넘을 경우 알림창 표시
+      alert("최대 5개까지만 선택 가능합니다.");
+    }
+  };
+
+  const handleDeleteTech = (deletedTech) => {
+    setTechStack(techStack.filter((tech) => tech !== deletedTech));
   };
 
   return (
@@ -131,13 +156,19 @@ export default function StuduyProject() {
           </label>
 
           <label className="post_3_label">
+            모집마감 :
+            <input
+              type="text"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+            />
+          </label>
+
+          <label className="post_3_label">
             기술스택 :
-            <select
-              value={techStack}
-              onChange={(e) => setTechStack(e.target.value)}
-            >
+            <select value={techStack} onChange={handleTechStackChange}>
+              <option>기술스택을 선택하세요</option>
               <option value="Angular">Angular</option>
-              <option value="bell">bell</option>
               <option value="C">C</option>
               <option value="C++">C++</option>
               <option value="Django">Django</option>
@@ -146,40 +177,52 @@ export default function StuduyProject() {
               <option value="Figma">Figma</option>
               <option value="Firebase">Firebase</option>
               <option value="Flask">Flask</option>
-              <option value="Flask">Flutter</option>
-              <option value="Flask">Git</option>
-              <option value="Flask">Go</option>
-              <option value="Flask">GraphQL</option>
-              <option value="Flask">Java Script</option>
-              <option value="Flask">Java</option>
-              <option value="Flask">Kubernetes</option>
-              <option value="Flask">MongoDB</option>
-              <option value="Flask">mySql</option>
-              <option value="Flask">NestJS</option>
-              <option value="Flask">NodeJS</option>
-              <option value="Flask">Php</option>
-              <option value="Flask">Python</option>
-              <option value="Flask">R</option>
-              <option value="Flask">React</option>
-              <option value="Flask">React Native</option>
-              <option value="Flask">Spring</option>
-              <option value="Flask">Svelte</option>
-              <option value="Flask">Swift</option>
-              <option value="Flask">Type Script</option>
-              <option value="Flask">Unity</option>
-              <option value="Flask">Vue</option>
-              <option value="Flask">Zeplin</option>
+              <option value="Flutter">Flutter</option>
+              <option value="Git">Git</option>
+              <option value="Go">Go</option>
+              <option value="GraphQL">GraphQL</option>
+              <option value="Java Script">Java Script</option>
+              <option value="Java">Java</option>
+              <option value="Kubernetes">Kubernetes</option>
+              <option value="MongoDB">MongoDB</option>
+              <option value="mySql">mySql</option>
+              <option value="NestJS">NestJS</option>
+              <option value="NodeJS">NodeJS</option>
+              <option value="Php">Php</option>
+              <option value="Python">Python</option>
+              <option value="R">R</option>
+              <option value="React">React</option>
+              <option value="React Native">React Native</option>
+              <option value="Spring">Spring</option>
+              <option value="Svelte">Svelte</option>
+              <option value="Swift">Swift</option>
+              <option value="Type Script">Type Script</option>
+              <option value="Unity">Unity</option>
+              <option value="Vue">Vue</option>
+              <option value="Zeplin">Zeplin</option>
+
+              {/* Add more options as needed */}
             </select>
           </label>
 
-          <label className="post_3_label">
-            모집마감 :
-            <input
-              type="text"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-            />
+          <label className="stack_box">
+            <div className="selected">
+              <br />
+              {techStack.map((stack, index) => (
+                <div className="selected_2" key={index}>
+                  <div className="tech-stack-item">{stack}</div>
+
+                  <img
+                    src={DeleteIcon}
+                    className="delete_img"
+                    alt="deleteButton"
+                    onClick={() => handleDeleteTech(stack)}
+                  />
+                </div>
+              ))}
+            </div>
           </label>
+
           <label className="post_3_label">
             지역구분 :
             <select value={region} onChange={(e) => setRegion(e.target.value)}>
