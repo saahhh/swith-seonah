@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lm.swith.main.mapper.StudyPostMapper;
 import lm.swith.main.model.Cafes;
+import lm.swith.main.model.Comments;
 import lm.swith.main.model.StudyPost;
 
 @Service
@@ -37,17 +38,28 @@ public class StudyPostService {
     
     // 스터디 키워드 검색
     public List<StudyPost> getStudiesByKeyword(String keyword) {
-        return studyPostMapper.getStudiesByKeyword(keyword);
-        }
+        return studyPostMapper.getStudiesByKeyword(keyword);}
     
     
 	
     
     
     // Detail Part
-	// 스터디 상세 페이지 불러오기
+    // 스터디 상세 페이지 불러오기
     public StudyPost getStudyPostByPostNo(Long post_no) {
-        return studyPostMapper.getStudyPostByPostNo(post_no);
+        StudyPost studyPost = studyPostMapper.getStudyPostByPostNo(post_no);
+
+        if (studyPost != null) {
+            List<Comments> comments = studyPostMapper.getCommentsByPostNo(post_no);
+            studyPost.setComments(comments);
+        }
+
+        return studyPost;
+    }
+    
+ // 댓글 불러오기
+    public List<Comments> getCommentsByPostNo(Long post_no) {
+    	return studyPostMapper.getCommentsByPostNo(post_no);
     }
     
     // 스터디 수정

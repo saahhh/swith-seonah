@@ -46,14 +46,6 @@
     	<result property="user_role" column="user_role" />
     </resultMap>
     
-    <resultMap type="lm.swith.main.model.Comments" id="commentWithUser">
-	    <id property="comment_no" column="COMMENT_NO"/>
-	    <result property="user_no" column="USER_NO"/>
-	    <result property="post_no" column="POST_NO"/>
-	    <result property="comment_content" column="COMMENT_CONTENT"/>
-	    <result property="comment_post_time" column="COMMENT_POST_TIME"/>
-	    <association property="user" resultMap="userResult"/> <!-- 사용자 정보를 association으로 매핑 -->
-	</resultMap>
 	
 	<resultMap type="lm.swith.main.model.Users" id="userResult">
 	    <id property="user_no" column="USER_NO"/>
@@ -86,6 +78,27 @@
         <collection property="studyPostWithSkills" resultMap="SkillResult"/>
     </resultMap>
     
+    <resultMap id="commentWithUser" type="lm.swith.main.model.Comments">
+	    <result property="comment_no" column="COMMENT_NO"/>
+	    <result property="post_no" column="POST_NO"/>
+	    <result property="user_no" column="USER_NO"/>
+	    <result property="comment_content" column="COMMENT_CONTENT"/>
+	    <result property="comment_post_time" column="COMMENT_POST_TIME"/>
+	    <result property="nickname" column="NICKNAME"/>
+	</resultMap>
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 	<select id="getAllStudyPostWithSkills" resultMap="studyPostWithSkills">
 	    SELECT sp.*, s.skill_name, s.skill_img
@@ -96,46 +109,53 @@
 	
 	
 	
-	<!-- 스터디 상세 페이지 -->
+		<!-- 스터디 상세 페이지 -->
 	<!-- 특정 post_no에 해당하는 스터디 포스트 및 기술 스택 정보 조회 -->
-<select id="getStudyPostByPostNo" resultSets="studyPost,mentor,mentee,application" resultMap="studyPostWithSkills">
-    SELECT 
-        sp.*,
-        s.skill_name,
-        s.skill_img,
-        m.USER_NO AS mentor_user_no,
-        m.MENTOR_STATUS,
-        m.MAX_MENTOR_APPLICANTS,
-        me.USER_NO AS mentee_user_no,
-        me.MENTEE_STATUS,
-        me.MAX_MENTEE_APPLICANTS,
-        sa.USER_NO AS application_user_no,
-        sa.STATUS,
-        sa.MAX_STUDY_APPLICANTS,
-        (
-            SELECT COUNT(DISTINCT m.USER_NO)
-            FROM mentor m
-            WHERE m.POST_NO = #{post_no} AND m.MENTOR_STATUS = '승인'
-        ) AS mentor_count,
-        (
-            SELECT COUNT(DISTINCT me.USER_NO)
-            FROM mentee me
-            WHERE me.POST_NO = #{post_no} AND me.MENTEE_STATUS = '승인'
-        ) AS mentee_count,
-        (
-            SELECT COUNT(DISTINCT sa.USER_NO)
-            FROM study_application sa
-            WHERE sa.POST_NO = #{post_no} AND sa.STATUS = '승인'
-        ) AS application_count
-    FROM study_post sp
-    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-    LEFT JOIN skill s ON pts.skill_no = s.skill_no
-    LEFT JOIN mentor m ON sp.post_no = m.POST_NO
-    LEFT JOIN mentee me ON sp.post_no = me.POST_NO
-    LEFT JOIN study_application sa ON sp.post_no = sa.POST_NO
-    WHERE sp.post_no = #{post_no}
-</select>
-
+	<select id="getStudyPostByPostNo" resultSets="studyPost,mentor,mentee,application" resultMap="studyPostWithSkills">
+	    SELECT 
+	        sp.*,
+	        s.skill_name,
+	        s.skill_img,
+	        m.USER_NO AS mentor_user_no,
+	        m.MENTOR_STATUS,
+	        m.MAX_MENTOR_APPLICANTS,
+	        me.USER_NO AS mentee_user_no,
+	        me.MENTEE_STATUS,
+	        me.MAX_MENTEE_APPLICANTS,
+	        sa.USER_NO AS application_user_no,
+	        sa.STATUS,
+	        sa.MAX_STUDY_APPLICANTS,
+	        (
+	            SELECT COUNT(DISTINCT m.USER_NO)
+	            FROM mentor m
+	            WHERE m.POST_NO = sp.post_no AND m.MENTOR_STATUS = '승인'
+	        ) AS mentor_count,
+	        (
+	            SELECT COUNT(DISTINCT me.USER_NO)
+	            FROM mentee me
+	            WHERE me.POST_NO = sp.post_no AND me.MENTEE_STATUS = '승인'
+	        ) AS mentee_count,
+	        (
+	            SELECT COUNT(DISTINCT sa.USER_NO)
+	            FROM study_application sa
+	            WHERE sa.POST_NO = sp.post_no AND sa.STATUS = '승인'
+	        ) AS application_count
+	    FROM study_post sp
+	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+	    LEFT JOIN skill s ON pts.skill_no = s.skill_no
+	    LEFT JOIN mentor m ON sp.post_no = m.POST_NO
+	    LEFT JOIN mentee me ON sp.post_no = me.POST_NO
+	    LEFT JOIN study_application sa ON sp.post_no = sa.POST_NO
+	    WHERE sp.post_no = #{post_no}
+	</select>	
+	
+	<!-- 댓글 목록 -->
+	<select id="getCommentsByPostNo" resultMap="commentWithUser">
+	    SELECT c.*, u.NICKNAME
+	    FROM COMMENTS c
+	    JOIN USERS u ON c.USER_NO = u.USER_NO
+	    WHERE c.POST_NO = #{post_no}
+	</select>
 
 	
 	
@@ -220,24 +240,20 @@
 	    </choose>
 	</insert>
 
-	
 
-	
-	
-	
-	
-	
 <!-- 조건 sort 해서 검색 -->
 	<select id="getStudiesbySelect" parameterType="String" resultType="lm.swith.main.model.StudyPost">
     SELECT DISTINCT *
     FROM (
         <!-- 기술스택별 스터디 목록 -->
-        SELECT sp.*, s.skill_name, s.skill_img
+        SELECT 
+        sp.*, 
+        s.skill_name, s.skill_img
         FROM study_post sp
-        JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-        LEFT JOIN skill s ON pts.skill_no = s.skill_no
+        JOIN post_tech_stacks pts ON sp.post_no = pts.post_no  
+        LEFT JOIN skill s ON pts.skill_no = s.skill_no     
         WHERE pts.skill_no = #{skill_no}
-
+        
         UNION
 
         <!-- 모집구분별 스터디 목록 -->
@@ -312,7 +328,7 @@
 	<!-- 스터디 삭제 -->
 	<delete id="deleteStudyPost" parameterType="Long">
 	    <!-- 첫 번째 쿼리: study_post 테이블에서 해당 post_no에 대한 스터디 정보 삭제 -->
-	    DELETE FROM study_post WHERE post_no = #{post_no} AND user_no = #{user_no};
+	    DELETE FROM study_post WHERE post_no = #{post_no} AND user_no = #{user_no} AND study_status = O;
 	    
 	    <!-- 두 번째 쿼리: post_tech_stacks 테이블에서 해당 post_no에 대한 기술 스택 정보 삭제 -->
 	    DELETE FROM post_tech_stacks WHERE post_no = #{post_no}

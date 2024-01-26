@@ -33,6 +33,8 @@ public class StudyPost {
 	
 	private List<Skill> studyPostWithSkills;
 	
+	private List<Comments> comments; // 댓글들 담을 곳
+	
 	private Users user;
 	
     private Mentor mentor;

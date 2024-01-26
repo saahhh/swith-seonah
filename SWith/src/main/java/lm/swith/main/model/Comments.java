@@ -10,6 +10,7 @@ public class Comments {
 	private Long comment_no;
 	private Long user_no;
 	private Long post_no;
+	private String nickname;
 	private String comment_content;
 	private Date comment_post_time;
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lm.swith.main.model.Cafes;
+import lm.swith.main.model.Comments;
 import lm.swith.main.model.StudyPost;
 import lm.swith.main.service.StudyPostService;
 
@@ -39,11 +40,13 @@ public class StudyPostController {
     }
        
 
-	// 스터디 상세 페이지
-	@GetMapping("/post_detail/{post_no}")
+ // 스터디 상세 페이지 + 댓글
+    @GetMapping("/post_detail/{post_no}")
     public ResponseEntity<StudyPost> getStudyPostByPostNo(@PathVariable Long post_no) {
         StudyPost studyPost = studyPostService.getStudyPostByPostNo(post_no); 
+        List<Comments> comments = studyPostService.getCommentsByPostNo(post_no); // 댓글 목록 조회
         if (studyPost != null) {
+            studyPost.setComments(comments); // 스터디 게시물에 댓글 목록 설정
             return ResponseEntity.ok(studyPost);
         } else {
             return ResponseEntity.notFound().build();
@@ -90,15 +93,14 @@ public class StudyPostController {
 	
     // 조건 스터디 목록
     @GetMapping ("/getSelectedList")
-    public String getStudiesBySelect(@RequestParam(required = false) String recruit_type,
+    public List<StudyPost> getStudiesBySelect(@RequestParam(required = false) String recruit_type,
                                      @RequestParam(required = false) String study_method,
                                      @RequestParam(required = false) String study_location,
-                                     @RequestParam(required = false) Long skill_no,
-                                     Model model) {
-        List<StudyPost> studyPosts = studyPostService.getStudiesBySelect(recruit_type, study_method, study_location, skill_no);
-        model.addAttribute("studyPosts", studyPosts);
-        return "/";
+                                     @RequestParam(required = false) Long skill_no) {
+    	return studyPostService.getStudiesBySelect(recruit_type, study_method, study_location, skill_no);
+
     }
+    
     
     // 검색 스터디 목록
     @GetMapping("/KeywordStudy")

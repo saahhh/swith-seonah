@@ -11,6 +11,8 @@ function StudyDetail() {
 
   const [detailPages, setDetailPage] = useState([]);
 
+  const [comments, setComments] = useState([]);
+
   useEffect(() => {
     const fetchStudyDetail = async () => {
       try {
@@ -18,8 +20,7 @@ function StudyDetail() {
           `/post_detail/${post_no}`
         );
         setDetailPage(response.data);
-        console.log(detailPages);
-        console.log(post_no.study_title);
+        setComments(response.data.comments);
       } catch (error) {
         console.log("Error fetching study detail: ", error);
       }
@@ -129,8 +130,24 @@ function StudyDetail() {
         <div style={{ paddingBottom: "80px" }}>
           <div className="commentInput">
             <div className="commentInput_comment">
-              댓글 <span className="commentInput_count">1</span>
+              {detailPages.nickname}
+              <span className="commentInput_count">
+                {comments.map(
+                  (
+                    comment // comments 배열의 각 요소인 comment 객체를 순회
+                  ) => (
+                    <li key={comment.comment_no}>
+                      {/* comment_no를 key로 사용 */}
+                      <p>
+                        {comment.comment_content} {comment.comment_post_time}
+                      </p>
+                      {/* comment_content 표시 */}
+                    </li>
+                  )
+                )}
+              </span>
             </div>
+
             <div className="commentInput_container">
               <img
                 className="commentInput_profile"
@@ -143,6 +160,7 @@ function StudyDetail() {
                 placeholder="댓글을 입력하세요."
               ></textarea>
             </div>
+
             <div className="commentInput_buttonWrapper">
               <button className="commentInput_buttonComplete" name="register">
                 댓글 등록

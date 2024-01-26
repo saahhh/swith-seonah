@@ -95,12 +95,16 @@ function MainContent() {
 
   const toggleContentRecruit = (recruit) => {
     setRecruitVisible(!isRecruitVisible);
-    setSelectedRecruit([recruit]); // 선택된 모집구분으로 설정
+    if (recruit) {
+      setSelectedRecruit([recruit]); // 선택된 모집구분으로 설정
+    }
   };
 
   const toggleContentMethod = (method) => {
     setMethodVisible(!isMethodVisible);
-    setSelectedMethod([method]); // 선택된 진행방식으로 설정
+    if (method) {
+      setSelectedMethod([method]); // 선택된 진행방식으로 설정
+    }
   };
   // 클릭된 상태를 관리하는 배열 추가
   const [clickedSkills, setClickedSkills] = useState([]);
@@ -233,7 +237,13 @@ function MainContent() {
     setSelectedSkill(clickedSkills);
   };
 
+  // setSelectedMethod(clickedMethod);
+  // setSelectedRecruit(clickedRecruit);
+
   console.log("selectedSkill: ", selectedSkill);
+  console.log("selectedCity: ", selectedCity);
+  console.log("selectedRecruit: ", selectedRecruit);
+  console.log("selectedMethod: ", selectedMethod);
 
   useEffect(() => {
     // 모든 클릭된 스킬을 선택된 스킬로 설정
@@ -268,11 +278,6 @@ function MainContent() {
   useEffect(() => {
     setSelectedMethod(clickedMethod ? [clickedMethod] : []);
   }, [clickedMethod]);
-
-  console.log(clickedSkills);
-  console.log(clickedCity);
-  console.log(clickedRecruit);
-  console.log(clickedMethod);
 
   //단어 길이 ...표현하는 함수
   const EllipsisText = ({ text, maxLength }) => {
