@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
+import lm.swith.main.model.PostTechStacks;
+import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
 
 @Mapper
@@ -39,8 +41,17 @@ public interface StudyPostMapper {
 	// 스터디 게시글 작성 내 카페 검색
 	List<Cafes> searchCafes(String keyword);
 	
-	// 댓글 불러오기
-		List<Comments> getCommentsByPostNo(Long post_no);
+	// 메인페이지 카페 좌표 가져오기
+	List<Cafes> getLatLngCafes(@Param("bplcnm")String bplcnm); 
 	
+	
+	// 댓글 불러오기
+	List<Comments> getCommentsByPostNo(Long post_no);
+	
+
+	// test
+    void insertStudyPosts(StudyPost studyPost);
+    void insertPostTechStacks(PostTechStacks postTechStacks);
+    void insertStudyApplication(StudyApplication studyApplication);
 	
 }

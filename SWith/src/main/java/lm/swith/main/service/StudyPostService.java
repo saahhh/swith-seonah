@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lm.swith.main.mapper.StudyPostMapper;
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
+import lm.swith.main.model.PostTechStacks;
+import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
 
 @Service
@@ -57,7 +60,7 @@ public class StudyPostService {
         return studyPost;
     }
     
- // 댓글 불러오기
+	// 댓글 불러오기
     public List<Comments> getCommentsByPostNo(Long post_no) {
     	return studyPostMapper.getCommentsByPostNo(post_no);
     }
@@ -81,6 +84,29 @@ public class StudyPostService {
     public List<Cafes> searchCafes(String keyword) {
         return studyPostMapper.searchCafes(keyword);
     }
+    
+    // 메인페이지 카페 좌표 가져오기
+    public List<Cafes> getLatLngCafes(String bplcnm){
+    	return studyPostMapper.getLatLngCafes(bplcnm);
+    }
    
+    @Transactional
+    public void insertTestStudyPost(StudyPost studyPost) {
+    	studyPostMapper.insertStudyPosts(studyPost); // INSERT studyPostMapper    	
+    	PostTechStacks postTechStacks = new PostTechStacks(); // 
+    	//studyPost.getPost_no() -> 위에서 INSERT한 POST_NO를 가져옴
+    	// studyPost에 전달받은 Skill_no를 postTechStacks.setSkill_no에 넣어줌
+    	postTechStacks.setPost_no(studyPost.getPost_no());
+    	postTechStacks.setSkill_no(studyPost.getSkill_no());
+    	studyPostMapper.insertPostTechStacks(postTechStacks);
+    	
+    	StudyApplication studyApplication = new StudyApplication();
+    	// 위와 동일한 형식
+    	studyApplication.setPost_no(studyPost.getPost_no());
+    	System.out.println(studyApplication.getPost_no());
+    	studyApplication.setUser_no(studyPost.getUser_no());
+    	studyPostMapper.insertStudyApplication(studyApplication);
+
+    }
 
 }

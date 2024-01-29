@@ -1,6 +1,7 @@
 package lm.swith.main.model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 import lombok.Getter;
@@ -24,11 +25,11 @@ public class StudyPost {
 	private Long study_likes;
 	private String study_location;
 	private String first_study;
-	private Date study_post_time;
+	private Timestamp  study_post_time;
     private int mentorCount;
     private int menteeCount;
     private int applicationCount;
-    private String skill_name;
+    private Long skill_no;
 
 	
 	private List<Skill> studyPostWithSkills;

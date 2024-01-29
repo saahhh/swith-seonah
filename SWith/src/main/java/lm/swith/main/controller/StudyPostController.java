@@ -3,18 +3,22 @@ package lm.swith.main.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
+import lm.swith.main.model.PostTechStacks;
+import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
 import lm.swith.main.service.StudyPostService;
 
@@ -27,6 +31,7 @@ public class StudyPostController {
     public StudyPostController(StudyPostService studyPostService) {
         this.studyPostService = studyPostService;
     }
+    
 	
 	// 스터디 목록
     @GetMapping("/post_list")
@@ -61,8 +66,23 @@ public class StudyPostController {
 	
     // 스터디 생성 처리
     @PostMapping("/create")
-    public String insertStudyPost(@ModelAttribute StudyPost studyPost) {
-        studyPostService.insertStudyPost(studyPost);
+    public String insertStudyPost(@RequestBody StudyPost studyPost) {
+    	System.out.println("getUser_no : " + studyPost.getUser_no());
+    	System.out.println("getNickname : " +  studyPost.getNickname());
+    	System.out.println(" getStudy_title : " +studyPost.getStudy_title());
+    	System.out.println("getStudy_content : " + studyPost.getStudy_content());
+    	System.out.println("getStudy_method : " + studyPost.getStudy_method());
+    	System.out.println("getRecruit_type : " + studyPost.getRecruit_type());
+    	System.out.println("getStudy_period : " + studyPost.getStudy_period());
+    	System.out.println("getStudy_start : " +studyPost.getStudy_start());
+    	System.out.println("getRecruit_deadline : " +studyPost.getRecruit_deadline());
+    	System.out.println("getStudy_status : " + studyPost.getStudy_status());
+    	System.out.println("getStudy_likes : " +studyPost.getStudy_likes());
+    	System.out.println("getStudy_location : " +studyPost.getStudy_location());
+    	System.out.println("getFirst_study : " + studyPost.getFirst_study());
+    	System.out.println("getStudy_post_time : " +studyPost.getStudy_post_time());
+    	System.out.println("getSkill_no : " + studyPost.getSkill_no());
+        studyPostService.insertTestStudyPost(studyPost);
         return "redirect:/";
     }
 	
@@ -121,6 +141,16 @@ public class StudyPostController {
     public List<Cafes> searchCafes(@RequestParam String keyword) {
         return studyPostService.searchCafes(keyword);
     }
-
     
+    @GetMapping("/cafe_xy")
+    public ResponseEntity<List<Cafes>> getLatLngCafes(@RequestParam(required = false)String bplcnm) {
+    	List<Cafes> cafes = studyPostService.getLatLngCafes(bplcnm);
+    	  if (cafes != null) {
+              return ResponseEntity.ok(cafes);
+          } else {
+              return ResponseEntity.notFound().build();
+          }
+
+    }
+   
 }

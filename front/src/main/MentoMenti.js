@@ -200,7 +200,7 @@ export default function MentoMenti() {
             </select>
           </label>
 
-          <label className="stack_box">
+          <label className="stack_box_2">
             <div className="selected">
               <br />
               {techStack.map((stack, index) => (

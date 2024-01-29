@@ -237,9 +237,6 @@ function MainContent() {
     setSelectedSkill(clickedSkills);
   };
 
-  // setSelectedMethod(clickedMethod);
-  // setSelectedRecruit(clickedRecruit);
-
   console.log("selectedSkill: ", selectedSkill);
   console.log("selectedCity: ", selectedCity);
   console.log("selectedRecruit: ", selectedRecruit);

@@ -29,6 +29,10 @@ function StudyDetail() {
     fetchStudyDetail();
   }, [post_no]); // post_no가 변경될 때마다 실행
 
+  useEffect(() => {
+    console.log(post_no); // post_no를 콘솔에 출력하여 값이 제대로 전달되었는지 확인
+  }, [post_no]);
+
   // studyPostWithSkills에 대한 중복제거 조건문 추가
   const uniqueSkills = detailPages.studyPostWithSkills && [
     ...new Set(
@@ -84,7 +88,7 @@ function StudyDetail() {
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집인원</span>
-                <span className="studyInfo_title_a">8명</span>
+                <span className="studyInfo_title_a">모집인원 넣기</span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">시작예정일</span>
@@ -105,9 +109,27 @@ function StudyDetail() {
                 </span>
               </li>
               <li className="studyContent_contentWrapper">
+                <span className="studyInfo_title">상태</span>
+                <span className="studyInfo_title_a">
+                  {detailPages.study_status}
+                </span>
+              </li>
+              <li className="studyContent_contentWrapper">
+                <span className="studyInfo_title">찜</span>
+                <span className="studyInfo_title_a">
+                  {detailPages.study_likes}
+                </span>
+              </li>
+              <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">지역</span>
                 <span className="studyInfo_title_a">
                   {detailPages.study_location}
+                </span>
+              </li>
+              <li className="studyContent_contentWrapper">
+                <span className="studyInfo_title">첫 모임장소</span>
+                <span className="studyInfo_title_a">
+                  {detailPages.first_study}
                 </span>
               </li>
               <li className="studyContent_contentWrapper">

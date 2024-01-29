@@ -168,38 +168,38 @@ export default function StuduyProject() {
             기술스택 :
             <select value={techStack} onChange={handleTechStackChange}>
               <option>기술스택을 선택하세요</option>
-              <option value="Angular">Angular</option>
-              <option value="C">C</option>
-              <option value="C++">C++</option>
-              <option value="Django">Django</option>
-              <option value="Docker">Docker</option>
-              <option value="Express">Express</option>
-              <option value="Figma">Figma</option>
-              <option value="Firebase">Firebase</option>
-              <option value="Flask">Flask</option>
-              <option value="Flutter">Flutter</option>
-              <option value="Git">Git</option>
-              <option value="Go">Go</option>
-              <option value="GraphQL">GraphQL</option>
-              <option value="Java Script">Java Script</option>
-              <option value="Java">Java</option>
-              <option value="Kubernetes">Kubernetes</option>
-              <option value="MongoDB">MongoDB</option>
-              <option value="mySql">mySql</option>
-              <option value="NestJS">NestJS</option>
-              <option value="NodeJS">NodeJS</option>
-              <option value="Php">Php</option>
-              <option value="Python">Python</option>
-              <option value="R">R</option>
-              <option value="React">React</option>
-              <option value="React Native">React Native</option>
-              <option value="Spring">Spring</option>
-              <option value="Svelte">Svelte</option>
-              <option value="Swift">Swift</option>
-              <option value="Type Script">Type Script</option>
-              <option value="Unity">Unity</option>
-              <option value="Vue">Vue</option>
-              <option value="Zeplin">Zeplin</option>
+              <option value={1}>Angular</option>
+              <option value={2}>C</option>
+              <option value={3}>C++</option>
+              <option value={4}>Django</option>
+              <option value={5}>Docker</option>
+              <option value={6}>Express</option>
+              <option value={7}>Figma</option>
+              <option value={8}>Firebase</option>
+              <option value={9}>Flask</option>
+              <option value={10}>Flutter</option>
+              <option value={11}>Git</option>
+              <option value={12}>Go</option>
+              <option value={13}>GraphQL</option>
+              <option value={14}>Java Script</option>
+              <option value={15}>Java</option>
+              <option value={16}>Kubernetes</option>
+              <option value={17}>MongoDB</option>
+              <option value={18}>mySql</option>
+              <option value={19}>NestJS</option>
+              <option value={20}>NodeJS</option>
+              <option value={21}>Php</option>
+              <option value={22}>Python</option>
+              <option value={23}>R</option>
+              <option value={24}>React</option>
+              <option value={25}>React Native</option>
+              <option value={26}>Spring</option>
+              <option value={27}>Svelte</option>
+              <option value={28}>Swift</option>
+              <option value={29}>Type Script</option>
+              <option value={30}>Unity</option>
+              <option value={31}>Vue</option>
+              <option value={32}>Zeplin</option>
 
               {/* Add more options as needed */}
             </select>

@@ -52,6 +52,14 @@
 	    <result property="nickname" column="NICKNAME"/>
 	</resultMap>
 
+	<resultMap type="lm.swith.main.model.Cafes" id="cafeResult">
+		<result property="bplcnm" column="BPLCNM" /> 
+		<result property="sitewhladdr" column="SITEWHLADDR" /> 
+		<result property="x" column="X" /> 
+		<result property="y" column="Y" /> 
+	</resultMap>
+	
+
     <resultMap type="lm.swith.main.model.StudyPost" id="studyPostWithSkills">
         <id property="post_no" column="POST_NO" />
         <result property="user_no" column="USER_NO" />
@@ -157,6 +165,22 @@
 	    WHERE c.POST_NO = #{post_no}
 	</select>
 
+	<!-- 게시글 작성시 카페 목록 검색 -->
+	<select id="searchCafes" resultType="lm.swith.main.model.Cafes">
+	    SELECT * FROM cafes 
+	    WHERE bplcnm LIKE '%' || #{keyword} || '%'
+	    OR sitewhladdr LIKE '%' || #{keyword} || '%'
+	</select>
+		
+	<!-- 카페목록 모두 가져오기 -->
+	<select id="getAllCafes" resultType="lm.swith.main.model.Cafes">
+	    SELECT * FROM CAFES 
+	</select>
+
+	<!-- 메인페이지 카페 좌표 가져오기 -->
+	<select id="getLatLngCafes" resultType="lm.swith.main.model.Cafes">
+    SELECT bplcnm, x, y FROM CAFES WHERE BPLCNM = #{bplcnm}
+	</select>
 	
 	
 	<!-- 스터디 등록 -->
