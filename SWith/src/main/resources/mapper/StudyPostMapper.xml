@@ -179,7 +179,7 @@
 
 	<!-- 메인페이지 카페 좌표 가져오기 -->
 	<select id="getLatLngCafes" resultType="lm.swith.main.model.Cafes">
-    SELECT bplcnm, x, y FROM CAFES WHERE BPLCNM = #{bplcnm}
+    SELECT * FROM CAFES WHERE BPLCNM = #{bplcnm}
 	</select>
 	
 	

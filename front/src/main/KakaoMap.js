@@ -56,7 +56,6 @@ const KakaoMap = () => {
         );
         setDetailPage(response.data);
         setComments(response.data.comments);
-        setPostNo(response.data.post_no);
       } catch (error) {
         console.log("Error fetching study detail: ", error);
       }
@@ -117,8 +116,8 @@ const KakaoMap = () => {
             marker.setMap(map, marker); // 홈 마커 지도에 표시
             map.setCenter(coords); // 사용자의 집 위치를 중심으로 지도 표시
 
-            // 각 first_study에 대한 마커 생성
-            const cafeMarkers = bplcnms.map((bplcnm) => {
+            // 마커를 생성하고 post_no를 연결하는 부분
+            const cafeMarkers = bplcnms.map((bplcnm, index) => {
               return new Promise((resolve) => {
                 geocoder.addressSearch(bplcnm, (result, status) => {
                   if (status === window.kakao.maps.services.Status.OK) {
@@ -128,10 +127,10 @@ const KakaoMap = () => {
                     );
 
                     const imageSrc = swithmarker;
-                    const imageSize = new window.kakao.maps.Size(64, 64); // 마커이미지의 크기입니다
+                    const imageSize = new window.kakao.maps.Size(64, 64);
                     const imageOption = {
                       offset: new window.kakao.maps.Point(27, 69),
-                    }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+                    };
 
                     const markerImage = new window.kakao.maps.MarkerImage(
                       imageSrc,
@@ -139,22 +138,21 @@ const KakaoMap = () => {
                       imageOption
                     );
 
-                    // 카페 마커를 생성하고 지도에 표시
                     const cafeMarker = new window.kakao.maps.Marker({
                       map: map,
                       position: cafeCoords,
-                      image: markerImage, // 마커이미지 설정
+                      image: markerImage,
+                      postNo: postNo[index], // post_no 연결
                     });
+
                     cafeMarker.setMap(map);
 
-                    // 마커 클릭 이벤트 추가
                     window.kakao.maps.event.addListener(
                       cafeMarker,
                       "click",
                       () => {
-                        // 마커 클릭 시 이동할 URL
-                        const url = `/post_detail/${post_no}`;
-                        window.location.href = url; // 현재 창에서 페이지 이동
+                        const url = `/post_detail/${cafeMarker.postNo}`; // 클릭된 마커의 post_no 가져오기
+                        window.location.href = url;
                       }
                     );
 
@@ -165,7 +163,6 @@ const KakaoMap = () => {
                 });
               });
             });
-
             Promise.all(cafeMarkers).then((resolvedMarkers) => {
               setMarkers(resolvedMarkers.filter((marker) => marker !== null));
             });
