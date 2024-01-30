@@ -4,9 +4,10 @@ import "../css/KakaoMap.css";
 import usersUserinfoAxios from "../token/tokenAxios";
 import home from "./img/home.png";
 import swithmarker from "./img/swithmarker.png";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 const KakaoMap = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState([]); //주소값
   const [bplcnms, setBplcnms] = useState([]); // 여러 개의 first_study를 저장할 배열
   const [markers, setMarkers] = useState([]); // 마커 배열 상태 추가
@@ -117,7 +118,7 @@ const KakaoMap = () => {
             map.setCenter(coords); // 사용자의 집 위치를 중심으로 지도 표시
 
             // 마커를 생성하고 post_no를 연결하는 부분
-            const cafeMarkers = bplcnms.map((bplcnm, index) => {
+            const cafeMarkers = bplcnms.map((bplcnm) => {
               return new Promise((resolve) => {
                 geocoder.addressSearch(bplcnm, (result, status) => {
                   if (status === window.kakao.maps.services.Status.OK) {
@@ -142,7 +143,6 @@ const KakaoMap = () => {
                       map: map,
                       position: cafeCoords,
                       image: markerImage,
-                      postNo: postNo[index], // post_no 연결
                     });
 
                     cafeMarker.setMap(map);
@@ -151,8 +151,12 @@ const KakaoMap = () => {
                       cafeMarker,
                       "click",
                       () => {
-                        const url = `/post_detail/${cafeMarker.postNo}`; // 클릭된 마커의 post_no 가져오기
-                        window.location.href = url;
+                        // 클릭된 마커의 post_no를 가져오기 위해 해당 마커의 인덱스를 사용합니다.
+                        const clickedMarkerIndex = bplcnms.findIndex(
+                          (item) => item === bplcnm
+                        );
+                        const clickedPostNo = postNo[clickedMarkerIndex];
+                        navigate(`/post_detail/${clickedPostNo}`);
                       }
                     );
 
