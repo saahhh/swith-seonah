@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../css/NewBoard.css";
-import DeleteIcon from "./img/delete.png";
 import FormFour from "./FormFour";
 import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
 import Modal from "react-modal";
+import DeleteIcon from "./img/delete.png";
 
-export default function StuduyProject() {
+const StudyProject = ({ handleDataFromChild }) => {
+  // formData에 저장된 데이터 사용
+
   const customStyles = {
     content: {
       width: "50%", // 모달의 가로 크기를 조절합니다.
@@ -46,15 +48,23 @@ export default function StuduyProject() {
   };
   const handleItemClick = (cafe) => {
     setKeyword(cafe.bplcnm);
+    setStudy_place(cafe.sitewhladdr);
     closeModal();
   };
-  const [recruitmentCount, setRecruitmentCount] = useState("");
+  const [applicationCount, setApplicationCount] = useState("");
 
   const [duration, setDuration] = useState("");
+  const [techStack, setTechStack] = useState([]);
   const [deadline, setDeadline] = useState("");
-  const [startDate, setStartDate] = useState("");
   const [region, setRegion] = useState("");
   const [study_place, setStudy_place] = useState("");
+
+  const [studyMethod, setStudyMethod] = useState("");
+
+  const [studyTitle, setStudyTitle] = useState("");
+  const [studyContent, setStudyContent] = useState("");
+
+  const [startDate, setStartDate] = useState("");
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -66,16 +76,15 @@ export default function StuduyProject() {
     if (selectedItem2 === item2) {
       // 클릭된 아이템이 현재 선택된 아이템과 같으면 선택 해제
       setSelectedItem2(null);
-      // 선택된 기술스택 제거
-      setTechStack(techStack.filter((tech) => tech !== item2));
     } else {
       // 아니면 새로운 아이템 선택
       setSelectedItem2(item2);
     }
-  };
 
-  // 기술스택 state를 배열로 변경
-  const [techStack, setTechStack] = useState([]);
+    // setStudyMethod 함수를 호출한 후에 handleDataChange를 호출하도록 수정
+    setStudyMethod(item2);
+    handleDataChange();
+  };
 
   const handleTechStackChange = (e) => {
     const selectedTech = e.target.value;
@@ -91,11 +100,69 @@ export default function StuduyProject() {
       // 5개를 넘을 경우 알림창 표시
       alert("최대 5개까지만 선택 가능합니다.");
     }
+    console.log("기술: " + techStack);
   };
 
   const handleDeleteTech = (deletedTech) => {
     setTechStack(techStack.filter((tech) => tech !== deletedTech));
   };
+
+  const handleDataChange = () => {
+    // techStack을 숫자로 이루어진 배열로 변환
+    const techStackAsNumbers = techStack.map((tech) => parseInt(tech));
+    // 데이터가 변경될 때마다 부모 컴포넌트로 데이터 전달
+    handleDataFromChild({
+      studyTitle,
+      studyContent,
+      studyMethod,
+      applicationCount,
+      duration,
+      techStack: techStackAsNumbers,
+      deadline,
+      region,
+      study_place,
+      startDate,
+    });
+    console.log("기술: " + techStack);
+  };
+
+  // 기술스택의 숫자 값과 텍스트를 매핑하는 객체
+  const techStackOptions = {
+    1: "Angular",
+    2: "C",
+    3: "C++",
+    4: "Django",
+    5: "Docker",
+    6: "Express",
+    7: "Figma",
+    8: "Firebase",
+    9: "Flask",
+    10: "Flutter",
+    11: "Git",
+    12: "Go",
+    13: "GraphQL",
+    14: "Java Script",
+    15: "Java",
+    16: "Kubernetes",
+    17: "MongoDB",
+    18: "mySql",
+    19: "NestJS",
+    20: "NodeJS",
+    21: "Php",
+    22: "Python",
+    23: "R",
+    24: "React",
+    25: "React Native",
+    26: "Spring",
+    27: "Svelte",
+    28: "Swift",
+    29: "Type Script",
+    30: "Unity",
+    31: "Vue",
+    32: "Zeplin",
+  };
+
+  console.log("스터디프로젝트js: " + studyMethod);
 
   return (
     <div>
@@ -108,7 +175,10 @@ export default function StuduyProject() {
           className={`postToggle ${
             selectedItem2 === "온라인" ? "clicked" : ""
           }`}
-          onClick={() => handleItem2Click("온라인")}
+          onClick={() => {
+            handleItem2Click("온라인");
+            setStudyMethod("온라인");
+          }}
         >
           <span className="postToggle_text">온라인</span>
         </li>
@@ -116,7 +186,10 @@ export default function StuduyProject() {
           className={`postToggle ${
             selectedItem2 === "오프라인" ? "clicked" : ""
           }`}
-          onClick={() => handleItem2Click("오프라인")}
+          onClick={() => {
+            handleItem2Click("오프라인");
+            setStudyMethod("오프라인");
+          }}
         >
           <span className="postToggle_text">오프라인</span>
         </li>
@@ -124,7 +197,10 @@ export default function StuduyProject() {
           className={`postToggle ${
             selectedItem2 === "온/오프병행" ? "clicked" : ""
           }`}
-          onClick={() => handleItem2Click("온/오프병행")}
+          onClick={() => {
+            handleItem2Click("온/오프병행");
+            setStudyMethod("온/오프병행");
+          }}
         >
           <span className="postToggle_text">온/오프병행</span>
         </li>
@@ -141,8 +217,9 @@ export default function StuduyProject() {
             모집인원 :
             <input
               type="number"
-              value={recruitmentCount}
-              onChange={(e) => setRecruitmentCount(e.target.value)}
+              value={applicationCount}
+              onChange={(e) => setApplicationCount(e.target.value)}
+              onBlur={handleDataChange}
             />
           </label>
 
@@ -152,65 +229,42 @@ export default function StuduyProject() {
               type="text"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
+              onBlur={handleDataChange}
             />
           </label>
 
-          <label className="post_3_label">
-            모집마감 :
-            <input
-              type="text"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-            />
-          </label>
-
-          <label className="post_3_label">
+          <div className="post_4_label">
             기술스택 :
-            <select value={techStack} onChange={handleTechStackChange}>
-              <option>기술스택을 선택하세요</option>
-              <option value={1}>Angular</option>
-              <option value={2}>C</option>
-              <option value={3}>C++</option>
-              <option value={4}>Django</option>
-              <option value={5}>Docker</option>
-              <option value={6}>Express</option>
-              <option value={7}>Figma</option>
-              <option value={8}>Firebase</option>
-              <option value={9}>Flask</option>
-              <option value={10}>Flutter</option>
-              <option value={11}>Git</option>
-              <option value={12}>Go</option>
-              <option value={13}>GraphQL</option>
-              <option value={14}>Java Script</option>
-              <option value={15}>Java</option>
-              <option value={16}>Kubernetes</option>
-              <option value={17}>MongoDB</option>
-              <option value={18}>mySql</option>
-              <option value={19}>NestJS</option>
-              <option value={20}>NodeJS</option>
-              <option value={21}>Php</option>
-              <option value={22}>Python</option>
-              <option value={23}>R</option>
-              <option value={24}>React</option>
-              <option value={25}>React Native</option>
-              <option value={26}>Spring</option>
-              <option value={27}>Svelte</option>
-              <option value={28}>Swift</option>
-              <option value={29}>Type Script</option>
-              <option value={30}>Unity</option>
-              <option value={31}>Vue</option>
-              <option value={32}>Zeplin</option>
-
-              {/* Add more options as needed */}
+            <select
+              value={techStack}
+              onChange={handleTechStackChange}
+              onBlur={handleDataChange}
+            >
+              {Object.entries(techStackOptions).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </select>
-          </label>
+          </div>
+          <div className="post_4_label">
+            시작일 :
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </div>
 
           <label className="stack_box">
             <div className="selected">
               <br />
               {techStack.map((stack, index) => (
                 <div className="selected_2" key={index}>
-                  <div className="tech-stack-item">{stack}</div>
+                  <div className="tech-stack-item">
+                    {techStackOptions[stack]}
+                  </div>
 
                   <img
                     src={DeleteIcon}
@@ -224,21 +278,38 @@ export default function StuduyProject() {
           </label>
 
           <label className="post_3_label">
+            모집마감 :
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </label>
+          <label className="post_3_label">
             지역구분 :
-            <select value={region} onChange={(e) => setRegion(e.target.value)}>
-              <option value="Gangnam">강남/역삼/삼성</option>
-              <option value="Sinsa">신사/청담/압구정</option>
-              <option value="Seocho">서초/교대/사당</option>
-              <option value="Jamsil">잠실/송파/강동</option>
-              <option value="Euljiro">을지로/명동/중구/동대문</option>
-              <option value="SeoulStation">서울역/이태원/용산</option>
-              <option value="Jonro">종로/인사동</option>
-              <option value="Hongdae">홍대/합정/마포/서대문</option>
-              <option value="Yeouido">여의도</option>
-              <option value="Guro">구로/신도림/금천</option>
-              <option value="KonkukUniversity">건대입구/성수/왕십리</option>
-              <option value="Seongbuk">성북/강북/노원/도봉</option>
-              <option value="Etc">기타</option>
+            <select
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              onBlur={handleDataChange}
+            >
+              <option value="강남/역삼/삼성">강남/역삼/삼성</option>
+              <option value="신사/청담/압구정">신사/청담/압구정</option>
+              <option value="서초/교대/사당">서초/교대/사당</option>
+              <option value="잠실/송파/강동">잠실/송파/강동</option>
+              <option value="을지로/명동/중구/동대문">
+                을지로/명동/중구/동대문
+              </option>
+              <option value="서울역/이태원/용산">서울역/이태원/용산</option>
+              <option value="종로/인사동">종로/인사동</option>
+              <option value="홍대/합정/마포/서대문">
+                홍대/합정/마포/서대문
+              </option>
+              <option value="여의도">여의도</option>
+              <option value="구로/신도림/금천">구로/신도림/금천</option>
+              <option value="건대입구/성수/왕십리">건대입구/성수/왕십리</option>
+              <option value="성북/강북/노원/도봉">성북/강북/노원/도봉</option>
+              <option value="기타">기타</option>
             </select>
           </label>
           {selectedItem2 === "오프라인" || selectedItem2 === "온/오프병행" ? (
@@ -251,6 +322,7 @@ export default function StuduyProject() {
                   onChange={(e) => setKeyword(e.target.value)}
                   className="cafeSearchInput"
                   placeholder="카페이름이나 지역을 입력하세요."
+                  onBlur={handleDataChange}
                 />
                 <button
                   onClick={() => {
@@ -306,7 +378,42 @@ export default function StuduyProject() {
       <br />
       <br />
       <br />
-      <FormFour />
+      <div>
+        <div className="post_1">
+          <span className="post_1_title">4</span>
+          <h2 className="post_title">S.With을 자세히 소개해주세요.</h2>
+        </div>
+        <div className="studyProject_title">
+          <label htmlFor="title" className="titleLabel">
+            제목 :
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="제목을 입력하세요."
+              value={studyTitle}
+              onChange={(e) => setStudyTitle(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </label>
+          <br />
+          <div className="studyProject_content">
+            <label htmlFor="content" className="contentLabel">
+              <textarea
+                type="text"
+                id="content"
+                name="content"
+                placeholder="내용을 입력하세요."
+                value={studyContent}
+                onChange={(e) => setStudyContent(e.target.value)}
+                onBlur={handleDataChange}
+              />
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default StudyProject;

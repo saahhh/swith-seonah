@@ -161,6 +161,23 @@
   flex-basis: 100%;
 }
 
+.post_4_label {
+  font-size: 18px;
+  font-family: "SejonghospitalBold", sans-serif;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  flex-direction: row;
+  flex-basis: 100%;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: row; /* 라벨과 입력 요소를 가로로 나란히 정렬합니다. */
+  align-items: center;
+  margin-bottom: 10px;
+  float: left;
+  padding-right: 117px;
+}
+
 .all_form input {
   width: 200px;
   height: 50px;
@@ -192,7 +209,13 @@
   box-sizing: border-box;
 }
 
-.my-block {
+.studyProject_title {
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: 4rem;
+}
+
+.studyProject_content {
   width: 100%;
   margin: 0 auto;
   margin-bottom: 4rem;
@@ -222,6 +245,25 @@
   box-sizing: border-box;
 }
 
+.contentLabel {
+  font-family: "SUITE-Regular";
+  color: #2c2f30;
+  font-size: 16px;
+}
+
+.contentLabel textarea {
+  width: 1000px;
+  height: 500px;
+  border-radius: 30px;
+  margin-top: 10px;
+  margin-left: 10px;
+  padding: 10px 20px;
+  border: 3px solid #b9eeff;
+  box-sizing: border-box;
+  text-align: left;
+  align-items: flex-start;
+}
+
 #modalCloseBtn {
   position: fixed;
   top: 15px;
@@ -246,7 +288,7 @@
   font-family: "SejonghospitalBold", sans-serif;
   display: flex;
   flex-direction: row; /* 기존의 기술스택이 가로로 나열되도록 변경 */
-  margin-left: 340px;
+
   width: 800px;
 }
 

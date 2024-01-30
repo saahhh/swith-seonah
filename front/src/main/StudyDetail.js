@@ -10,8 +10,9 @@ function StudyDetail() {
   const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
 
   const [detailPages, setDetailPage] = useState([]);
-
+  const [addComment, setAddComment] = useState([]);
   const [comments, setComments] = useState([]);
+  const [swithUser, setSwithUser] = useState("");
 
   useEffect(() => {
     const fetchStudyDetail = async () => {
@@ -20,7 +21,9 @@ function StudyDetail() {
           `/post_detail/${post_no}`
         );
         setDetailPage(response.data);
-        setComments(response.data.comments);
+        setAddComment(response.data);
+        console.log(detailPages);
+        console.log(post_no.study_title);
       } catch (error) {
         console.log("Error fetching study detail: ", error);
       }
@@ -29,9 +32,56 @@ function StudyDetail() {
     fetchStudyDetail();
   }, [post_no]); // post_no가 변경될 때마다 실행
 
+  // 이미지 정보를 가져오기 위해 만들어줌
   useEffect(() => {
-    console.log(post_no); // post_no를 콘솔에 출력하여 값이 제대로 전달되었는지 확인
-  }, [post_no]);
+    // detailPages.user_no를 사용하여 요청을 보내도록 수정
+    if (detailPages && detailPages.user_no) {
+      const fetchStudyDetailUserNo = async () => {
+        try {
+          const response = await usersUserinfoAxios.get(
+            `/users/info/${detailPages.user_no}`
+          );
+          setSwithUser(response.data);
+        } catch (error) {}
+      };
+
+      fetchStudyDetailUserNo();
+    }
+  }, [detailPages]);
+
+  const handleDeletePost = async () => {
+    try {
+      await usersUserinfoAxios.get(`/delete/${post_no}`);
+      window.location.href = "/";
+    } catch (error) {
+      console.log("Delete Post Error", error);
+    }
+  };
+
+  // 댓글 텍스트 변경 핸들러
+  const handleCommentChange = (event) => {
+    setAddComment(event.target.value);
+  };
+
+  const handleAddComment = async () => {
+    try {
+      const response = await usersUserinfoAxios.get(`/add_comment`, {
+        comment: addComment,
+        postId: post_no, // 게시물 ID 추가 (필요 시 수정)
+      });
+      // 성공적으로 댓글을 전송한 후에 실행할 작업 추가
+      console.log("댓글이 성공적으로 등록되었습니다.");
+
+      // 댓글 입력창 비우기
+      setAddComment("");
+    } catch (error) {
+      console.log("댓글 등록 에러: ", error);
+    }
+  };
+
+  useEffect(() => {
+    // swithUser 상태가 업데이트되면 실행
+  }, [swithUser]);
 
   // studyPostWithSkills에 대한 중복제거 조건문 추가
   const uniqueSkills = detailPages.studyPostWithSkills && [
@@ -65,6 +115,7 @@ function StudyDetail() {
                 className="user_img"
                 width="30px"
                 height="30px"
+                src={`data:image/jpeg;base64,${swithUser.user_profile}`}
                 alt="Profile"
               />
               <div className="username">{detailPages.nickname}</div>
@@ -88,7 +139,7 @@ function StudyDetail() {
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집인원</span>
-                <span className="studyInfo_title_a">모집인원 넣기</span>
+                <span className="studyInfo_title_a">8명</span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">시작예정일</span>
@@ -109,29 +160,19 @@ function StudyDetail() {
                 </span>
               </li>
               <li className="studyContent_contentWrapper">
-                <span className="studyInfo_title">상태</span>
-                <span className="studyInfo_title_a">
-                  {detailPages.study_status}
-                </span>
-              </li>
-              <li className="studyContent_contentWrapper">
-                <span className="studyInfo_title">찜</span>
-                <span className="studyInfo_title_a">
-                  {detailPages.study_likes}
-                </span>
-              </li>
-              <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">지역</span>
                 <span className="studyInfo_title_a">
                   {detailPages.study_location}
                 </span>
               </li>
-              <li className="studyContent_contentWrapper">
-                <span className="studyInfo_title">첫 모임장소</span>
-                <span className="studyInfo_title_a">
-                  {detailPages.first_study}
-                </span>
-              </li>
+              {detailPages.study_method === "온라인" ? null : (
+                <li className="studyContent_contentWrapper">
+                  <span className="studyInfo_title">첫모임장소</span>
+                  <span className="studyInfo_title_a">
+                    {detailPages.first_study}
+                  </span>
+                </li>
+              )}
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">기술스택</span>
                 <span className="studyInfo_title_a">
@@ -152,46 +193,49 @@ function StudyDetail() {
         <div style={{ paddingBottom: "80px" }}>
           <div className="commentInput">
             <div className="commentInput_comment">
-              {detailPages.nickname}
+              댓글
+              <div>{comments.nickname}</div>
+              {comments.map((comment, index) => (
+                <li key={index}>
+                  <p>{comment.comment_content}</p>
+                  {/* 댓글 작성자 정보 등 추가 */}
+                </li>
+              ))}
               <span className="commentInput_count">
-                {comments.map(
-                  (
-                    comment // comments 배열의 각 요소인 comment 객체를 순회
-                  ) => (
-                    <li key={comment.comment_no}>
-                      {/* comment_no를 key로 사용 */}
-                      <p>
-                        {comment.comment_content} {comment.comment_post_time}
-                      </p>
-                      {/* comment_content 표시 */}
-                    </li>
-                  )
-                )}
+                {detailPages.comment_no}
               </span>
             </div>
-
             <div className="commentInput_container">
               <img
                 className="commentInput_profile"
                 width="30px"
                 height="30px"
+                src={`data:image/jpeg;base64,${swithUser.user_profile}`}
                 alt="Profile"
               />
               <textarea
                 class="commentInput_commentText"
                 placeholder="댓글을 입력하세요."
+                value={addComment}
+                onChange={handleCommentChange} // 댓글 변경 핸들러 연결
               ></textarea>
             </div>
-
             <div className="commentInput_buttonWrapper">
-              <button className="commentInput_buttonComplete" name="register">
+              <button
+                className="commentInput_buttonComplete"
+                name="register"
+                onClick={handleAddComment}
+              >
                 댓글 등록
+              </button>
+              <button className="commentInput_buttonComplete">
+                게시글 수정하기
               </button>
               <button
                 className="commentInput_buttonComplete"
-                name="post_update"
+                onClick={handleDeletePost}
               >
-                게시글 수정하기
+                게시글 삭제
               </button>
             </div>
           </div>

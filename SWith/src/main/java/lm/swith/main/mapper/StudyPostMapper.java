@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
 import lm.swith.main.model.PostTechStacks;
+import lm.swith.main.model.Skill;
 import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
 
@@ -18,10 +19,17 @@ public interface StudyPostMapper {
 	List<StudyPost> getAllStudyPostWithSkills();
 	
 	// 스터디 등록
-	void insertStudyPost (StudyPost studyPost);
+    void insertStudyPosts(StudyPost studyPost);
+    void insertPostTechStacks(PostTechStacks postTechStacks);
+   
+    void insertSkill(List<Skill> skill);
+    void insertStudyApplication(StudyApplication studyApplication);
 	
 	// 스터디 삭제
-	void deleteStudyPost (Long post_no);
+	void deleteStudyPost (@Param("post_no") Long post_no);
+	void deleteComments(@Param("post_no") Long post_no);
+	void deleteStudyApplication(@Param("post_no") Long post_no);
+	void deletePostTechStacks(@Param("post_no") Long post_no);
 	
 	// 스터디 상세 페이지
 	StudyPost getStudyPostByPostNo(@Param("post_no") Long post_no);
@@ -44,14 +52,18 @@ public interface StudyPostMapper {
 	// 메인페이지 카페 좌표 가져오기
 	List<Cafes> getLatLngCafes(@Param("bplcnm")String bplcnm); 
 	
-	
-	// 댓글 불러오기
-	List<Comments> getCommentsByPostNo(Long post_no);
-	
+	// Comment Part
+		// 댓글 등록
+		void insertComment (Comments comments);
+		
+		// 댓글 불러오기
+		List<Comments> getCommentsByPostNo(Long post_no);
+		
+		// 댓글 수정
+		void updateComment (Comments comments);
+		
+		// 댓글 삭제
+		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no);
 
-	// test
-    void insertStudyPosts(StudyPost studyPost);
-    void insertPostTechStacks(PostTechStacks postTechStacks);
-    void insertStudyApplication(StudyApplication studyApplication);
 	
 }

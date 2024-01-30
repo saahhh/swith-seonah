@@ -117,7 +117,7 @@ const KakaoMap = () => {
             marker.setMap(map, marker); // 홈 마커 지도에 표시
             map.setCenter(coords); // 사용자의 집 위치를 중심으로 지도 표시
 
-            // 마커를 생성하고 post_no를 연결하는 부분
+            // 카페의 주소로 마커를 생성하고 post_no를 연결하는 부분
             const cafeMarkers = bplcnms.map((bplcnm) => {
               return new Promise((resolve) => {
                 geocoder.addressSearch(bplcnm, (result, status) => {
@@ -151,7 +151,7 @@ const KakaoMap = () => {
                       cafeMarker,
                       "click",
                       () => {
-                        // 클릭된 마커의 post_no를 가져오기 위해 해당 마커의 인덱스를 사용합니다.
+                        // 클릭된 마커의 post_no를 가져오기 위해 해당 마커의 인덱스를 사용
                         const clickedMarkerIndex = bplcnms.findIndex(
                           (item) => item === bplcnm
                         );

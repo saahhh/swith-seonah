@@ -45,7 +45,7 @@ public class StudyPostController {
     }
        
 
- // 스터디 상세 페이지 + 댓글
+    // 스터디 상세 페이지 + 댓글
     @GetMapping("/post_detail/{post_no}")
     public ResponseEntity<StudyPost> getStudyPostByPostNo(@PathVariable Long post_no) {
         StudyPost studyPost = studyPostService.getStudyPostByPostNo(post_no); 
@@ -58,42 +58,54 @@ public class StudyPostController {
         }
     }
 	
+    // 스터디룸 페이지
+ 		@GetMapping("/study_room/{post_no}")
+ 	    public ResponseEntity<StudyPost> getStudyRoomByPostNo(@PathVariable Long post_no) {
+ 	        StudyPost studyPost = studyPostService.getStudyPostByPostNo(post_no); 
+ 	        if (studyPost != null) {
+ 	            return ResponseEntity.ok(studyPost);
+ 	        } else {
+ 	            return ResponseEntity.notFound().build();
+ 	        }
+ 	    }
+    
 	// 스터디 등록 페이지
 	@GetMapping("/post")
 	public String showPostForm (Model model) {
 		return "/post_form";
 	}
 	
-    // 스터디 생성 처리
+	  // 스터디 생성 처리
     @PostMapping("/create")
-    public String insertStudyPost(@RequestBody StudyPost studyPost) {
-    	System.out.println("getUser_no : " + studyPost.getUser_no());
-    	System.out.println("getNickname : " +  studyPost.getNickname());
-    	System.out.println(" getStudy_title : " +studyPost.getStudy_title());
-    	System.out.println("getStudy_content : " + studyPost.getStudy_content());
-    	System.out.println("getStudy_method : " + studyPost.getStudy_method());
-    	System.out.println("getRecruit_type : " + studyPost.getRecruit_type());
-    	System.out.println("getStudy_period : " + studyPost.getStudy_period());
-    	System.out.println("getStudy_start : " +studyPost.getStudy_start());
-    	System.out.println("getRecruit_deadline : " +studyPost.getRecruit_deadline());
-    	System.out.println("getStudy_status : " + studyPost.getStudy_status());
-    	System.out.println("getStudy_likes : " +studyPost.getStudy_likes());
-    	System.out.println("getStudy_location : " +studyPost.getStudy_location());
-    	System.out.println("getFirst_study : " + studyPost.getFirst_study());
-    	System.out.println("getStudy_post_time : " +studyPost.getStudy_post_time());
-    	System.out.println("getSkill_no : " + studyPost.getSkill_no());
+    public ResponseEntity<?> insertStudyPost(@RequestBody StudyPost studyPost) {
+//    	System.out.println("getUser_no : " + studyPost.getUser_no());
+//    	System.out.println("getNickname : " +  studyPost.getNickname());
+//    	System.out.println(" getStudy_title : " +studyPost.getStudy_title());
+//    	System.out.println("getStudy_content : " + studyPost.getStudy_content());
+//    	System.out.println("getStudy_method : " + studyPost.getStudy_method());
+//    	System.out.println("getRecruit_type : " + studyPost.getRecruit_type());
+//    	System.out.println("getStudy_period : " + studyPost.getStudy_period());
+//    	System.out.println("getStudy_start : " +studyPost.getStudy_start());
+//    	System.out.println("getRecruit_deadline : " +studyPost.getRecruit_deadline());
+//    	System.out.println("getStudy_status : " + studyPost.getStudy_status());
+//    	System.out.println("getStudy_likes : " +studyPost.getStudy_likes());
+//    	System.out.println("getStudy_location : " +studyPost.getStudy_location());
+//    	System.out.println("getFirst_study : " + studyPost.getFirst_study());
+//    	System.out.println("getStudy_post_time : " +studyPost.getStudy_post_time());
+//    	System.out.println("getSkill_no : " + studyPost.getSkill_no());
+//    	System.out.println("getPostTechStacks : " + studyPost.getPostTechStacks());
         studyPostService.insertTestStudyPost(studyPost);
-        return "redirect:/";
+        return ResponseEntity.ok("ㅎㅇ");
     }
 	
 	
-	// 스터디 삭제
-	@PostMapping("/delete/{post_no}")
-	public String deleteStudyPost (@PathVariable Long post_no) {
-		studyPostService.deleteStudyPost(post_no);
-		return "redirect:/";
-	}
-	
+ // 스터디 삭제
+    @GetMapping("/delete/{post_no}")
+    public String deleteStudyPost (@PathVariable Long post_no) {
+    	studyPostService.deleteStudyPost(post_no);
+        return "/";
+    }
+
 	// 스터디 수정 페이지 이동
 	@GetMapping("update/{post_no}")
 	public String showUpdateFrom (@PathVariable Long post_no, Model model) {
@@ -142,6 +154,7 @@ public class StudyPostController {
         return studyPostService.searchCafes(keyword);
     }
     
+    //메인페이지 카페 좌표
     @GetMapping("/cafe_xy")
     public ResponseEntity<List<Cafes>> getLatLngCafes(@RequestParam(required = false)String bplcnm) {
     	List<Cafes> cafes = studyPostService.getLatLngCafes(bplcnm);
@@ -150,7 +163,28 @@ public class StudyPostController {
           } else {
               return ResponseEntity.notFound().build();
           }
-
+    	}
+    
+    
+	// 댓글 등록
+    @GetMapping("/add_comment")
+    public String addComment(@ModelAttribute Comments comments) {
+        studyPostService.insertComment(comments);
+        return "redirect:/post_detail/" + comments.getPost_no();
+    }
+    
+    // 댓글 삭제
+    @PostMapping("/delete_comment/{post_no}/{user_no}")
+    public String deleteComment(@PathVariable Long post_no, @PathVariable Long user_no) {
+        studyPostService.deleteComment(post_no, user_no);
+        return "redirect:/post_detail/" + post_no;
+    }
+    
+    // 댓글 수정
+    @PostMapping("/update_comment/{post_no}/{user_no}")
+    public String updateComment(@ModelAttribute Comments comments) {
+    	studyPostService.updateComment(comments);
+    	return "redirect:/post_detail/" + comments.getPost_no();
     }
    
 }

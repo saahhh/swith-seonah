@@ -1,13 +1,129 @@
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import "../css/NewBoard.css";
-import StuduyProject from "./StudyProject";
+import StudyProject from "./StudyProject";
 import FormFour from "./FormFour";
 import MentoMenti from "./MentoMenti";
 import usersUserinfoAxios from "../token/tokenAxios";
 
 function NewBoard() {
+  // FormFour에서 사용하는 상태들을 초기화
+  const [studyTitle, setStudyTitle] = useState(""); // 추가
+  const [studyContent, setStudyContent] = useState(""); // 추가
+  const [userData, setUserData] = useState("");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // 서버에 사용자 정보를 가져오는 요청
+        const response = await usersUserinfoAxios.get("/users/userinfo");
+        setUserData(response.data);
+        console.log(userData);
+      } catch (error) {
+        console.error("Failed to fetch user data.", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleDataFromChild = (data) => {
+    // 자식 컴포넌트에서 받은 데이터 처리
+    console.log("Data from child component:", data);
+    // 여기에서 필요한 로직을 수행
+    setStudyMethod(data.studyMethod);
+    setApplicationCount(data.applicationCount);
+    setDuration(data.duration);
+    setTechStack(data.techStack);
+    setDeadline(data.deadline);
+    setRegion(data.region);
+    setStudy_place(data.study_place);
+    setStudyLocation(data.studyLocation);
+    setStartDate(data.startDate);
+
+    // FormFour 컴포넌트에서 받은 데이터도 처리
+    setFormFourData({
+      studyTitle: data.studyTitle,
+      studyContent: data.studyContent,
+    });
+
+    console.log("제목1: " + formFourData.studyTitle);
+    console.log("제목2: " + studyTitle);
+
+    // StudyProject에서 받은 데이터 처리
+    setStudyTitle(data.studyTitle);
+    setStudyContent(data.studyContent);
+  };
+
+  const [board, setBoard] = useState([]);
+  const [formFourData, setFormFourData] = useState({
+    studyTitle: "",
+    studyContent: "",
+  });
+  // StudyProject에서 사용하는 상태들을 초기화
+  const [studyMethod, setStudyMethod] = useState("");
+
+  const [duration, setDuration] = useState("");
+  const [techStack, setTechStack] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [region, setRegion] = useState("1");
+  const [study_place, setStudy_place] = useState("1");
+  const [studyStatus, setStudyStatus] = useState("O");
+  const [studyLikes, setStudyLikes] = useState("1");
+  const [studyLocation, setStudyLocation] = useState("1");
+  const [firstStudy, setFirstStudy] = useState("1");
+  const [mentorCount, setMentorCount] = useState("");
+  const [menteeCount, setMenteeCount] = useState("");
+  const [applicationCount, setApplicationCount] = useState("");
   const [selectedItem1, setSelectedItem1] = useState(null);
+  const [submittedData, setSubmittedData] = useState(null);
+  const [startDate, setStartDate] = useState("");
+
+  // 게시물을 생성하는 함수
+  // 게시물 생성 함수를 의존성 배열 밖으로 빼서 코드를 간소화
+  const createPost = async () => {
+    console.log("studyMethod:", studyMethod);
+    try {
+      const response = await usersUserinfoAxios.post(
+        "/create",
+        {
+          study_status: studyStatus,
+          mentor_count: mentorCount,
+          mentee_count: menteeCount,
+          application_count: applicationCount,
+          // 나머지 데이터도 추가
+          // FormFour에서 온 데이터
+          recruit_type: selectedItem1,
+          study_title: studyTitle,
+          study_content: studyContent,
+          // StudyProject에서 온 데이터
+          study_method: studyMethod,
+          study_period: duration,
+          skill_no: techStack,
+          recruit_deadline: deadline,
+          study_location: region,
+          first_study: study_place,
+          study_start: startDate,
+          // 유저 데이터
+          user_no: userData.user_no,
+          nickname: userData.nickname,
+        },
+        { timeout: 10000 }
+      );
+      console.log(response.data);
+
+      console.log("게시물 생성 성공:", response.data);
+      setSubmittedData(response.data); // 생성된 게시물 데이터 저장
+    } catch (error) {
+      console.error("게시물 생성 실패:", error);
+      console.error("에러 응답 데이터:", error.response?.data);
+    }
+  };
+
+  // Submit 버튼 클릭 시 게시물 생성
+  const handleCreatePost = () => {
+    // 여기서 createPost 함수 호출
+    createPost();
+  };
 
   const handleItem1Click = (item1) => {
     if (selectedItem1 === item1) {
@@ -18,6 +134,8 @@ function NewBoard() {
       setSelectedItem1(item1);
     }
   };
+
+  console.log("뉴보드js: " + studyMethod);
 
   return (
     <div>
@@ -64,11 +182,27 @@ function NewBoard() {
 
           {/* Conditionally render StuduyProject based on the selected item */}
           {selectedItem1 === "스터디" || selectedItem1 === "프로젝트" ? (
-            <StuduyProject />
+            <StudyProject
+              handleDataFromChild={handleDataFromChild}
+              setStudyMethod={setStudyMethod}
+              setApplicationCount={setApplicationCount}
+              setDuration={setDuration}
+              setTechStack={setTechStack}
+              setDeadline={setDeadline}
+              setRegion={setRegion}
+              setStudy_place={setStudy_place}
+              setStudyTitle={setStudyTitle}
+              setStudyContent={setStudyContent}
+              setStartDate={setStartDate}
+            />
           ) : null}
-          {selectedItem1 === "멘토/멘티" ? <MentoMenti /> : null}
+          {selectedItem1 === "멘토/멘티" ? (
+            <MentoMenti onDataChanged={handleDataFromChild} />
+          ) : null}
         </section>
       </div>
+      {/* 추가: Submit 버튼 */}
+      <button onClick={handleCreatePost}>게시물 생성</button>
     </div>
   );
 }

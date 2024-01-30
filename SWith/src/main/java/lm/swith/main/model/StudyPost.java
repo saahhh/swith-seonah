@@ -1,7 +1,9 @@
 package lm.swith.main.model;
 
+
 import java.sql.Date;
 import java.sql.Timestamp;
+
 import java.util.List;
 
 import lombok.Getter;
@@ -19,27 +21,30 @@ public class StudyPost {
 	private String study_method;
 	private String recruit_type;
 	private String study_period;
-	private Date study_start;
-	private Date recruit_deadline;
-	private char study_status;
-	private Long study_likes;
+	private String study_start;
+	private String recruit_deadline;
+	private String study_status;
 	private String study_location;
 	private String first_study;
 	private Timestamp  study_post_time;
-    private int mentorCount;
-    private int menteeCount;
-    private int applicationCount;
-    private Long skill_no;
-
+    private int mentor_count;
+    private int mentee_count;
+    private int application_count;
+    private int likes_count; // likes count
+    private List<Long> skill_no;
+    private List<PostTechStacks> postTechStacks; 
+    private String study_likes;
+    
+    private List<Skill> studyPostWithSkills;
+    private String skill_name; // join 했을 때 skill 이름 받을 곳
+    private String skill_img; // join 했을 때 skill img 받을 곳
+    
+    private List<Comments> comments; // 댓글들 담을 곳
 	
-	private List<Skill> studyPostWithSkills;
+	private Users user; // 유저 테이블
+	private Likes likes; // 찜 테이블
 	
-	private List<Comments> comments; // 댓글들 담을 곳
-	
-	private Users user;
-	
-    private Mentor mentor;
-    private Mentee mentee;
-    private StudyApplication studyApplication;
-
+    private Mentor mentor; // 멘토 테이블
+    private Mentee mentee; // 멘티 테이블
+    private StudyApplication studyApplication; // 스터디 참가 현황 테이블
 }

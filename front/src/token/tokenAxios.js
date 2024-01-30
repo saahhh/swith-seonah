@@ -21,4 +21,21 @@ tokenAxios.interceptors.request.use(
   }
 );
 
+export const isTokenAvailable = () => {
+  const token = localStorage.getItem("token");
+  return token !== null && token !== undefined && token !== "";
+};
+
+export const logout = () => {
+  try {
+    localStorage.removeItem("token");
+    // 다른 로그아웃 처리를 수행할 수 있음
+    // 예: 리다이렉트 등
+    return true; // 성공적으로 로그아웃 처리됨
+  } catch (error) {
+    console.error("로그아웃 중 에러 발생:", error);
+    return false; // 로그아웃 중 에러 발생
+  }
+};
+
 export default tokenAxios;

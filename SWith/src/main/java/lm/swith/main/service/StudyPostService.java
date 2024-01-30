@@ -26,7 +26,7 @@ public class StudyPostService {
     
     // 스터디 등록하기
 	public void insertStudyPost (StudyPost studyPost) {
-		studyPostMapper.insertStudyPost(studyPost);
+		studyPostMapper.insertStudyPosts(studyPost);
 	}
 	
 	// 스터디 목록 불러오기	
@@ -60,18 +60,18 @@ public class StudyPostService {
         return studyPost;
     }
     
-	// 댓글 불러오기
-    public List<Comments> getCommentsByPostNo(Long post_no) {
-    	return studyPostMapper.getCommentsByPostNo(post_no);
-    }
-    
+
     // 스터디 수정
     public void updateStudyPost(StudyPost studyPost) {
     	studyPostMapper.updateStudyPost(studyPost);
     }
     
     // 스터디 삭제
+    @Transactional
     public void deleteStudyPost(Long post_no) {
+    	studyPostMapper.deleteComments(post_no);
+    	studyPostMapper.deleteStudyApplication(post_no);
+    	studyPostMapper.deletePostTechStacks(post_no);
     	studyPostMapper.deleteStudyPost(post_no);
     }
     
@@ -92,21 +92,54 @@ public class StudyPostService {
    
     @Transactional
     public void insertTestStudyPost(StudyPost studyPost) {
-    	studyPostMapper.insertStudyPosts(studyPost); // INSERT studyPostMapper    	
-    	PostTechStacks postTechStacks = new PostTechStacks(); // 
-    	//studyPost.getPost_no() -> 위에서 INSERT한 POST_NO를 가져옴
-    	// studyPost에 전달받은 Skill_no를 postTechStacks.setSkill_no에 넣어줌
-    	postTechStacks.setPost_no(studyPost.getPost_no());
-    	postTechStacks.setSkill_no(studyPost.getSkill_no());
-    	studyPostMapper.insertPostTechStacks(postTechStacks);
-    	
-    	StudyApplication studyApplication = new StudyApplication();
-    	// 위와 동일한 형식
-    	studyApplication.setPost_no(studyPost.getPost_no());
-    	System.out.println(studyApplication.getPost_no());
-    	studyApplication.setUser_no(studyPost.getUser_no());
-    	studyPostMapper.insertStudyApplication(studyApplication);
+        try {
+            // StudyPost 삽입
+            studyPostMapper.insertStudyPosts(studyPost);
 
+            // PostTechStacks 삽입
+            System.out.println("Original skill_no list: " + studyPost.getSkill_no());
+            List<Long> postTechStacksList = studyPost.getSkill_no();
+            System.out.println("postTechStacksList size: " + postTechStacksList.size());
+            for (Long skill_no : postTechStacksList) {
+                System.out.println("Current skill_no: " + skill_no);
+                PostTechStacks postTechStacks = new PostTechStacks();
+                postTechStacks.setPost_no(studyPost.getPost_no());
+                postTechStacks.setSkill_no(skill_no);
+                System.out.println("PostTechStacks skill_no: " + postTechStacks.getSkill_no());
+                // PostTechStacks를 삽입
+                studyPostMapper.insertPostTechStacks(postTechStacks);
+            }
+
+            // StudyApplication 삽입
+            StudyApplication studyApplication = new StudyApplication();
+            studyApplication.setPost_no(studyPost.getPost_no());
+            studyApplication.setUser_no(studyPost.getUser_no());
+            studyPostMapper.insertStudyApplication(studyApplication);
+        } catch (Exception e) {
+            // 롤백 여부 확인을 위해 예외 발생
+            throw new RuntimeException("Transaction rolled back", e);
+        }
     }
-
+    
+    // Comments Part
+    // 댓글 등록
+    public void insertComment(Comments comments) {
+    	studyPostMapper.insertComment(comments);
+    }
+    
+    // 댓글 불러오기
+    public List<Comments> getCommentsByPostNo(Long post_no) {
+    	return studyPostMapper.getCommentsByPostNo(post_no);
+    }
+    
+    // 댓글 수정
+    public void updateComment(Comments comments) {
+    	studyPostMapper.updateComment(comments);
+    }
+    
+    
+    // 댓글 삭제
+    public void deleteComment(Long post_no, Long user_no) {
+    	studyPostMapper.deleteComment(post_no, user_no);
+    }
 }

@@ -9,6 +9,9 @@ import StudyDetail from "./StudyDetail";
 import StudyDetailUpdate from "./StudyDetailUpdate";
 import MainContent from "./MainContent";
 import KakaoMap from "./KakaoMap";
+import MyPage from "./MyPage";
+import StudyRoom from "./StudyRoom";
+import ModifyPage from "./ModifyPage";
 
 // function AuthenticatedRoute({ children }) {
 //   const authContext = useAuth();
@@ -32,6 +35,9 @@ export default function Control() {
           <Route path="/post_update/:post_no" element={<StudyDetailUpdate />} />
           <Route path="/KeywordStudy?:keyword" element={<MainContent />} />
           <Route path="/post_detail/:post_no" component={KakaoMap} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/study_room/:post_no" element={<StudyRoom />} />
+          <Route path="/modify" element={<ModifyPage />} />
         </Routes>
       </BrowserRouter>
     </div>
