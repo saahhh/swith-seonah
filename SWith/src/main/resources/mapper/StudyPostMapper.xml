@@ -480,10 +480,11 @@
 	<!-- 댓글 삭제 -->
 	<delete id="deleteComment" parameterType="lm.swith.main.model.Comments">
 		DELETE FROM COMMENTS
-		WHERE POST_NO = #{post_no}
-		AND USER_NO = #{user_no}
+		WHERE USER_NO = #{user_no}
 		AND COMMENT_NO = #{comment_no}
+		AND POST_NO = #{post_no}
 	</delete>
+
 
 
 
