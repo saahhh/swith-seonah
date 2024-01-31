@@ -185,7 +185,7 @@ public class StudyPostController {
         System.out.println(post_no);
         System.out.println(user_no);
         System.out.println(comment_no);
-        return "/";
+        return "redirect:/post_detail/" + post_no;
         
     }
     

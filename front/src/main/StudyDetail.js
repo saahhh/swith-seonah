@@ -100,11 +100,13 @@ function StudyDetail() {
     console.log(comment.comment_content);
   };
 
-  const deleteComment = async () => {
+  // 댓글 삭제하기
+  const handledeleteComment = async (e, comment) => {
+    e.preventDefault();
     try {
       await usersUserinfoAxios.delete(
         `/delete_comment/${post_no}/${swithUser.user_no}/${comment.comment_no}`,
-
+        { ...comment, comment_no: comment.comment_no },
         {
           withCredentials: true,
         }
@@ -236,8 +238,8 @@ function StudyDetail() {
             <div className="commentInput_comment">
               <ul>
                 {detailPages.comments &&
-                  [...detailPages.comments].reverse().map((comment, index) => (
-                    <li key={index}>
+                  [...detailPages.comments].reverse().map((comment) => (
+                    <li key={comment.comment_no}>
                       <span className="commentUser">
                         {swithUser.nickname}
                         <img
@@ -251,7 +253,7 @@ function StudyDetail() {
                       {comment.comment_content}
                       <button
                         className="commentDelete_buttonComplete"
-                        onClick={() => deleteComment(comment.comment_no)}
+                        onClick={(e) => handledeleteComment(e, comment)}
                       >
                         댓글 삭제
                       </button>
