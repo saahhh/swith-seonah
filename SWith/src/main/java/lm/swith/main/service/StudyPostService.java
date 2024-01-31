@@ -61,6 +61,7 @@ public class StudyPostService {
     }
     
 
+    
     // 스터디 수정
     public void updateStudyPost(StudyPost studyPost) {
     	studyPostMapper.updateStudyPost(studyPost);
@@ -137,9 +138,10 @@ public class StudyPostService {
     	studyPostMapper.updateComment(comments);
     }
     
-    
     // 댓글 삭제
-    public void deleteComment(Long post_no, Long user_no) {
-    	studyPostMapper.deleteComment(post_no, user_no);
+    public void deleteComment(Long post_no, Long user_no, Long comment_no) {
+    	studyPostMapper.deleteComment(post_no, user_no, comment_no);
     }
+    
+    
 }

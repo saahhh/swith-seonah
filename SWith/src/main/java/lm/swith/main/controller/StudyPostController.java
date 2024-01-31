@@ -164,20 +164,29 @@ public class StudyPostController {
               return ResponseEntity.notFound().build();
           }
     	}
-    
-    
-	// 댓글 등록
-    @GetMapping("/add_comment")
-    public String addComment(@ModelAttribute Comments comments) {
-        studyPostService.insertComment(comments);
-        return "redirect:/post_detail/" + comments.getPost_no();
+    // 댓글 등록
+    @PostMapping("/add_comment/{post_no}/{user_no}")
+    public ResponseEntity<?> addComment(@PathVariable Long post_no, @PathVariable Long user_no, @RequestBody Comments comment) {
+        Comments comm = new Comments();
+        comm.setUser_no(user_no);
+        comm.setPost_no(post_no);
+        comm.setComment_no(user_no);
+        comm.setComment_content(comment.getComment_content());
+        studyPostService.insertComment(comm);
+        System.out.println(comment.getComment_content());
+
+        return ResponseEntity.ok("댓글이 등록되었습니다.");
     }
     
     // 댓글 삭제
-    @PostMapping("/delete_comment/{post_no}/{user_no}")
-    public String deleteComment(@PathVariable Long post_no, @PathVariable Long user_no) {
-        studyPostService.deleteComment(post_no, user_no);
-        return "redirect:/post_detail/" + post_no;
+    @PostMapping("/delete_comment/{post_no}/{user_no}/{comment_no}")
+    public String deleteComment(@PathVariable Long post_no, @PathVariable Long user_no, @RequestParam Long comment_no) {
+        studyPostService.deleteComment(post_no, user_no, comment_no);
+        System.out.println(post_no);
+        System.out.println(user_no);
+        System.out.println(comment_no);
+        return "/";
+        
     }
     
     // 댓글 수정
@@ -186,5 +195,4 @@ public class StudyPostController {
     	studyPostService.updateComment(comments);
     	return "redirect:/post_detail/" + comments.getPost_no();
     }
-   
 }

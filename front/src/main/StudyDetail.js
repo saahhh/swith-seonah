@@ -11,7 +11,12 @@ function StudyDetail() {
 
   const [detailPages, setDetailPage] = useState([]);
   const [addComment, setAddComment] = useState([]);
-  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState({
+    comment_no: "",
+    user_no: "",
+    post_no: "",
+    comment_content: "",
+  });
   const [swithUser, setSwithUser] = useState("");
 
   useEffect(() => {
@@ -20,8 +25,9 @@ function StudyDetail() {
         const response = await usersUserinfoAxios.get(
           `/post_detail/${post_no}`
         );
+
         setDetailPage(response.data);
-        setAddComment(response.data);
+        setComment(response.data.comments); // 댓글 목록 설정
         console.log(detailPages);
         console.log(post_no.study_title);
       } catch (error) {
@@ -30,7 +36,7 @@ function StudyDetail() {
     };
 
     fetchStudyDetail();
-  }, [post_no]); // post_no가 변경될 때마다 실행
+  }, [post_no, addComment]); // post_no가 변경될 때마다 실행
 
   // 이미지 정보를 가져오기 위해 만들어줌
   useEffect(() => {
@@ -49,6 +55,7 @@ function StudyDetail() {
     }
   }, [detailPages]);
 
+  // 게시글 삭제
   const handleDeletePost = async () => {
     try {
       await usersUserinfoAxios.get(`/delete/${post_no}`);
@@ -58,25 +65,61 @@ function StudyDetail() {
     }
   };
 
-  // 댓글 텍스트 변경 핸들러
-  const handleCommentChange = (event) => {
-    setAddComment(event.target.value);
+  // 댓글 추가 변경 핸들러
+  const handleCommentChange = (e) => {
+    const { name, value } = e.target;
+    setComment((comment) => ({ ...comment, [name]: value }));
   };
-
+  // 댓글 추가
   const handleAddComment = async () => {
     try {
-      const response = await usersUserinfoAxios.get(`/add_comment`, {
-        comment: addComment,
-        postId: post_no, // 게시물 ID 추가 (필요 시 수정)
-      });
-      // 성공적으로 댓글을 전송한 후에 실행할 작업 추가
-      console.log("댓글이 성공적으로 등록되었습니다.");
+      const response = await usersUserinfoAxios.post(
+        `/add_comment/${post_no}/${swithUser.user_no}`,
+        comment,
+        {
+          withCredentials: true,
+        }
+      );
 
-      // 댓글 입력창 비우기
-      setAddComment("");
+      console.log("댓글이 성공적으로 등록되었습니다.");
+      setComment({ ...comment, comment_content: "" });
+
+      // 새로운 댓글 목록을 다시 가져오기
+      const updatedDetail = await usersUserinfoAxios.get(
+        `/post_detail/${post_no}`
+      );
+      setDetailPage(updatedDetail.data);
+      // 서버로부터 받아온 댓글의 comment_no를 출력합니다.
+      console.log("댓글의 comment_no:", comment.comment_no);
     } catch (error) {
       console.log("댓글 등록 에러: ", error);
     }
+    console.log(comment.comment_content);
+  };
+
+  const deleteComment = async () => {
+    try {
+      await usersUserinfoAxios.delete(
+        `/delete_comment/${post_no}/${swithUser.user_no}/${comment.comment_no}`,
+
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("댓글이 성공적으로 삭제되었습니다.");
+
+      // 새로운 댓글 목록을 다시 가져오기
+      const updatedDetail = await usersUserinfoAxios.get(
+        `/post_detail/${post_no}`
+      );
+      setDetailPage(updatedDetail.data);
+    } catch (error) {
+      console.log("댓글 삭제 에러: ", error);
+    }
+    console.log(post_no);
+    console.log(comment.comment_no);
+    console.log(swithUser.user_no);
   };
 
   useEffect(() => {
@@ -192,18 +235,34 @@ function StudyDetail() {
 
         <div style={{ paddingBottom: "80px" }}>
           <div className="commentInput">
+            댓글
             <div className="commentInput_comment">
-              댓글
-              <div>{comments.nickname}</div>
-              {comments.map((comment, index) => (
-                <li key={index}>
-                  <p>{comment.comment_content}</p>
-                  {/* 댓글 작성자 정보 등 추가 */}
-                </li>
-              ))}
-              <span className="commentInput_count">
-                {detailPages.comment_no}
-              </span>
+              <ul>
+                {detailPages.comments &&
+                  [...detailPages.comments].reverse().map((comment, index) => (
+                    <li key={index}>
+                      <span className="commentUser">
+                        {swithUser.nickname}
+                        <img
+                          className="commentInput_profile"
+                          width="30px"
+                          height="30px"
+                          src={`data:image/jpeg;base64,${swithUser.user_profile}`}
+                          alt="Profile"
+                        />
+                      </span>
+                      {comment.comment_content}
+                      <button
+                        className="commentDelete_buttonComplete"
+                        onClick={() => deleteComment(comment.comment_no)}
+                      >
+                        댓글 삭제
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+
+              <span className="commentInput_count">ddd</span>
             </div>
             <div className="commentInput_container">
               <img
@@ -213,10 +272,11 @@ function StudyDetail() {
                 src={`data:image/jpeg;base64,${swithUser.user_profile}`}
                 alt="Profile"
               />
+              <div>{swithUser.nickname}</div>
               <textarea
                 class="commentInput_commentText"
                 placeholder="댓글을 입력하세요."
-                value={addComment}
+                name="comment_content"
                 onChange={handleCommentChange} // 댓글 변경 핸들러 연결
               ></textarea>
             </div>

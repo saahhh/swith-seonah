@@ -60,6 +60,7 @@
 		<result property="user_no" column="USER_NO" />
 		<result property="comment_content" column="COMMENT_CONTENT" />
 		<result property="comment_post_time" column="COMMENT_POST_TIME" />
+		<result property="user_profile" column="USER_PROFILE" />
 		<result property="nickname" column="NICKNAME" />
 	</resultMap>
 
@@ -455,42 +456,33 @@
 
 
 	<!-- 댓글 등록 -->
-	<insert id="insertComment"
-		parameterType="lm.swith.main.model.Comments">
-		INSERT INTO COMMENTS (COMMENT_NO, USER_NO, POST_NO,
-		COMMENT_CONTENT,
-		NICKNAME, COMMENT_POST_TIME)
-		VALUES
-		COMMENTS_NO_SEQ.NEXTVAL, #{USER_NO}, #{post_no}, #{comment_content},
-		(SELECT NICKNAME FROM USERS WHERE USER_NO = #{user_no}),
-		#{comment_post_time}
-	</insert>
-
-
-	<!-- 댓글 목록 -->
+	<insert id="insertComment" parameterType="lm.swith.main.model.Comments">
+        INSERT INTO COMMENTS (COMMENT_NO, USER_NO, POST_NO, COMMENT_CONTENT)
+        VALUES (COMMENTS_SEQ.NEXTVAL, #{user_no}, #{post_no}, #{comment_content})
+    </insert>
+    
+  	<!-- 댓글 목록 -->
 	<select id="getCommentsByPostNo" resultMap="commentWithUser">
-		SELECT * FROM
-		COMMENTS WHERE POST_NO = #{post_no}
+	    SELECT * FROM COMMENTS WHERE POST_NO = #{post_no} ORDER BY comment_post_time DESC
 	</select>
 
-
 	<!-- 댓글 수정 -->
-	<update id="updateComment"
-		parameterType="lm.swith.main.model.Comments">
+	<update id="updateComment" parameterType="lm.swith.main.model.Comments">
 		UPDATE COMMENTS
 		SET
 		COMMENT_CONTENT = #{comment_content}
 		WHERE
 		COMMENT_NO = #{comment_no}
-		AND USER_NO = #{user_no};
+		AND USER_NO = #{user_no}
 	</update>
 
 
 	<!-- 댓글 삭제 -->
-	<delete id="deleteComment" parameterType="Long">
+	<delete id="deleteComment" parameterType="lm.swith.main.model.Comments">
 		DELETE FROM COMMENTS
 		WHERE POST_NO = #{post_no}
 		AND USER_NO = #{user_no}
+		AND COMMENT_NO = #{comment_no}
 	</delete>
 
 

@@ -53,17 +53,18 @@ public interface StudyPostMapper {
 	List<Cafes> getLatLngCafes(@Param("bplcnm")String bplcnm); 
 	
 	// Comment Part
+
 		// 댓글 등록
 		void insertComment (Comments comments);
 		
-		// 댓글 불러오기
-		List<Comments> getCommentsByPostNo(Long post_no);
+		// 댓글 목록
+		List<Comments> getCommentsByPostNo(@Param("post_no") Long post_no);
 		
 		// 댓글 수정
 		void updateComment (Comments comments);
 		
 		// 댓글 삭제
-		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no);
+		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no, @Param("comment_no") Long comment_no);
 
 	
 }

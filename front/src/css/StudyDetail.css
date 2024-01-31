@@ -153,9 +153,12 @@
 
 .commentInput_comment {
   margin-bottom: 15px;
-  font-size: 18px;
-  font-weight: 700;
+
+  width: 100%;
+  margin: 40px auto 0;
   display: flex;
+  font-family: "SUITE-Regular";
+  text-align: left;
 }
 
 .commentInput_count {
@@ -205,4 +208,16 @@
   font-family: "SUITE-Regular";
   padding: 0 20px;
   border: 0px;
+}
+
+.commentDelete_buttonComplete {
+  height: 20px;
+  background: #8ee3ff;
+  border-radius: 50px;
+  color: #525252;
+  font-size: 13px;
+  font-family: "SUITE-Regular";
+  padding: 0 20px;
+  border: 0px;
+  text-align: right;
 }
