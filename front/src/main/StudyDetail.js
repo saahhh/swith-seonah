@@ -16,6 +16,8 @@ function StudyDetail() {
     user_no: "",
     post_no: "",
     comment_content: "",
+    nickname: "",
+    user_profile: "",
   });
   const [swithUser, setSwithUser] = useState("");
 
@@ -82,6 +84,7 @@ function StudyDetail() {
       );
 
       console.log("댓글이 성공적으로 등록되었습니다.");
+      setComment({ ...comment, comment_no: "" });
       setComment({ ...comment, comment_content: "" });
 
       // 새로운 댓글 목록을 다시 가져오기
@@ -108,12 +111,6 @@ function StudyDetail() {
       );
 
       console.log("댓글이 성공적으로 삭제되었습니다.");
-
-      // 새로운 댓글 목록을 다시 가져오기
-      const updatedDetail = await usersUserinfoAxios.get(
-        `/post_detail/${post_no}`
-      );
-      setDetailPage(updatedDetail.data);
     } catch (error) {
       console.log("댓글 삭제 에러: ", error);
     }
