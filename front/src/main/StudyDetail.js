@@ -9,6 +9,23 @@ import axios from "axios";
 function StudyDetail() {
   const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
 
+  const [detailPages, setDetailPage] = useState([]);
+  const [addComment, setAddComment] = useState([]);
+  const [comment, setComment] = useState({
+    comment_no: "",
+    user_no: "",
+    post_no: "",
+    comment_content: "",
+    nickname: "",
+    user_profile: "",
+  });
+
+  // 게시글 댓글 쓴 유저 = detailCommentUser
+  const [detailCommentUser, setDetailCommentUser] = useState([]);
+
+  // 게시글 쓴 유저 = swithUser
+  const [swithUser, setSwithUser] = useState("");
+
   // 유저 데이터 가져오기
   // 로그인된 유저 = userData
   const [userData, setUserData] = useState("");
@@ -27,25 +44,9 @@ function StudyDetail() {
     fetchUserData();
   }, []);
 
-  const [detailPages, setDetailPage] = useState([]);
-  const [addComment, setAddComment] = useState([]);
-  const [comment, setComment] = useState({
-    comment_no: "",
-    user_no: "",
-    post_no: "",
-    comment_content: "",
-    nickname: "",
-    user_profile: "",
-  });
-  // 게시글 쓴 유저 = swithUser
-  const [swithUser, setSwithUser] = useState("");
-
   useEffect(() => {
     // swithUser 상태가 업데이트되면 실행
   }, [swithUser]);
-
-  // 게시글 댓글 쓴 유저 = detailCommentUser
-  const [detailCommentUser, setDetailCommentUser] = useState([]);
 
   useEffect(() => {
     const fetchStudyDetail = async () => {
@@ -266,25 +267,29 @@ function StudyDetail() {
         <div style={{ paddingBottom: "80px" }}>
           <div className="commentInput">
             댓글
-            <div className="commentInput_comment">
-              <ul>
-                {detailPages.comments &&
-                  [...detailPages.comments]
-                    .reverse()
-                    .map((comment, comment_no) => (
-                      <li key={comment_no}>
-                        <span className="commentUser">
-                          {comment.user_no}
+            <ul className="commentList_CommentList">
+              {detailPages.comments &&
+                [...detailPages.comments]
+                  .reverse()
+                  .map((comment, comment_no) => (
+                    <li className="commentInput_comment" key={comment_no}>
+                      <section className="commentInput_comment_Header">
+                        <img
+                          className="commentInput_profile"
+                          width="30px"
+                          height="30px"
+                          src={`data:image/jpeg;base64,${comment.user_profile}`}
+                          alt="Profile"
+                        />
+                        <div className="commentItem_userNickname">
                           {comment.nickname}
-                          <img
-                            className="commentInput_profile"
-                            width="30px"
-                            height="30px"
-                            src={`data:image/jpeg;base64,${comment.user_profile}`}
-                            alt="Profile"
-                          />
-                        </span>
-                        {comment.comment_content}
+                        </div>
+                        <div className="commentItem_registeredDate">
+                          {comment.comment_post_time}
+                        </div>
+                      </section>
+                      <section>
+                        <p> {comment.comment_content}</p>
                         {comment.user_no === userData.user_no && (
                           <button
                             className="commentDelete_buttonComplete"
@@ -293,46 +298,45 @@ function StudyDetail() {
                             댓글 삭제
                           </button>
                         )}
-                      </li>
-                    ))}
-              </ul>
-
-              <span className="commentInput_count">ddd</span>
-            </div>
-            <div className="commentInput_container">
-              {/* <img
-                className="commentInput_profile"
-                width="30px"
-                height="30px"
-                src={`data:image/jpeg;base64,${swithUser.user_profile}`}
-                alt="Profile"
-              />
-              <div>{swithUser.nickname}</div> */}
-              <textarea
-                class="commentInput_commentText"
-                placeholder="댓글을 입력하세요."
-                name="comment_content"
-                onChange={handleCommentChange} // 댓글 변경 핸들러 연결
-              ></textarea>
-            </div>
-            <div className="commentInput_buttonWrapper">
-              <button
-                className="commentInput_buttonComplete"
-                name="comment_no"
-                onClick={handleAddComment}
-              >
-                댓글 등록
-              </button>
-              <button className="commentInput_buttonComplete">
-                게시글 수정하기
-              </button>
-              <button
-                className="commentInput_buttonComplete"
-                onClick={handleDeletePost}
-              >
-                게시글 삭제
-              </button>
-            </div>
+                      </section>
+                    </li>
+                  ))}
+            </ul>
+            <span className="commentInput_count"></span>
+          </div>
+          <div className="commentInput_container">
+            <img
+              className="commentInput_profile"
+              width="30px"
+              height="30px"
+              src={`data:image/jpeg;base64,${userData.user_profile}`}
+              alt="Profile"
+            />
+            <div>{userData.nickname}</div>
+            <textarea
+              class="commentInput_commentText"
+              placeholder="댓글을 입력하세요."
+              name="comment_content"
+              onChange={handleCommentChange} // 댓글 변경 핸들러 연결
+            ></textarea>
+          </div>
+          <div className="commentInput_buttonWrapper">
+            <button
+              className="commentInput_buttonComplete"
+              name="comment_no"
+              onClick={handleAddComment}
+            >
+              댓글 등록
+            </button>
+            <button className="commentInput_buttonComplete">
+              게시글 수정하기
+            </button>
+            <button
+              className="commentInput_buttonComplete"
+              onClick={handleDeletePost}
+            >
+              게시글 삭제
+            </button>
           </div>
         </div>
       </div>

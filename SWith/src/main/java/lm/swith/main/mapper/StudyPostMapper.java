@@ -1,6 +1,7 @@
 package lm.swith.main.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,6 +16,7 @@ import lm.swith.main.model.StudyPost;
 @Mapper
 public interface StudyPostMapper {
 	
+	//Main Part =============================================================================
 	// 스터디 목록
 	List<StudyPost> getAllStudyPostWithSkills();
 	
@@ -38,7 +40,7 @@ public interface StudyPostMapper {
 	void updateStudyPost (StudyPost studyPost);
 	
 	// 스터디 조건 검색
-	List<StudyPost> getStudiesBySelect(String recruit_type, String study_method, String study_location, Long skill_no);
+	List<StudyPost> getStudiesBySelect(Map<String, Object> params);
 		
 	// 스터디 제목+내용 검색
 	List<StudyPost> getStudiesByKeyword(String keyword);

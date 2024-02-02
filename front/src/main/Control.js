@@ -12,6 +12,7 @@ import KakaoMap from "./KakaoMap";
 import MyPage from "./MyPage";
 import StudyRoom from "./StudyRoom";
 import ModifyPage from "./ModifyPage";
+import StudyApplication from "./StudyApplication";
 
 // function AuthenticatedRoute({ children }) {
 //   const authContext = useAuth();
@@ -38,6 +39,7 @@ export default function Control() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/study_room/:post_no" element={<StudyRoom />} />
           <Route path="/modify" element={<ModifyPage />} />
+          <Route path="/application" element={<StudyApplication />} />
         </Routes>
       </BrowserRouter>
     </div>
