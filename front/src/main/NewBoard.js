@@ -98,7 +98,7 @@ function NewBoard() {
           // StudyProject에서 온 데이터
           study_method: studyMethod,
           study_period: duration,
-          skill_no: techStack,
+          skills: techStack,
           recruit_deadline: deadline,
           study_location: region,
           first_study: study_place,

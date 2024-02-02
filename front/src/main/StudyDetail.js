@@ -114,23 +114,18 @@ function StudyDetail() {
         }
       );
       console.log("댓글이 성공적으로 등록되었습니다.");
-      // 서버로부터 받아온 댓글 번호를 설정합니다.
-      setComment({
-        ...comment,
-        comment_no: userData.comment_no,
-        comment_content: "",
-      });
 
       // 새로운 댓글 목록을 다시 가져오기
       const updatedDetail = await usersUserinfoAxios.get(
         `/post_detail/${post_no}`
       );
       setDetailPage(updatedDetail.data);
-      // // 서버로부터 받아온 댓글의 comment_no를 출력합니다.
-      // console.log("댓글의 comment_no:", comment.comment_no);
     } catch (error) {
       console.log("댓글 등록 에러: ", error);
     }
+    const textarea = document.querySelector(".commentInput_commentText");
+    textarea.value = ""; // textarea 초기화
+    textarea.placeholder = "댓글을 입력하세요."; // placeholder 다시 설정
     console.log(comment.comment_content);
   };
 
@@ -274,21 +269,22 @@ function StudyDetail() {
                   .map((comment, comment_no) => (
                     <li className="commentInput_comment" key={comment_no}>
                       <section className="commentInput_comment_Header">
-                        <img
-                          className="commentInput_profile"
-                          width="30px"
-                          height="30px"
-                          src={`data:image/jpeg;base64,${comment.user_profile}`}
-                          alt="Profile"
-                        />
-                        <div className="commentItem_userNickname">
-                          {comment.nickname}
+                        <div className="commentItem_avatarWrapper">
+                          <img
+                            className="commentInput_profile"
+                            width="30px"
+                            height="30px"
+                            src={`data:image/jpeg;base64,${comment.user_profile}`}
+                            alt="Profile"
+                          />
+                          <div className="commentItem_userNickname">
+                            {comment.nickname}
+
+                            <div className="commentItem_registeredDate">
+                              {comment.comment_post_time}
+                            </div>
+                          </div>
                         </div>
-                        <div className="commentItem_registeredDate">
-                          {comment.comment_post_time}
-                        </div>
-                      </section>
-                      <section>
                         <p> {comment.comment_content}</p>
                         {comment.user_no === userData.user_no && (
                           <button
@@ -312,7 +308,7 @@ function StudyDetail() {
               src={`data:image/jpeg;base64,${userData.user_profile}`}
               alt="Profile"
             />
-            <div>{userData.nickname}</div>
+            <div className="commentItem_userNickname">{userData.nickname}</div>
             <textarea
               class="commentInput_commentText"
               placeholder="댓글을 입력하세요."

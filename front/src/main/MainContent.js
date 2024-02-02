@@ -7,6 +7,7 @@ import HeartButton from "./HeartButton";
 import SearchIcon from "./img/search.png";
 import DeleteIcon from "./img/delete.png";
 import axios from "axios";
+import { logout, isTokenAvailable } from "../token/tokenAxios";
 import usersUserinfoAxios from "../token/tokenAxios";
 import StudyDetail from "./StudyDetail";
 import { useNavigate, useSearchParams } from "react-router-dom";

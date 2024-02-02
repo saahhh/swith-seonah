@@ -24,7 +24,7 @@ public class FinalSWithApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 				.allowedMethods("*")
-				.allowedOrigins("http://localhost:3000");
+				.allowedOrigins("http://1.221.120.194:3000");
 			}
 		};
 	}

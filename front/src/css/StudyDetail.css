@@ -153,12 +153,14 @@
 
 .commentInput_comment {
   margin-bottom: 15px;
-
   width: 100%;
-  margin: 40px auto 0;
   display: flex;
   font-family: "SUITE-Regular";
   text-align: left;
+  flex-direction: column;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e1e1e1;
 }
 
 .commentInput_count {
@@ -232,6 +234,7 @@
 
 .commentItem_userNickname {
   color: #333;
+  font-family: "SUITE-Regular";
   font-weight: 700;
 }
 
@@ -253,7 +256,6 @@
 
 .commentInput_comment_Header {
   display: flex;
-  justify-content: space-between;
 }
 
 .commentList_CommentList {

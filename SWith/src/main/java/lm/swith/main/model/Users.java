@@ -12,5 +12,5 @@ public class Users {
 	private byte[] user_profile;
 	private String useraddress;
 	private String user_introduction;
-	private String user_role; 
+	private String user_role;
 }
