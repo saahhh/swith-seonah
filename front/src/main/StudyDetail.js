@@ -131,6 +131,7 @@ function StudyDetail() {
 
   // 댓글 삭제하기
   const handleDeleteComment = async (comment) => {
+    console.log("comment.handleDeleteComment : " + comment.comment_no);
     try {
       await usersUserinfoAxios.delete(
         `/delete_comment/${post_no}/${userData.user_no}/${comment.comment_no}`,
@@ -150,6 +151,27 @@ function StudyDetail() {
     console.log(post_no);
     console.log(comment.comment_no);
     console.log(userData.user_no);
+  };
+
+  const [commentToUpdate, setCommentToUpdate] = useState("");
+
+  const handleUpdateComment = async (comment) => {
+    try {
+      await usersUserinfoAxios.post(
+        `/update_comment/${post_no}/${userData.user_no}/${comment.comment_no}`,
+        commentToUpdate,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("댓글 수정 완료!");
+    } catch (error) {
+      console.log("댓글 수정 오류", error);
+    }
+    console.log(post_no);
+    console.log(comment.comment_no);
+    console.log(userData.user_no);
+    console.log(commentToUpdate.comment_content);
   };
 
   // studyPostWithSkills에 대한 중복제거 조건문 추가
@@ -285,55 +307,90 @@ function StudyDetail() {
                             </div>
                           </div>
                         </div>
-                        <p> {comment.comment_content}</p>
-                        {comment.user_no === userData.user_no && (
-                          <button
-                            className="commentDelete_buttonComplete"
-                            onClick={() => handleDeleteComment(comment)}
-                          >
-                            댓글 삭제
-                          </button>
+
+                        {commentToUpdate &&
+                        commentToUpdate.comment_no === comment.comment_no ? (
+                          <div>
+                            <textarea
+                              className="commentInput_commentText"
+                              value={commentToUpdate.comment_content}
+                              onChange={(e) =>
+                                setCommentToUpdate({
+                                  ...commentToUpdate,
+                                  comment_content: e.target.value,
+                                })
+                              }
+                            ></textarea>
+                            <button
+                              className="commentInput_buttonComplete"
+                              onClick={() =>
+                                handleUpdateComment(commentToUpdate)
+                              }
+                            >
+                              수정 완료
+                            </button>
+                          </div>
+                        ) : (
+                          <div>
+                            <p>{comment.comment_content}</p>
+                            {comment.user_no === userData.user_no && (
+                              <div>
+                                <button
+                                  className="commentDelete_buttonComplete"
+                                  onClick={() => setCommentToUpdate(comment)}
+                                >
+                                  댓글 수정
+                                </button>
+                                <button
+                                  className="commentDelete_buttonComplete"
+                                  onClick={() => handleDeleteComment(comment)}
+                                >
+                                  댓글 삭제
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         )}
                       </section>
                     </li>
                   ))}
             </ul>
-            <span className="commentInput_count"></span>
           </div>
-          <div className="commentInput_container">
-            <img
-              className="commentInput_profile"
-              width="30px"
-              height="30px"
-              src={`data:image/jpeg;base64,${userData.user_profile}`}
-              alt="Profile"
-            />
-            <div className="commentItem_userNickname">{userData.nickname}</div>
-            <textarea
-              class="commentInput_commentText"
-              placeholder="댓글을 입력하세요."
-              name="comment_content"
-              onChange={handleCommentChange} // 댓글 변경 핸들러 연결
-            ></textarea>
-          </div>
-          <div className="commentInput_buttonWrapper">
-            <button
-              className="commentInput_buttonComplete"
-              name="comment_no"
-              onClick={handleAddComment}
-            >
-              댓글 등록
-            </button>
-            <button className="commentInput_buttonComplete">
-              게시글 수정하기
-            </button>
-            <button
-              className="commentInput_buttonComplete"
-              onClick={handleDeletePost}
-            >
-              게시글 삭제
-            </button>
-          </div>
+          <span className="commentInput_count"></span>
+        </div>
+        <div className="commentInput_container">
+          <img
+            className="commentInput_profile"
+            width="30px"
+            height="30px"
+            src={`data:image/jpeg;base64,${userData.user_profile}`}
+            alt="Profile"
+          />
+          <div className="commentItem_userNickname">{userData.nickname}</div>
+          <textarea
+            class="commentInput_commentText"
+            placeholder="댓글을 입력하세요."
+            name="comment_content"
+            onChange={handleCommentChange} // 댓글 변경 핸들러 연결
+          ></textarea>
+        </div>
+        <div className="commentInput_buttonWrapper">
+          <button
+            className="commentInput_buttonComplete"
+            name="comment_no"
+            onClick={handleAddComment}
+          >
+            댓글 등록
+          </button>
+          <button className="commentInput_buttonComplete">
+            게시글 수정하기
+          </button>
+          <button
+            className="commentInput_buttonComplete"
+            onClick={handleDeletePost}
+          >
+            게시글 삭제
+          </button>
         </div>
       </div>
     </div>

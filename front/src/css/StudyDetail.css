@@ -163,6 +163,12 @@
   border-bottom: 2px solid #e1e1e1;
 }
 
+.commentItem_avatarWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
 .commentInput_count {
   font-weight: 700;
   font-size: 18px;

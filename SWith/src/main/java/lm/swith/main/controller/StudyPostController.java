@@ -40,7 +40,6 @@ public class StudyPostController {
     @GetMapping("/post_list")
     public ResponseEntity<List<StudyPost>> getAllStudyPostWithSkills() {
         List<StudyPost> studyPost = studyPostService.getAllStudyPostWithSkills();
-        System.out.println("ㅎㅇ : " + studyPost.size());
         if (!studyPost.isEmpty()) {
             return ResponseEntity.ok(studyPost);
         } else {
@@ -154,11 +153,15 @@ public class StudyPostController {
     }
     
     // 댓글 수정
-    @PostMapping("/update_comment/{post_no}/{user_no}")
+    @PostMapping("/update_comment/{post_no}/{user_no}/{comment_no}")
     public String updateComment(@ModelAttribute Comments comments) {
+
+    	System.out.println("code check : getPost_no" + comments.getPost_no());
+    	System.out.println("code check : getComment_content" + comments.getComment_content());
+    	System.out.println("code check : getUser_no" + comments.getUser_no());
     	studyPostService.updateComment(comments);
     	return "redirect:/post_detail/" + comments.getPost_no();
-    }
+    }		
     
     // 카페 리스트
     @GetMapping ("/cafe_list")
