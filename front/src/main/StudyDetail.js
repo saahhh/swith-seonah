@@ -9,6 +9,24 @@ import axios from "axios";
 function StudyDetail() {
   const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
 
+  // 유저 데이터 가져오기
+  // 로그인된 유저 = userData
+  const [userData, setUserData] = useState("");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // 서버에 사용자 정보를 가져오는 요청
+        const response = await usersUserinfoAxios.get("/users/userinfo");
+        setUserData(response.data);
+        console.log(userData);
+      } catch (error) {
+        console.error("Failed to fetch user data.", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const [detailPages, setDetailPage] = useState([]);
   const [addComment, setAddComment] = useState([]);
   const [comment, setComment] = useState({
@@ -19,7 +37,15 @@ function StudyDetail() {
     nickname: "",
     user_profile: "",
   });
+  // 게시글 쓴 유저 = swithUser
   const [swithUser, setSwithUser] = useState("");
+
+  useEffect(() => {
+    // swithUser 상태가 업데이트되면 실행
+  }, [swithUser]);
+
+  // 게시글 댓글 쓴 유저 = detailCommentUser
+  const [detailCommentUser, setDetailCommentUser] = useState([]);
 
   useEffect(() => {
     const fetchStudyDetail = async () => {
@@ -27,11 +53,12 @@ function StudyDetail() {
         const response = await usersUserinfoAxios.get(
           `/post_detail/${post_no}`
         );
-
+        setDetailCommentUser(response.data.comments);
         setDetailPage(response.data);
-        setComment(response.data.comments); // 댓글 목록 설정
+        setComment(response.data.comments || []); // 댓글 목록 설정
         console.log(detailPages);
         console.log(post_no.study_title);
+        console.log(response.data.comments);
       } catch (error) {
         console.log("Error fetching study detail: ", error);
       }
@@ -50,6 +77,7 @@ function StudyDetail() {
             `/users/info/${detailPages.user_no}`
           );
           setSwithUser(response.data);
+          setDetailCommentUser((user_no) => response.data);
         } catch (error) {}
       };
 
@@ -76,24 +104,29 @@ function StudyDetail() {
   const handleAddComment = async () => {
     try {
       const response = await usersUserinfoAxios.post(
-        `/add_comment/${post_no}/${swithUser.user_no}`,
-        comment,
+        `/add_comment/${post_no}/${userData.user_no}`,
+        {
+          ...comment,
+        },
         {
           withCredentials: true,
         }
       );
-
       console.log("댓글이 성공적으로 등록되었습니다.");
-      setComment({ ...comment, comment_no: "" });
-      setComment({ ...comment, comment_content: "" });
+      // 서버로부터 받아온 댓글 번호를 설정합니다.
+      setComment({
+        ...comment,
+        comment_no: userData.comment_no,
+        comment_content: "",
+      });
 
       // 새로운 댓글 목록을 다시 가져오기
       const updatedDetail = await usersUserinfoAxios.get(
         `/post_detail/${post_no}`
       );
       setDetailPage(updatedDetail.data);
-      // 서버로부터 받아온 댓글의 comment_no를 출력합니다.
-      console.log("댓글의 comment_no:", comment.comment_no);
+      // // 서버로부터 받아온 댓글의 comment_no를 출력합니다.
+      // console.log("댓글의 comment_no:", comment.comment_no);
     } catch (error) {
       console.log("댓글 등록 에러: ", error);
     }
@@ -101,29 +134,27 @@ function StudyDetail() {
   };
 
   // 댓글 삭제하기
-  const handledeleteComment = async (e, comment) => {
-    e.preventDefault();
+  const handleDeleteComment = async (comment) => {
     try {
       await usersUserinfoAxios.delete(
-        `/delete_comment/${post_no}/${swithUser.user_no}/${comment.comment_no}`,
-        { ...comment, comment_no: comment.comment_no },
+        `/delete_comment/${post_no}/${userData.user_no}/${comment.comment_no}`,
         {
           withCredentials: true,
         }
       );
-
       console.log("댓글이 성공적으로 삭제되었습니다.");
+      // 댓글 삭제 후 상태 업데이트
+      const updatedComments = detailPages.comments.filter(
+        (c) => c.comment_no !== comment.comment_no
+      );
+      setDetailPage({ ...detailPages, comments: updatedComments });
     } catch (error) {
       console.log("댓글 삭제 에러: ", error);
     }
     console.log(post_no);
     console.log(comment.comment_no);
-    console.log(swithUser.user_no);
+    console.log(userData.user_no);
   };
-
-  useEffect(() => {
-    // swithUser 상태가 업데이트되면 실행
-  }, [swithUser]);
 
   // studyPostWithSkills에 대한 중복제거 조건문 추가
   const uniqueSkills = detailPages.studyPostWithSkills && [
@@ -238,40 +269,45 @@ function StudyDetail() {
             <div className="commentInput_comment">
               <ul>
                 {detailPages.comments &&
-                  [...detailPages.comments].reverse().map((comment) => (
-                    <li key={comment.comment_no}>
-                      <span className="commentUser">
-                        {swithUser.nickname}
-                        <img
-                          className="commentInput_profile"
-                          width="30px"
-                          height="30px"
-                          src={`data:image/jpeg;base64,${swithUser.user_profile}`}
-                          alt="Profile"
-                        />
-                      </span>
-                      {comment.comment_content}
-                      <button
-                        className="commentDelete_buttonComplete"
-                        onClick={(e) => handledeleteComment(e, comment)}
-                      >
-                        댓글 삭제
-                      </button>
-                    </li>
-                  ))}
+                  [...detailPages.comments]
+                    .reverse()
+                    .map((comment, comment_no) => (
+                      <li key={comment_no}>
+                        <span className="commentUser">
+                          {comment.user_no}
+                          {comment.nickname}
+                          <img
+                            className="commentInput_profile"
+                            width="30px"
+                            height="30px"
+                            src={`data:image/jpeg;base64,${comment.user_profile}`}
+                            alt="Profile"
+                          />
+                        </span>
+                        {comment.comment_content}
+                        {comment.user_no === userData.user_no && (
+                          <button
+                            className="commentDelete_buttonComplete"
+                            onClick={() => handleDeleteComment(comment)}
+                          >
+                            댓글 삭제
+                          </button>
+                        )}
+                      </li>
+                    ))}
               </ul>
 
               <span className="commentInput_count">ddd</span>
             </div>
             <div className="commentInput_container">
-              <img
+              {/* <img
                 className="commentInput_profile"
                 width="30px"
                 height="30px"
                 src={`data:image/jpeg;base64,${swithUser.user_profile}`}
                 alt="Profile"
               />
-              <div>{swithUser.nickname}</div>
+              <div>{swithUser.nickname}</div> */}
               <textarea
                 class="commentInput_commentText"
                 placeholder="댓글을 입력하세요."
@@ -282,7 +318,7 @@ function StudyDetail() {
             <div className="commentInput_buttonWrapper">
               <button
                 className="commentInput_buttonComplete"
-                name="register"
+                name="comment_no"
                 onClick={handleAddComment}
               >
                 댓글 등록

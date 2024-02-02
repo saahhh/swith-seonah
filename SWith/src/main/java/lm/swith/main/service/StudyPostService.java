@@ -138,6 +138,14 @@ public class StudyPostService {
     	studyPostMapper.updateComment(comments);
     }
     
+//    @Transactional
+//    public void deleteStudyPost(Long post_no) {
+//    	studyPostMapper.deleteComments(post_no);
+//    	studyPostMapper.deleteStudyApplication(post_no);
+//    	studyPostMapper.deletePostTechStacks(post_no);
+//    	studyPostMapper.deleteStudyPost(post_no);
+//    }
+//    
     // 댓글 삭제
     public void deleteComment(Long post_no, Long user_no, Long comment_no) {
     	studyPostMapper.deleteComment(post_no, user_no, comment_no);

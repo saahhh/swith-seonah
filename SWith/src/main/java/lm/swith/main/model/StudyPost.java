@@ -40,6 +40,8 @@ public class StudyPost {
     private String skill_img; // join 했을 때 skill img 받을 곳
     
     private List<Comments> comments; // 댓글들 담을 곳
+    private Long commnet_no;
+    private String commnet_content;
 	
 	private Users user; // 유저 테이블
 	private Likes likes; // 찜 테이블

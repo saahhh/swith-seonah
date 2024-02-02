@@ -3,9 +3,9 @@ package lm.swith.main.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
-import lm.swith.main.model.PostTechStacks;
-import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
 import lm.swith.main.service.StudyPostService;
 
@@ -99,7 +97,7 @@ public class StudyPostController {
     }
 	
 	
- // 스터디 삭제
+    // 스터디 삭제
     @GetMapping("/delete/{post_no}")
     public String deleteStudyPost (@PathVariable Long post_no) {
     	studyPostService.deleteStudyPost(post_no);
@@ -164,6 +162,7 @@ public class StudyPostController {
               return ResponseEntity.notFound().build();
           }
     	}
+    
     // 댓글 등록
     @PostMapping("/add_comment/{post_no}/{user_no}")
     public ResponseEntity<?> addComment(@PathVariable Long post_no, @PathVariable Long user_no, @RequestBody Comments comment) {
@@ -179,14 +178,13 @@ public class StudyPostController {
     }
     
     // 댓글 삭제
-    @PostMapping("/delete_comment/{post_no}/{user_no}/{comment_no}")
-    public String deleteComment(@PathVariable Long post_no, @PathVariable Long user_no, @RequestParam Long comment_no) {
+    @DeleteMapping("/delete_comment/{post_no}/{user_no}/{comment_no}")
+    public String deleteComment(@PathVariable Long post_no, @PathVariable Long user_no, @PathVariable Long comment_no) {
         studyPostService.deleteComment(post_no, user_no, comment_no);
         System.out.println(post_no);
         System.out.println(user_no);
         System.out.println(comment_no);
         return "redirect:/post_detail/" + post_no;
-        
     }
     
     // 댓글 수정
