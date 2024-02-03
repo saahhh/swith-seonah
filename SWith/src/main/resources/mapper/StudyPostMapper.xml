@@ -332,7 +332,7 @@
 
 	
 	<!-- 스터디 수정 -->
-	<!-- <update id="updateStudyPost" parameterType="lm.swith.main.model.StudyPost">
+	 <update id="updateStudyPost" parameterType="lm.swith.main.model.StudyPost">
 	     첫 번째 쿼리: study_post 테이블에 스터디 정보 업데이트 
 	    UPDATE study_post
 	    SET
@@ -361,15 +361,15 @@
 	    UPDATE study_post sp
 	    SET sp.nickname = (SELECT nickname FROM users u WHERE u.user_no = sp.user_no)
 	    WHERE sp.post_no = #{post_no}
-	    
-	    <if test="mentor_check">
+	     
+	</update>
+	
+	<!-- <if test="mentor_check">
 		    UPDATE mentor SET USER_NO = #{user_no} WHERE POST_NO = #{post_no}
 		</if>
 		<if test="mentee_check">
 		    UPDATE mentee SET USER_NO = #{user_no} WHERE POST_NO = #{post_no}
-		</if>
-	    
-	</update>  -->
+		</if> -->
 
 	<!-- 마감 기한 지난 스터디 목록 -->
 	<select id="findExpiredStudyStatus" parameterType="lm.swith.main.model.StudyPost">
@@ -470,8 +470,9 @@
 		SET
 		COMMENT_CONTENT = #{comment_content}
 		WHERE
-		COMMENT_NO = #{comment_no}
+		POST_NO = #{post_no}
 		AND USER_NO = #{user_no}
+		AND COMMENT_NO = #{comment_no}
 	</update>
 
 

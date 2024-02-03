@@ -124,7 +124,7 @@ public interface StudyPostMapper {
 		List<Comments> getCommentsByPostNo(@Param("post_no") Long post_no);
 		
 		// 댓글 수정
-		void updateComment (Comments comments);
+		void updateComment (Long post_no, Long user_no , Long comment_no, String comment_content);
 		
 		// 댓글 삭제
 		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no, @Param("comment_no") Long comment_no);

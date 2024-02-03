@@ -5,6 +5,7 @@ import "../css/StudyDetail.css";
 import "../css/NewBoard.css";
 import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
+import StudyDetailUpdate from "./StudyDetailUpdate";
 
 function StudyDetail() {
   const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
@@ -58,7 +59,6 @@ function StudyDetail() {
         setDetailPage(response.data);
         setComment(response.data.comments || []); // 댓글 목록 설정
         console.log(detailPages);
-        console.log(post_no.study_title);
         console.log(response.data.comments);
       } catch (error) {
         console.log("Error fetching study detail: ", error);
@@ -155,16 +155,45 @@ function StudyDetail() {
 
   const [commentToUpdate, setCommentToUpdate] = useState("");
 
+  // 댓글 내용 변경 핸들러
+  // 사용자가 댓글을 수정할 때 입력한 내용을 commentToUpdate 상태에 반영
+  const handleCommentToUpdateChange = (e) => {
+    const { value } = e.target;
+    setCommentToUpdate((prevCommentToUpdate) => ({
+      ...prevCommentToUpdate,
+      comment_content: value,
+    }));
+  };
+
+  // 댓글 수정 버튼 클릭 시 실행되는 함수
+  const handleEditComment = (comment) => {
+    // 선택한 댓글의 내용을 수정할 수 있는 입력창에 표시
+    setCommentToUpdate(comment);
+  };
+
+  // comment = 기존의 댓글
   const handleUpdateComment = async (comment) => {
     try {
       await usersUserinfoAxios.post(
         `/update_comment/${post_no}/${userData.user_no}/${comment.comment_no}`,
-        commentToUpdate,
+        {
+          comment_content: commentToUpdate.comment_content, // 수정된 댓글 내용만을 전송합니다.
+        },
         {
           withCredentials: true,
         }
       );
       console.log("댓글 수정 완료!");
+      // 댓글 상태 업데이트하여 화면 다시 렌더링\
+      const updatedComments = detailPages.comments.map((c) =>
+        c.comment_no === comment.comment_no
+          ? { ...c, comment_content: commentToUpdate.comment_content }
+          : c
+      );
+
+      setDetailPage({ ...detailPages, comments: updatedComments });
+      // 수정 완료 후 commentToUpdate 초기화
+      setCommentToUpdate("");
     } catch (error) {
       console.log("댓글 수정 오류", error);
     }
@@ -172,6 +201,11 @@ function StudyDetail() {
     console.log(comment.comment_no);
     console.log(userData.user_no);
     console.log(commentToUpdate.comment_content);
+  };
+
+  // 게시글 수정 페이지로 이동
+  const handleButtonClick = () => {
+    window.location.href = "/StudyDetailUpdate.js";
   };
 
   // studyPostWithSkills에 대한 중복제거 조건문 추가
@@ -314,12 +348,7 @@ function StudyDetail() {
                             <textarea
                               className="commentInput_commentText"
                               value={commentToUpdate.comment_content}
-                              onChange={(e) =>
-                                setCommentToUpdate({
-                                  ...commentToUpdate,
-                                  comment_content: e.target.value,
-                                })
-                              }
+                              onChange={handleCommentToUpdateChange} // 댓글 변경 핸들러 연결
                             ></textarea>
                             <button
                               className="commentInput_buttonComplete"
@@ -337,7 +366,7 @@ function StudyDetail() {
                               <div>
                                 <button
                                   className="commentDelete_buttonComplete"
-                                  onClick={() => setCommentToUpdate(comment)}
+                                  onClick={() => handleEditComment(comment)}
                                 >
                                   댓글 수정
                                 </button>
@@ -382,7 +411,10 @@ function StudyDetail() {
           >
             댓글 등록
           </button>
-          <button className="commentInput_buttonComplete">
+          <button
+            className="commentInput_buttonComplete"
+            onClick={handleButtonClick}
+          >
             게시글 수정하기
           </button>
           <button

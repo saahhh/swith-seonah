@@ -137,7 +137,7 @@ public class StudyPostController {
         comm.setComment_no(user_no);
         comm.setComment_content(comment.getComment_content());
         studyPostService.insertComment(comm);
-        System.out.println(comment.getComment_content());
+//        System.out.println(comment.getComment_content());
 
         return ResponseEntity.ok("댓글이 등록되었습니다.");
     }
@@ -146,22 +146,23 @@ public class StudyPostController {
     @DeleteMapping("/delete_comment/{post_no}/{user_no}/{comment_no}")
     public String deleteComment(@PathVariable Long post_no, @PathVariable Long user_no, @PathVariable Long comment_no) {
         studyPostService.deleteComment(post_no, user_no, comment_no);
-        System.out.println(post_no);
-        System.out.println(user_no);
-        System.out.println(comment_no);
+//        System.out.println(post_no);
+//        System.out.println(user_no);
+//        System.out.println(comment_no);
         return "redirect:/post_detail/" + post_no;
     }
     
     // 댓글 수정
     @PostMapping("/update_comment/{post_no}/{user_no}/{comment_no}")
-    public String updateComment(@ModelAttribute Comments comments) {
-
-    	System.out.println("code check : getPost_no" + comments.getPost_no());
-    	System.out.println("code check : getComment_content" + comments.getComment_content());
-    	System.out.println("code check : getUser_no" + comments.getUser_no());
-    	studyPostService.updateComment(comments);
-    	return "redirect:/post_detail/" + comments.getPost_no();
-    }		
+    public String updateComment(@PathVariable Long post_no, @PathVariable Long user_no, @PathVariable Long comment_no ,@RequestBody Comments comments) {
+//    	System.out.println(comment_no + " comment_no");
+//    	System.out.println(post_no + " post");
+//    	System.out.println(user_no + " user");
+//    	System.out.println(comments.getComment_content() + " 내용!!!");
+        studyPostService.updateComment(post_no, user_no, comment_no, comments.getComment_content());
+        return "redirect:/post_detail/";
+    }
+	
     
     // 카페 리스트
     @GetMapping ("/cafe_list")

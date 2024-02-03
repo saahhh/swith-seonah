@@ -232,8 +232,8 @@ public class StudyPostService {
     }
     
     // 댓글 수정
-    public void updateComment(Comments comments) {
-    	studyPostMapper.updateComment(comments);
+    public void updateComment(Long post_no, Long user_no , Long comment_no, String comment_content) {
+    	studyPostMapper.updateComment(post_no, user_no, comment_no, comment_content);
     }
     
     // 댓글 삭제
