@@ -76,7 +76,14 @@ public interface StudyPostMapper {
 		StudyPost getStudyPostByPostNo(@Param("post_no") Long post_no);
 		
 		// 스터디 수정
-		//void updateStudyPost (StudyPost studyPost);
+		void updateStudyPost (StudyPost studyPost);
+		void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
+		void updateSkill(List<Skill> skill);
+		void upadateStudyApplication(StudyApplication studyApplication);
+		void insertPostTechStacksUpdate(PostTechStacks postTechStacks);
+		void updateStudyPostUser(@Param("user_no") Long user_no);
+		
+
 		
 		// 스터디 삭제 OK
 		void deleteStudyPost (@Param("post_no") Long post_no);
@@ -90,8 +97,7 @@ public interface StudyPostMapper {
 		// 스터디 기술스텍 삭제
 		void deletePostTechStacks(@Param("post_no") Long post_no);
 
-		// 스터디 수정
-		void updateStudyPost (StudyPost studyPost);
+	
 	
 		
 	// Study Application Part======================================================================================================================================

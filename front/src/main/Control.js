@@ -33,7 +33,10 @@ export default function Control() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterUser />} />
           <Route path="/post_detail/:post_no" element={<StudyDetail />} />
-          <Route path="/post_update/:post_no" element={<StudyDetailUpdate />} />
+          <Route
+            path="/StudyDetailUpdate/:post_no"
+            element={<StudyDetailUpdate />}
+          />
           <Route path="/KeywordStudy?:keyword" element={<MainContent />} />
           <Route path="/post_detail/:post_no" component={KakaoMap} />
           <Route path="/mypage" element={<MyPage />} />

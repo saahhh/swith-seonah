@@ -60,6 +60,8 @@ public class StudyPostService {
         }
     }
     
+   
+    
     // 스터디 게시글 작성 내 첫모임 장소 카페 리스트
     public List<Cafes> getAllCafes(String bplcnm, String sitewhladdr, String x, String y) {
         return studyPostMapper.getAllCafes(bplcnm, sitewhladdr, x, y);
@@ -133,12 +135,44 @@ public class StudyPostService {
         return studyPost;
     }
     
+    // 스터디 수정
+    public void updateStudyPost(StudyPost studyPost) {
+    	try {
+    		 
+    	studyPostMapper.updateStudyPost(studyPost);
+    	
+    	  // PostTechStacks 삽입
+        System.out.println("Original skill_no list: " + studyPost.getSkills());
+        List<Long> postTechStacksList = studyPost.getSkills();
+        
+        System.out.println("postTechStacksList size: " + postTechStacksList.size());
+        
+        for (Long skill_no : postTechStacksList) {
+            System.out.println("Current skill_no: " + skill_no);
+            PostTechStacks postTechStacks = new PostTechStacks();
+            postTechStacks.setPost_no(studyPost.getPost_no());
+            postTechStacks.setSkill_no(skill_no);
+            System.out.println("PostTechStacks skill_no: " + postTechStacks.getSkill_no());
+            // PostTechStacks를 삭제 후 다시 저장
+            studyPostMapper.deletePostTechStacksUpdate(postTechStacks);
+            
+            studyPostMapper.insertPostTechStacksUpdate(postTechStacks);
+        }
 
-    
-  // 스터디 수정
-  public void updateStudyPost(StudyPost studyPost) {
-  	studyPostMapper.updateStudyPost(studyPost);
+        // StudyApplication 삽입
+        StudyApplication studyApplication = new StudyApplication();
+        studyApplication.setPost_no(studyPost.getPost_no());
+        studyApplication.setUser_no(studyPost.getUser_no());
+        
+        studyPostMapper.upadateStudyApplication(studyApplication);
+        studyPostMapper.updateStudyPostUser(studyPost.getUser_no());
+    } catch (Exception e) {
+        // 롤백 여부 확인을 위해 예외 발생
+        throw new RuntimeException("Transaction rolled back", e);
+    }
+  	
   }
+ 
     
     // 스터디 삭제
     @Transactional

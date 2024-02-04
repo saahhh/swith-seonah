@@ -225,9 +225,7 @@ public class RegisterController {
 			SwithUser createUser = userService.signUpUser(swithUser);
 			return ResponseEntity.ok(createUser);
 		}
-	//원정연 파트 (update)
-		
-	//update 하은이 파트 
+
 	    
 	    //update user profile
 	    @PostMapping("/updateUserProfile")

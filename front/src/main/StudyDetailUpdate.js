@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import Header from "./Header";
-import "../css/StudyDetail.css";
 import "../css/NewBoard.css";
+import Header from "./Header";
+import { useParams } from "react-router-dom";
 import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
-import StuduyProject from "./StudyProject";
-import MentoMenti from "./MentoMenti";
+import Modal from "react-modal";
+import DeleteIcon from "./img/delete.png";
 
-function StudyDetailUpdate() {
-  const { post_no } = useParams();
+const StudyDetailUpdate = ({ handleDataFromChild }) => {
+  // formData에 저장된 데이터 사용
 
-  const navigate = useNavigate();
+  const customStyles = {
+    content: {
+      width: "50%", // 모달의 가로 크기를 조절합니다.
+      height: "50%", // 모달의 세로 크기를 조절합니다.
+      margin: "auto", // 화면 중앙에 모달을 배치합니다.
+    },
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [cafes, setCafes] = useState([]);
 
-  const [StudyDetailUpdate, setStudyDetailUpdate] = useState([]);
-
-  const [selectedItem1, setSelectedItem1] = useState(null);
-
-  const handleItem1Click = (item1) => {
-    if (selectedItem1 === item1) {
-      // 클릭된 아이템이 현재 선택된 아이템과 같으면 선택 해제
-      setSelectedItem1(null);
-    } else {
-      // 아니면 새로운 아이템 선택
-      setSelectedItem1(item1);
-    }
+  const openModal = () => {
+    setIsModalOpen(true);
   };
 
-  const [detailPages, setDetailPage] = useState([]);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleButtonClick = () => {
+    if (!isModalOpen) {
+      openModal();
+    } else {
+      closeModal();
+    }
+  };
+  const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
+
+  const [detailPages, setDetailPage] = useState(null);
+  const [updateDetailPages, setUpdateDetailPages] = useState("");
 
   useEffect(() => {
     const fetchStudyDetail = async () => {
@@ -36,8 +48,15 @@ function StudyDetailUpdate() {
           `/post_detail/${post_no}`
         );
         setDetailPage(response.data);
+
         console.log(detailPages);
-        console.log(post_no.study_title);
+
+        const updateStudyPost = await usersUserinfoAxios.post(
+          `/update/${post_no}`
+        );
+        setUpdateDetailPages(updateStudyPost.data);
+        console.log(updateStudyPost);
+        console.log("게시글 수정 완료!");
       } catch (error) {
         console.log("Error fetching study detail: ", error);
       }
@@ -46,97 +65,398 @@ function StudyDetailUpdate() {
     fetchStudyDetail();
   }, [post_no]); // post_no가 변경될 때마다 실행
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setStudyDetail((prevStudyDetail) => ({
-      ...prevStudyDetail,
-      [name]: value,
-    }));
-  };
+  // useEffect(() => {
+  //   if (detailPages) {
+  //     setApplicationCount(detailPages.applicationCount);
+  //     setDuration(detailPages.duration);
+  //     setTechStack(detailPages.techStack);
+  //     setDeadline(detailPages.deadline);
+  //     setRegion(detailPages.region);
+  //     setStudy_place(detailPages.study_place);
+  //     setStudyMethod(detailPages.studyMethod);
+  //     setStudyTitle(detailPages.studyTitle);
+  //     setStudyContent(detailPages.studyContent);
+  //     setStartDate(detailPages.startDate);
+  //   }
+  // }, [detailPages]);
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  const handleSearch = async () => {
     try {
-      await usersUserinfoAxios.put(`/update/${post_no}`, studyDetail);
-      alert("스터디 정보가 수정되었습니다.");
-      // Redirect to the updated study detail page or any other page
-      navigate(`/post_detail/${post_no}`);
+      const response = await usersUserinfoAxios.get(
+        `/KeywordCafes?keyword=${keyword}`
+      );
+      setCafes(response.data);
     } catch (error) {
-      console.log("Error updating study detail: ", error);
+      console.error("Error searching cafes:", error);
     }
   };
+  const handleItemClick = (cafe) => {
+    setKeyword(cafe.bplcnm);
+    setStudy_place(cafe.sitewhladdr);
+    closeModal();
+  };
+  const [applicationCount, setApplicationCount] = useState("");
 
-  const [studyDetail, setStudyDetail] = useState({
-    study_title: "",
-    study_content: "",
-    nickname: "",
-    recruit_type: "",
-    study_method: "",
-    study_start: "",
-    study_period: "",
-    recruit_deadline: "",
-    study_location: "",
-    skill: "",
-  });
+  const [duration, setDuration] = useState("");
+  const [techStack, setTechStack] = useState([]);
+  const [deadline, setDeadline] = useState("");
+  const [region, setRegion] = useState("");
+  const [study_place, setStudy_place] = useState("");
+
+  const [studyMethod, setStudyMethod] = useState("");
+
+  const [studyTitle, setStudyTitle] = useState("");
+  const [studyContent, setStudyContent] = useState("");
+
+  const [startDate, setStartDate] = useState("");
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  const [selectedItem2, setSelectedItem2] = useState(null);
+
+  const handleItem2Click = (item2) => {
+    if (selectedItem2 === item2) {
+      // 클릭된 아이템이 현재 선택된 아이템과 같으면 선택 해제
+      setSelectedItem2(null);
+    } else {
+      // 아니면 새로운 아이템 선택
+      setSelectedItem2(item2);
+    }
+
+    // setStudyMethod 함수를 호출한 후에 handleDataChange를 호출하도록 수정
+    setStudyMethod(item2);
+    handleDataChange();
+  };
+
+  const handleTechStackChange = (e) => {
+    const selectedTech = e.target.value;
+
+    // 이미 선택된 기술스택이 있는지 확인
+    if (techStack.includes(selectedTech)) {
+      // 이미 선택된 경우, 해당 기술스택을 배열에서 제거
+      setTechStack(techStack.filter((tech) => tech !== selectedTech));
+    } else if (techStack.length < 5) {
+      // 선택된 기술스택이 5개 미만인 경우에만 추가
+      setTechStack([...techStack, selectedTech]);
+    } else {
+      // 5개를 넘을 경우 알림창 표시
+      alert("최대 5개까지만 선택 가능합니다.");
+    }
+    console.log("기술: " + techStack);
+  };
+
+  const handleDeleteTech = (deletedTech) => {
+    setTechStack(techStack.filter((tech) => tech !== deletedTech));
+  };
+
+  const handleDataChange = () => {
+    // techStack을 숫자로 이루어진 배열로 변환
+    const techStackAsNumbers = techStack.map((tech) => parseInt(tech));
+    // 데이터가 변경될 때마다 부모 컴포넌트로 데이터 전달
+    handleDataFromChild({
+      studyTitle,
+      studyContent,
+      studyMethod,
+      applicationCount,
+      duration,
+      techStack: techStackAsNumbers,
+      deadline,
+      region,
+      study_place,
+      startDate,
+    });
+    console.log("기술: " + techStack);
+  };
+
+  // 기술스택의 숫자 값과 텍스트를 매핑하는 객체
+  const techStackOptions = {
+    1: "Angular",
+    2: "C",
+    3: "C++",
+    4: "Django",
+    5: "Docker",
+    6: "Express",
+    7: "Figma",
+    8: "Firebase",
+    9: "Flask",
+    10: "Flutter",
+    11: "Git",
+    12: "Go",
+    13: "GraphQL",
+    14: "Java Script",
+    15: "Java",
+    16: "Kubernetes",
+    17: "MongoDB",
+    18: "mySql",
+    19: "NestJS",
+    20: "NodeJS",
+    21: "Php",
+    22: "Python",
+    23: "R",
+    24: "React",
+    25: "React Native",
+    26: "Spring",
+    27: "Svelte",
+    28: "Swift",
+    29: "Type Script",
+    30: "Unity",
+    31: "Vue",
+    32: "Zeplin",
+  };
 
   return (
     <div>
       <Header />
+      <div className="post_1">
+        <span className="post_1_title">2</span>
+        <h2 className="post_title">S.With 진행 방식을 골라주세요.</h2>
+      </div>
+      <ul className="postToggle_ul">
+        <li
+          className={`postToggle ${
+            selectedItem2 === "온라인" ? "clicked" : ""
+          }`}
+          onClick={() => {
+            handleItem2Click("온라인");
+            setStudyMethod("온라인");
+          }}
+        >
+          <span className="postToggle_text">온라인</span>
+        </li>
+        <li
+          className={`postToggle ${
+            selectedItem2 === "오프라인" ? "clicked" : ""
+          }`}
+          onClick={() => {
+            handleItem2Click("오프라인");
+            setStudyMethod("오프라인");
+          }}
+        >
+          <span className="postToggle_text">오프라인</span>
+        </li>
+        <li
+          className={`postToggle ${
+            selectedItem2 === "온/오프병행" ? "clicked" : ""
+          }`}
+          onClick={() => {
+            handleItem2Click("온/오프병행");
+            setStudyMethod("온/오프병행");
+          }}
+        >
+          <span className="postToggle_text">온/오프병행</span>
+        </li>
+      </ul>
+      <br />
+      <br />
+      <div className="post_1">
+        <span className="post_1_title">3</span>
+        <h2 className="post_title">S.With 기본 정보를 입력해주세요.</h2>
+      </div>
+      <form onSubmit={handleFormSubmit} className="all_form">
+        <div className="all_form_div">
+          <label className="post_3_label">
+            모집인원 :
+            <input
+              type="number"
+              value={applicationCount}
+              onChange={(e) => setApplicationCount(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </label>
 
-      <h1 className="title">S.With 수정하기</h1>
-      <div className="section_1">
-        <section>
-          <div className="post_1">
-            <span className="post_1_title">1</span>
-            <h2 className="post_title">S.With 모집 구분을 골라주세요.</h2>
+          <label className="post_3_label">
+            진행기간 :
+            <input
+              type="text"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </label>
+
+          <div className="post_4_label">
+            기술스택 :
+            <select
+              value={techStack}
+              onChange={handleTechStackChange}
+              onBlur={handleDataChange}
+            >
+              {Object.entries(techStackOptions).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="post_4_label">
+            시작일 :
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              onBlur={handleDataChange}
+            />
           </div>
 
-          <ul className="postToggle_ul">
-            <li
-              className={`postToggle ${
-                selectedItem1 === "스터디" ? "clicked" : ""
-              }`}
-              onClick={() => handleItem1Click("스터디")}
-            >
-              <span className="postToggle_text">스터디</span>
-            </li>
+          <label className="stack_box">
+            <div className="selected">
+              <br />
+              {techStack.map((stack, index) => (
+                <div className="selected_2" key={index}>
+                  <div className="tech-stack-item">
+                    {techStackOptions[stack]}
+                  </div>
 
-            <li
-              className={`postToggle ${
-                selectedItem1 === "프로젝트" ? "clicked" : ""
-              }`}
-              onClick={() => handleItem1Click("프로젝트")}
-            >
-              <span className="postToggle_text">프로젝트</span>
-            </li>
+                  <img
+                    src={DeleteIcon}
+                    className="delete_img"
+                    alt="deleteButton"
+                    onClick={() => handleDeleteTech(stack)}
+                  />
+                </div>
+              ))}
+            </div>
+          </label>
 
-            <li
-              className={`postToggle ${
-                selectedItem1 === "멘토/멘티" ? "clicked" : ""
-              }`}
-              onClick={() => handleItem1Click("멘토/멘티")}
+          <label className="post_3_label">
+            모집마감 :
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </label>
+          <label className="post_3_label">
+            지역구분 :
+            <select
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              onBlur={handleDataChange}
             >
-              <span className="postToggle_text">멘토/멘티</span>
-            </li>
-          </ul>
-          <br />
-          <br />
-
-          {/* Conditionally render StuduyProject based on the selected item */}
-          {selectedItem1 === "스터디" || selectedItem1 === "프로젝트" ? (
-            <StuduyProject />
+              <option value="강남/역삼/삼성">강남/역삼/삼성</option>
+              <option value="신사/청담/압구정">신사/청담/압구정</option>
+              <option value="서초/교대/사당">서초/교대/사당</option>
+              <option value="잠실/송파/강동">잠실/송파/강동</option>
+              <option value="을지로/명동/중구/동대문">
+                을지로/명동/중구/동대문
+              </option>
+              <option value="서울역/이태원/용산">서울역/이태원/용산</option>
+              <option value="종로/인사동">종로/인사동</option>
+              <option value="홍대/합정/마포/서대문">
+                홍대/합정/마포/서대문
+              </option>
+              <option value="여의도">여의도</option>
+              <option value="구로/신도림/금천">구로/신도림/금천</option>
+              <option value="건대입구/성수/왕십리">건대입구/성수/왕십리</option>
+              <option value="성북/강북/노원/도봉">성북/강북/노원/도봉</option>
+              <option value="기타">기타</option>
+            </select>
+          </label>
+          {selectedItem2 === "오프라인" || selectedItem2 === "온/오프병행" ? (
+            <label className="post_3_label">
+              첫모임장소 :
+              <div className="cafeModal">
+                <input
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  className="cafeSearchInput"
+                  placeholder="카페이름이나 지역을 입력하세요."
+                  onBlur={handleDataChange}
+                />
+                <button
+                  onClick={() => {
+                    handleButtonClick();
+                    handleSearch();
+                  }}
+                >
+                  Search
+                </button>
+                <div>
+                  <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={closeModal}
+                    style={customStyles}
+                  >
+                    <button
+                      onClick={() => {
+                        closeModal();
+                      }}
+                      id="modalCloseBtn"
+                    >
+                      ✖
+                    </button>
+                    <ul>
+                      {cafes.map((cafe) => (
+                        <li
+                          key={cafe.id}
+                          onClick={() => handleItemClick(cafe)}
+                          className="cafe_p"
+                        >
+                          <p className="cafe_p">
+                            {cafe.bplcnm} ( {cafe.sitewhladdr} )
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </Modal>
+                </div>
+              </div>
+            </label>
           ) : null}
-          {selectedItem1 === "멘토/멘티" ? <MentoMenti /> : null}
-        </section>
+        </div>
+      </form>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <div>
+        <div className="post_1">
+          <span className="post_1_title">4</span>
+          <h2 className="post_title">S.With을 자세히 소개해주세요.</h2>
+        </div>
+        <div className="studyProject_title">
+          <label htmlFor="title" className="titleLabel">
+            제목 :
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="제목을 입력하세요."
+              value={studyTitle}
+              onChange={(e) => setStudyTitle(e.target.value)}
+              onBlur={handleDataChange}
+            />
+          </label>
+          <br />
+          <div className="studyProject_content">
+            <label htmlFor="content" className="contentLabel">
+              <textarea
+                type="text"
+                id="content"
+                name="content"
+                placeholder="내용을 입력하세요."
+                value={studyContent}
+                onChange={(e) => setStudyContent(e.target.value)}
+                onBlur={handleDataChange}
+              />
+            </label>
+          </div>
+        </div>
       </div>
-      <button
-        className="commentInput_buttonComplete"
-        onClick={handleFormSubmit()}
-      >
-        수정하기
-      </button>
     </div>
   );
-}
+};
 
 export default StudyDetailUpdate;

@@ -205,7 +205,7 @@ function StudyDetail() {
 
   // 게시글 수정 페이지로 이동
   const handleButtonClick = () => {
-    window.location.href = "/StudyDetailUpdate.js";
+    window.location.href = `/StudyDetailUpdate/${post_no}`;
   };
 
   // studyPostWithSkills에 대한 중복제거 조건문 추가
