@@ -1,0 +1,23 @@
+.carousel {
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  display: none;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: auto;
+}
+
+.board_box_section {
+  width: 1325px;
+  display: flex;
+  grid-gap: 27px;
+  gap: 27px;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 0 20px;
+}
