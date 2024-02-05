@@ -36,10 +36,12 @@ public class StudyPostController {
     }
     
 	
-    // 스터디 목록
+	// 스터디 목록
     @GetMapping("/post_list")
     public ResponseEntity<List<StudyPost>> getAllStudyPostWithSkills() {
         List<StudyPost> studyPost = studyPostService.getAllStudyPostWithSkills();
+        studyPostService.runUpdateStudyStatus();
+        studyPostService.updateStudyStatus();
         if (!studyPost.isEmpty()) {
             return ResponseEntity.ok(studyPost);
         } else {
@@ -90,9 +92,9 @@ public class StudyPostController {
 	
 	// 스터디 신청
 	@PostMapping("/add_applicants")
-	public String addUsersByPostNo (@ModelAttribute StudyApplication studyApplication) {
-		studyPostService.addUsersByPostNo(studyApplication);
-		return "redirect:/post_detail/" + studyApplication.getPost_no();
+	public String addUsersByPostNo ( @RequestParam("user_no") Long user_no, @RequestParam("post_no") Long post_no) {
+		studyPostService.addUsersByPostNo(post_no, user_no);
+		return "redirect:/post_detail/" + post_no;
 	}
 	
 	
@@ -107,7 +109,6 @@ public class StudyPostController {
         }
     }
 	
-
 	// 스터디 신청 목록 업데이트 (승인/거절)
 	@PostMapping("/application_update/{post_no}")
 	public ResponseEntity<List<StudyApplication>> updateApplication(

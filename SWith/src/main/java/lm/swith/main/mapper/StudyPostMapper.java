@@ -53,23 +53,24 @@ public interface StudyPostMapper {
 		// 스터디 찜
 		void addLikes (Likes likes);
 		
-		// 스터디 찜 확인
+		// 스터디 찜 목록
 		List<Likes> isLiked (@Param("post_no") Long post_no, @Param("user_no") Long user_no);
 		
 		// 스터디 찜 삭제
 		void deleteLikes (@Param("post_no") Long post_no, @Param("user_no") Long user_no);
-		
+	
+
 	// My page Part=================================================================================================================================================
 		// 마이페이지 내가 쓴 게시물 목록 OK
-		List<StudyPost> getOwnStudiesWithUserNo(Long user_no);
+		List<StudyPost> getOwnStudiesWithUserNo(@Param("user_no") Long user_no);
 		
 		// 마이페이지 찜한 게시물 목록
-		List<StudyPost> getAllStudiesWithLikes(Long user_no);
+		List<StudyPost> getAllStudiesWithLikes(@Param("user_no") Long user_no);
 		
 		// 내가 참여한 스터디 목록 OK
-		List<StudyPost> getAllStudiesWithUserNo(Long user_no);
+		List<StudyPost> getAllStudiesWithUserNo(@Param("user_no") Long user_no);
 		
-	
+		
 
 	// Detail Part==================================================================================================================================================
 		// 스터디 상세 페이지 OK
@@ -100,9 +101,10 @@ public interface StudyPostMapper {
 	
 	
 		
+
 	// Study Application Part======================================================================================================================================
 		// 스터디 신청
-		void addUsersByPostNo (StudyApplication studyApplication);
+		void addUsersByPostNo (Long post_no, Long user_no);
 		
 		// 스터디 신청 목록 OK
 		List<StudyApplication> getAllApplicantsByPostNo(Long post_no);
@@ -119,6 +121,8 @@ public interface StudyPostMapper {
 		// 스터디 거절
 		void deleteApplicant (@Param("post_no") Long post_no, @Param("user_no") Long user_no);
 		
+		// 스터디 확정 멤버
+		List<StudyApplication> getAllMembersByPostNo(@Param("post_no") Long post_no);
 		
 
 	

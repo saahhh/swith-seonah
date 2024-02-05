@@ -264,7 +264,10 @@ function StudyDetail() {
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집인원</span>
-                <span className="studyInfo_title_a">8명</span>
+                <span className="studyInfo_title_a">
+                  {detailPages.studyApplication &&
+                    detailPages.studyApplication.max_study_applicants}
+                </span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">시작예정일</span>

@@ -107,18 +107,22 @@ public class StudyPostService {
     // MyPage Part
     // 내가 쓴 스터디 목록
     public List<StudyPost> getOwnStudiesWithUserNo(Long user_no) {
+    	Users users = studyPostMapper.getUserByUserNo(user_no);
     	return studyPostMapper.getOwnStudiesWithUserNo(user_no);
     }
     
     // 찜한 스터디 목록
     public List<StudyPost> getAllStudiesWithLikes(Long user_no) {
+    	Users users = studyPostMapper.getUserByUserNo(user_no);
     	return studyPostMapper.getAllStudiesWithLikes(user_no);
     }
     
     // 내가 참여한 스터디 목록
     public List<StudyPost> getAllStudiesWithUserNo(Long user_no) {
+    	Users users = studyPostMapper.getUserByUserNo(user_no);
     	return studyPostMapper.getAllStudiesWithUserNo(user_no);
     }
+    
     
     
     
@@ -184,9 +188,10 @@ public class StudyPostService {
     }
     
  
+    
     // 스터디 신청
-    public void addUsersByPostNo(StudyApplication studyApplication) {
-    	studyPostMapper.addUsersByPostNo(studyApplication);
+    public void addUsersByPostNo(Long post_no, Long user_no) {
+    	studyPostMapper.addUsersByPostNo(post_no, user_no);
     }
     
     // 스터디 신청자 목록
