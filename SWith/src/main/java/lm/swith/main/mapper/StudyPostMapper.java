@@ -140,7 +140,17 @@ public interface StudyPostMapper {
 		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no, @Param("comment_no") Long comment_no);
 
 
-		// Profile Part================================================================================================================================================
+	// Profile Part================================================================================================================================================
 		// 유저 프로필 확인 OK
 		Users getUserByUserNo (@Param("user_no") Long user_no);
+		
+	// Admin part =================================================================================================================================================
+		// 닉네임으로 게시글 검색
+		List<StudyPost> getStudiesByNickname(String nickname);
+		
+		// 닉네임으로 댓글 검색
+		List<Comments> getCommentsByNickname(String nickname);
+		
+		// 유저 삭제
+		void deleteUser(@Param("nickname") String nickname);
 	}

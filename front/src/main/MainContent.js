@@ -57,10 +57,17 @@ function MainContent() {
     const fetchData = async () => {
       try {
         const boardsResponse = await usersUserinfoAxios.get("/post_list");
+        if (!boardsResponse.data) {
+          return;
+        }
         setBoards(boardsResponse.data);
 
         // Fetch user data
         const userResponse = await usersUserinfoAxios.get("/users/userinfo");
+        if (userResponse.data === null) {
+          return;
+        }
+
         setUserData(userResponse.data);
 
         Zzim(userData.user_no, boards.post_no);
@@ -414,6 +421,9 @@ function MainContent() {
   const [zzimUser, setZzimUser] = useState([]);
 
   const Zzim = async (user_no) => {
+    if (user_no === undefined) {
+      return;
+    }
     try {
       const response = await usersUserinfoAxios.get(
         `/liked_studies/${userData.user_no}`

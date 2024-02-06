@@ -38,13 +38,16 @@ public class StudyPostService {
             // PostTechStacks 삽입
             System.out.println("Original skill_no list: " + studyPost.getSkills());
             List<Long> postTechStacksList = studyPost.getSkills();
+            
             System.out.println("postTechStacksList size: " + postTechStacksList.size());
+            
             for (Long skill_no : postTechStacksList) {
                 System.out.println("Current skill_no: " + skill_no);
                 PostTechStacks postTechStacks = new PostTechStacks();
                 postTechStacks.setPost_no(studyPost.getPost_no());
                 postTechStacks.setSkill_no(skill_no);
                 System.out.println("PostTechStacks skill_no: " + postTechStacks.getSkill_no());
+         
                 // PostTechStacks를 삽입
                 studyPostMapper.insertPostTechStacks(postTechStacks);
             }
@@ -53,7 +56,9 @@ public class StudyPostService {
             StudyApplication studyApplication = new StudyApplication();
             studyApplication.setPost_no(studyPost.getPost_no());
             studyApplication.setUser_no(studyPost.getUser_no());
+            studyApplication.setMax_study_applicants(studyPost.getMax_study_applicants());
             studyPostMapper.insertStudyApplication(studyApplication);
+            //System.out.println("getMax_study_applicants" + studyApplication.getMax_study_applicants());
         } catch (Exception e) {
             // 롤백 여부 확인을 위해 예외 발생
             throw new RuntimeException("Transaction rolled back", e);
@@ -213,21 +218,22 @@ public class StudyPostService {
     
     // 스터디 신청 상태 업데이트 (승인/거절)
     public void updateApplicantsStatus(Long user_no, Long post_no, boolean accept) {
-    	int acceptedApplicants = getAcceptedApplicants(post_no); // 승인 인원 수
-    	int maxApplicants = getMaxApplicants(post_no); // 최대 인원 수
-    	
+    
+
+    	System.out.println("서비스 accept"+ accept);
         try {
-            if (acceptedApplicants < maxApplicants) { // 대기 인원이 최대 지원 가능 인원을 초과하는지 확인하고 적다면 아래 if문 실행
+           
                 if (accept) { // accept가 true라면 승인 
                     studyPostMapper.acceptApplicant(post_no, user_no);
                 } else {
                 	studyPostMapper.deleteApplicant(post_no, user_no);
                 }
-            }
+            
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
+    
     
     
     // 스터디 찜 목록
@@ -280,6 +286,8 @@ public class StudyPostService {
     	studyPostMapper.deleteComment(post_no, user_no, comment_no);
     }
     
+    
+    
     // Profile Part
     // 유저 프로필 확인 OK
     public Users getUserByUserNo(Long user_no) {
@@ -287,4 +295,19 @@ public class StudyPostService {
     	return users;
     }
     
+    // Admin Part
+    // 닉네임으로 게시글 검색
+    public List<StudyPost> getStudiesByNickname(String nickname) {
+    	return studyPostMapper.getStudiesByNickname(nickname);
+    }
+    
+    // 닉네임으로 댓글 검색
+    public List<Comments> getCommentsByNickname(String nickname) {
+    	return studyPostMapper.getCommentsByNickname(nickname);
+    }
+    
+    // 유저 삭제(탈퇴)
+    public void deleteUser(String nickname) {
+    	studyPostMapper.deleteUser(nickname);
+    }
 }

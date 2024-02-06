@@ -30,6 +30,7 @@ public class StudyPost {
     private int mentor_count; // mentor에서 status가 '승인'인 user count
     private int mentee_count; // mentee에서 status가 '승인'인 user count
     private int application_count; // study_application에서 status가 '승인'인 user count
+    private int max_study_applicants;
     private int likes_count; // likes count
     private List<Long> skills; // 스터디 내 기술들 담을 곳
     private List<PostTechStacks> postTechStacks; 

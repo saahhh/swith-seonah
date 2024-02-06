@@ -64,6 +64,7 @@ public class RegisterController {
 	        System.out.println(user.getUser_no());
 	        System.out.println(user.getNickname());
 	        System.out.println(user.getUser_profile());
+	        System.out.println("getRole" + user.getRole());
 	        return ResponseEntity.ok(user);
 	    } else {
 	        return ResponseEntity.notFound().build();

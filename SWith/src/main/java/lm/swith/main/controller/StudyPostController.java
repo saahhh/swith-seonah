@@ -110,24 +110,38 @@ public class StudyPostController {
     }
 	
 	// 스터디 신청 목록 업데이트 (승인/거절)
-	@PostMapping("/application_update/{post_no}")
-	public ResponseEntity<List<StudyApplication>> updateApplication(
-	        @RequestParam("post_no") Long post_no,
-	        @RequestParam("user_no") Long user_no,
-	        @RequestParam("action") String action) { // action은 HTTP 요청에서 "action"이라는 이름의 파라미터를 String 타입으로 받아옴 (accept 혹은 reject로)
-	    List<StudyApplication> studyApplication = studyPostService.getAllApplicants(post_no);
-	    try {
-	        boolean accept = "accept".equalsIgnoreCase(action); // 대소문자 상관없이 action으로 accept를 가져오면 수락
-	        if (accept || "reject".equalsIgnoreCase(action)) { // action으로 reject를 가져와서 accept이거나 reject라면
-	            studyPostService.updateApplicantsStatus(user_no, post_no, accept); // service코드 실행
-	            return ResponseEntity.ok(studyApplication); // 처리 성공
-	        } else { // 값이 accept나 reject가 아닌 경우
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 bad request 반환
-	        }
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 예외인 경우 HTTP 500 서버 에러 오류 상태코드 반환
-	    }
-	}
+		@PostMapping("/application_update/{post_no}/{user_no}")
+		public ResponseEntity<List<StudyApplication>> updateApplication(
+				@PathVariable("post_no") Long post_no,
+				@PathVariable("user_no") Long user_no,
+				@RequestParam("action") String action) { // action은 HTTP 요청에서 "action"이라는 이름의 파라미터를 String 타입으로 받아옴 (accept 혹은 reject로)
+		    List<StudyApplication> studyApplication = studyPostService.getAllApplicants(post_no);
+	  
+		    try {
+		        boolean accept = true;
+		        System.out.println("action: " + action);
+		        if ("accept".equals(action)) {
+		        
+		            studyPostService.updateApplicantsStatus(user_no, post_no, accept);
+		            List<StudyApplication> updatedApplications = studyPostService.getAllApplicants(post_no);
+		            
+		            return ResponseEntity.ok(updatedApplications); // 처리 성공
+		        } else if("reject".equals(action)) {
+		        	System.out.println("여기는 거절");
+		            accept = false;
+		            studyPostService.updateApplicantsStatus(user_no, post_no, accept);
+		            List<StudyApplication> updatedApplications = studyPostService.getAllApplicants(post_no);
+		            
+		            return ResponseEntity.ok(updatedApplications); // 처리 성공
+		        } else {
+		        	 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		        }
+		        
+		    } catch (Exception e) {
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 예외인 경우 HTTP 500 서버 에러 오류 상태코드 반환
+		    }
+		}
+
 	
 	  // 댓글 등록
     @PostMapping("/add_comment/{post_no}/{user_no}")
@@ -288,7 +302,26 @@ public class StudyPostController {
     	return ResponseEntity.ok(user);
     }
 
-    
+ // Admin Part
+ 	// 닉네임 검색 스터디 목록
+ 	@GetMapping("/nicknameStudies")
+ 	public List<StudyPost> getStudiesByNickname(@RequestParam(required = true) String nickname) {
+ 		
+ 		return studyPostService.getStudiesByNickname(nickname);
+ 	}
+ 	
+ 	// 닉네임 검색 댓글 목록
+ 	@GetMapping("/nicknameComments")
+ 	public List<Comments> getCommentsByNickname(@RequestParam(required = false) String nickname) {
+ 		return studyPostService.getCommentsByNickname(nickname);
+ 	}
+ 	
+ 	// 유저 삭제
+ 	@DeleteMapping("/delete_comment/{nickname}")
+ 	public String deleteUser(@PathVariable String nickname) {
+ 		studyPostService.deleteUser(nickname);
+ 		return "redirect:/nicknameStudies/" + nickname;
+ 	}
 
   
 }

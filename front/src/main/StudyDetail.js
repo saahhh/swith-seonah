@@ -6,6 +6,7 @@ import "../css/NewBoard.css";
 import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
 import StudyDetailUpdate from "./StudyDetailUpdate";
+import StudyApplication from "./StudyApplication";
 
 function StudyDetail() {
   const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
@@ -36,6 +37,7 @@ function StudyDetail() {
         // 서버에 사용자 정보를 가져오는 요청
         const response = await usersUserinfoAxios.get("/users/userinfo");
         setUserData(response.data);
+        setUserNo(response.data.user_no); // user_no를 상태에 저장
         console.log(userData);
       } catch (error) {
         console.error("Failed to fetch user data.", error);
@@ -49,6 +51,9 @@ function StudyDetail() {
     // swithUser 상태가 업데이트되면 실행
   }, [swithUser]);
 
+  const [shortDate, setShortDate] = useState("");
+  const [longDate, setLongString] = useState("");
+
   useEffect(() => {
     const fetchStudyDetail = async () => {
       try {
@@ -58,6 +63,9 @@ function StudyDetail() {
         setDetailCommentUser(response.data.comments);
         setDetailPage(response.data);
         setComment(response.data.comments || []); // 댓글 목록 설정
+        const studyPostTime = response.data.study_post_time;
+        setLongString(studyPostTime);
+        setShortDate(studyPostTime.slice(0, 10));
         console.log(detailPages);
         console.log(response.data.comments);
       } catch (error) {
@@ -214,6 +222,74 @@ function StudyDetail() {
       detailPages.studyPostWithSkills.map((skill) => skill.skill_name)
     ),
   ];
+  //////////////////////지원하기/////////////////////
+  const [isApplicant, setIsApplicant] = useState(true);
+  const [applicateImpossibleUser, setApplicateImossibleUser] = useState();
+  const [applicantData, setApplicantData] = useState([]);
+  const fetchApplicant = async () => {
+    try {
+      const response = await usersUserinfoAxios.post(
+        `/add_applicants?user_no=${userData.user_no}&post_no=${post_no}`
+      );
+
+      const updatedApplicant = await usersUserinfoAxios.get(
+        `/application_update/${post_no}`
+      );
+
+      setApplicateImossibleUser(updatedApplicant.user_no);
+      setApplicantData(updatedApplicant.data);
+      setApplicationKey((prev) => prev + 1);
+
+      if (
+        applicantData &&
+        applicantData.some(
+          (applicant) => applicant.user_no === userData.user_no
+        )
+      ) {
+        setIsApplicant(false);
+      }
+
+      console.log("지원하기데이터: " + response.data);
+    } catch (error) {
+      console.error("Failed 지원하기", error);
+    }
+  };
+
+  const fetchApplicantFuction = async () => {
+    const updatedApplicant = await usersUserinfoAxios.get(
+      `/application_update/${post_no}`
+    );
+    setApplicateImossibleUser(updatedApplicant.user_no);
+    setApplicantData(updatedApplicant.data);
+
+    if (
+      applicantData &&
+      applicantData.some((applicant) => applicant.user_no === userData.user_no)
+    ) {
+      setIsApplicant(false);
+    }
+    console.log("보여!", updatedApplicant.data);
+  };
+
+  const [applicationKey, setApplicationKey] = useState(0);
+
+  const handleApplicantButton = () => {
+    fetchApplicant();
+    setIsApplicant(false);
+  };
+
+  useEffect(() => {
+    const fetchFuction = async () => {
+      await fetchApplicantFuction(userData.user_no);
+    };
+
+    console.log("applicationKey (outside useEffect): " + applicationKey);
+
+    // 함수 호출
+    fetchFuction();
+  }, [userData.user_no]);
+
+  const [userNo, setUserNo] = useState(""); // user_no를 상태로 관리
 
   return (
     <div>
@@ -246,9 +322,41 @@ function StudyDetail() {
               <div className="username">{detailPages.nickname}</div>
             </div>
             <div className="studyContent_seperator"></div>
-            <div className="studyContent_registerDate"></div>
+            <div className="studyContent_registerDate">{shortDate}</div>
+            <div
+              className="register_swithButton"
+              style={{ marginLeft: "auto" }}
+            >
+              {isApplicant && (
+                <button
+                  className="commentInput_buttonComplete"
+                  onClick={handleApplicantButton}
+                >
+                  보고있는 S.With 지원하기
+                </button>
+              )}
+
+              {!isApplicant && (
+                <button className="commentInput_buttonComplete">
+                  지원완료
+                </button>
+              )}
+            </div>
           </div>
           <section>
+            <div className="application_totalWrapper">
+              <div className="application_totalWrapper_2">
+                <div className="application_totalWrapper_3">
+                  <StudyApplication
+                    userNo={userNo}
+                    userData={userData}
+                    user_no={swithUser.user_no}
+                    applicationKey={applicationKey}
+                    swithUser={swithUser}
+                  />
+                </div>
+              </div>
+            </div>
             <ul className="studyContent_grid">
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집구분</span>
@@ -344,7 +452,6 @@ function StudyDetail() {
                             </div>
                           </div>
                         </div>
-
                         {commentToUpdate &&
                         commentToUpdate.comment_no === comment.comment_no ? (
                           <div>
@@ -373,12 +480,16 @@ function StudyDetail() {
                                 >
                                   댓글 수정
                                 </button>
-                                <button
-                                  className="commentDelete_buttonComplete"
-                                  onClick={() => handleDeleteComment(comment)}
-                                >
-                                  댓글 삭제
-                                </button>
+
+                                {(userData.role === "ADMIN" ||
+                                  comment.user_no === userData.user_no) && (
+                                  <button
+                                    className="commentDelete_buttonComplete"
+                                    onClick={() => handleDeleteComment(comment)}
+                                  >
+                                    댓글 삭제
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>
@@ -414,18 +525,23 @@ function StudyDetail() {
           >
             댓글 등록
           </button>
-          <button
-            className="commentInput_buttonComplete"
-            onClick={handleButtonClick}
-          >
-            게시글 수정하기
-          </button>
-          <button
-            className="commentInput_buttonComplete"
-            onClick={handleDeletePost}
-          >
-            게시글 삭제
-          </button>
+          {detailPages.user_no === userData.user_no && (
+            <button
+              className="commentInput_buttonComplete"
+              onClick={handleButtonClick}
+            >
+              게시글 수정하기
+            </button>
+          )}
+          {(userData.role === "ADMIN" ||
+            detailPages.user_no === userData.user_no) && (
+            <button
+              className="commentInput_buttonComplete"
+              onClick={handleDeletePost}
+            >
+              게시글 삭제
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -101,76 +101,132 @@ function MyPage() {
         <h1>My Page</h1>
       </div>
       <div>
-        <ul>
-          {attendingStudy && attendingStudy.length > 0 && (
-            <li>
-              <p>내가 신청한 스터디 목록</p>
-              <ul>
-                {attendingStudy.map((study, index) => (
-                  <li key={index}>
-                    {study.study_method}
-                    <p>{study.study_title}</p>
-                    <p>{study.study_start}</p>
-                    <p>{study.user_profile}</p>
-                    <ul>
-                      {study.studyPostWithSkills.map((skill, skillIndex) => (
-                        <li key={skillIndex}>{skill.skill_name}</li>
-                      ))}
-                    </ul>
-                    <br />
-                    <br />
-                  </li>
-                ))}
-              </ul>
-            </li>
-          )}
-        </ul>
-      </div>
-      <div>
-        <ul className="board_box_section">
-          {myOwnStudy &&
-            myOwnStudy
-              // .filter((study) => study.user_no === userData.user_no)
-              .map((study, index) => (
-                <li key={index}>
-                  <p>내가 작성한 스터디 목록</p>
-                  {study.study_method}
-                  <p>{study.study_title}</p>
-                  <p>{study.study_start}</p>
-                  <p>{study.user_profile}</p>
-                  <ul>
-                    {study.studyPostWithSkills.map((skill, skillIndex) => (
-                      <li key={skillIndex}>{skill.skill_name}</li>
-                    ))}
-                  </ul>
-                  <br />
-                  <br />
-                </li>
-              ))}
-        </ul>
-      </div>
-      <div>
-        <ul className="board_box_section">
-          {likedStudy &&
-            likedStudy
-              // .filter((study) => study.user_no === userData.user_no)
-              .map((study, index) => (
-                <li key={index}>
-                  <p>내가 찜한 스터디 목록</p>
-                  {study.study_method}
-                  <p>{study.study_title}</p>
-                  <p>{study.study_start}</p>
-                  <p>{study.user_profile}</p>
-                  <ul>
-                    {study.studyPostWithSkills.map((skill, skillIndex) => (
-                      <li key={skillIndex}>{skill.skill_name}</li>
-                    ))}
-                  </ul>
-                  <br />
-                  <br />
-                </li>
-              ))}
-        </ul>
+        <div className="">
+          <ul className="mypage_list">
+            {attendingStudy && attendingStudy.length > 0 && (
+              <li className="">
+                <div className="mypageItem_box">
+                  <p className="">내가 신청한 스터디 목록</p>
+                </div>
+                <ul>
+                  {attendingStudy.map((study, index) => (
+                    <li key={index}>
+                      <div className="">
+                        <div className="">
+                          {"✏️"}
+                          {"🍰"}
+                          {study.study_method}
+                        </div>
+                      </div>
+                      <h1 className="">{study.study_title}</h1>
+                      <div>
+                        <p className="">시작일 | {study.study_start}</p>
+                      </div>
+                      <p>{study.user_profile}</p>
+                      <ul className="">
+                        {study.studyPostWithSkills.map((skill, skillIndex) => (
+                          <li className="" key={skillIndex}>
+                            {skill.skill_name}
+                          </li>
+                        ))}
+                      </ul>
+                      <br />
+                      <br />
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            )}
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <div className="mypageItem_box">
+              {myOwnStudy &&
+                myOwnStudy
+
+                  // .filter((study) => study.user_no === userData.user_no)
+                  .map((study, index) => (
+                    <li key={index}>
+                      <div className="mypage_title_list">
+                        <p className="mypage_list_content">
+                          내가 작성한 스터디 목록
+                        </p>
+                      </div>
+                      <div className="study_method_badge">
+                        <div className="badge_study">{study.study_method}</div>
+                      </div>
+                      <h1 className="mypage_studyItem_title">
+                        {study.study_title}
+                      </h1>
+                      <div>
+                        <p className="mypage_schedule">
+                          시작일 | {study.study_start}
+                        </p>
+                      </div>
+                      <p>{study.user_profile}</p>
+                      <ul className="mypage_skill_content">
+                        {study.studyPostWithSkills.map((skill, skillIndex) => (
+                          <li
+                            className="mypage_skill_language"
+                            key={skillIndex}
+                          >
+                            {skill.skill_name}
+                          </li>
+                        ))}
+                      </ul>
+                      <br />
+                      <br />
+                    </li>
+                  ))}
+            </div>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <div className="mypageItem_box">
+              {likedStudy &&
+                likedStudy
+                  // .filter((study) => study.user_no === userData.user_no)
+                  .map((study, index) => (
+                    <li key={index}>
+                      <div className="mypage_title_list">
+                        <p className="mypage_list_content">
+                          내가 찜한 스터디 목록
+                        </p>
+                      </div>
+                      <div className="study_method_badge">
+                        <div className="badge_study">
+                          {"✏️"}
+                          {study.study_method}
+                        </div>
+                      </div>
+                      <h1 className="mypage_studyItem_title">
+                        {study.study_title}
+                      </h1>
+                      <div>
+                        <p className="mypage_schedule">
+                          시작일 | {study.study_start}
+                        </p>
+                      </div>
+                      <p>{study.user_profile}</p>
+                      <ul className="mypage_skill_content">
+                        {study.studyPostWithSkills.map((skill, skillIndex) => (
+                          <li
+                            className="mypage_skill_language"
+                            key={skillIndex}
+                          >
+                            {skill.skill_name}
+                          </li>
+                        ))}
+                      </ul>
+                      <br />
+                      <br />
+                    </li>
+                  ))}
+            </div>
+          </ul>
+        </div>
       </div>
     </div>
   );
