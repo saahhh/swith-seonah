@@ -38,7 +38,7 @@ function StudyDetail() {
         const response = await usersUserinfoAxios.get("/users/userinfo");
         setUserData(response.data);
         setUserNo(response.data.user_no); // user_no를 상태에 저장
-        console.log(userData);
+        console.log("userData.user_role", userData.user_role);
       } catch (error) {
         console.error("Failed to fetch user data.", error);
       }
@@ -480,18 +480,19 @@ function StudyDetail() {
                                 >
                                   댓글 수정
                                 </button>
-
-                                {(userData.role === "ADMIN" ||
-                                  comment.user_no === userData.user_no) && (
-                                  <button
-                                    className="commentDelete_buttonComplete"
-                                    onClick={() => handleDeleteComment(comment)}
-                                  >
-                                    댓글 삭제
-                                  </button>
-                                )}
                               </div>
                             )}
+                            <div>
+                              {(userData.user_role === "ADMIN" ||
+                                comment.user_no === userData.user_no) && (
+                                <button
+                                  className="commentDelete_buttonComplete"
+                                  onClick={() => handleDeleteComment(comment)}
+                                >
+                                  댓글 삭제
+                                </button>
+                              )}
+                            </div>
                           </div>
                         )}
                       </section>
@@ -533,7 +534,7 @@ function StudyDetail() {
               게시글 수정하기
             </button>
           )}
-          {(userData.role === "ADMIN" ||
+          {(userData.user_role === "ADMIN" ||
             detailPages.user_no === userData.user_no) && (
             <button
               className="commentInput_buttonComplete"

@@ -41,7 +41,7 @@
 	</resultMap>
 
 
-	<resultMap type="lm.swith.main.model.Users" id="UsersResult">
+	<resultMap type="lm.swith.user.model.SwithUser" id="UsersResult">
 		<id property="user_no" column="user_no" />
 		<result property="email" column="email" />
 		<result property="nickname" column="nickname" />
@@ -64,7 +64,7 @@
 		<result property="nickname" column="NICKNAME" />
 	</resultMap>
 
-	<resultMap type="lm.swith.main.model.Users" id="userResult">
+	<resultMap type="lm.swith.user.model.SwithUser" id="userResult">
 		<id property="user_no" column="USER_NO" />
 		<result property="nickname" column="NICKNAME" />
 	</resultMap>

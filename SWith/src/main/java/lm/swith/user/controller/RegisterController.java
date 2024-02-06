@@ -64,7 +64,7 @@ public class RegisterController {
 	        System.out.println(user.getUser_no());
 	        System.out.println(user.getNickname());
 	        System.out.println(user.getUser_profile());
-	        System.out.println("getRole" + user.getRole());
+	        System.out.println("getRole" + user.getUser_role());
 	        return ResponseEntity.ok(user);
 	    } else {
 	        return ResponseEntity.notFound().build();
@@ -320,7 +320,7 @@ public class RegisterController {
                 .user_profile(userProfile)
                 .useraddress(userAddress)
                 .user_introduction(userIntroduction)
-                .role(role)
+                .user_role(role)
                 .build();
 
         SwithUser registeredUser = userService.signUpUser(swithUser);

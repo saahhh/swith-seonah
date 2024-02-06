@@ -4,6 +4,7 @@ package lm.swith.main.model;
 import java.sql.Timestamp;
 import java.util.List;
 
+import lm.swith.user.model.SwithUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +44,7 @@ public class StudyPost {
 	
 	private List<Comments> comments; // 댓글들 담을 곳
 	
-	private Users user; // 유저 테이블
+	private SwithUser user; // 유저 테이블
 	private Likes likes; // 찜 테이블
 	
     private Mentor mentor; // 멘토 테이블

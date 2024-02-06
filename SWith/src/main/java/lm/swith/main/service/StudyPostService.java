@@ -15,8 +15,7 @@ import lm.swith.main.model.Likes;
 import lm.swith.main.model.PostTechStacks;
 import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
-import lm.swith.main.model.Users;
-
+import lm.swith.user.model.SwithUser;
 @Service
 public class StudyPostService {
 	@Autowired
@@ -112,19 +111,19 @@ public class StudyPostService {
     // MyPage Part
     // 내가 쓴 스터디 목록
     public List<StudyPost> getOwnStudiesWithUserNo(Long user_no) {
-    	Users users = studyPostMapper.getUserByUserNo(user_no);
+    	SwithUser users = studyPostMapper.getUserByUserNo(user_no);
     	return studyPostMapper.getOwnStudiesWithUserNo(user_no);
     }
     
     // 찜한 스터디 목록
     public List<StudyPost> getAllStudiesWithLikes(Long user_no) {
-    	Users users = studyPostMapper.getUserByUserNo(user_no);
+    	SwithUser users = studyPostMapper.getUserByUserNo(user_no);
     	return studyPostMapper.getAllStudiesWithLikes(user_no);
     }
     
     // 내가 참여한 스터디 목록
     public List<StudyPost> getAllStudiesWithUserNo(Long user_no) {
-    	Users users = studyPostMapper.getUserByUserNo(user_no);
+    	SwithUser users = studyPostMapper.getUserByUserNo(user_no);
     	return studyPostMapper.getAllStudiesWithUserNo(user_no);
     }
     
@@ -290,8 +289,8 @@ public class StudyPostService {
     
     // Profile Part
     // 유저 프로필 확인 OK
-    public Users getUserByUserNo(Long user_no) {
-    	Users users = studyPostMapper.getUserByUserNo(user_no);
+    public SwithUser getUserByUserNo(Long user_no) {
+    	SwithUser users = studyPostMapper.getUserByUserNo(user_no);
     	return users;
     }
     

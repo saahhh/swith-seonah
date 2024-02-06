@@ -2,6 +2,7 @@ package lm.swith.main.model;
 
 import java.sql.Date;
 
+import lm.swith.user.model.SwithUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,6 @@ public class Comments {
 	private String comment_content;
 	private Date comment_post_time;
 	
-	private Users user;
+	private SwithUser user;
 
 }

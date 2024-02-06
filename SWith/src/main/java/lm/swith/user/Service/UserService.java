@@ -39,7 +39,7 @@ public class UserService {
 		user.setUser_profile(swithUser.getUser_profile());
 		user.setUseraddress(swithUser.getUseraddress());
 		user.setUser_introduction(swithUser.getUser_introduction());
-		user.setRole(swithUser.getRole());
+		user.setUser_role(swithUser.getUser_role());
 		
 		usersMapper.insertUser(user);
 		return user;

@@ -349,3 +349,36 @@
   position: fixed;
   top: 350px;
 }
+
+.mypage_post_list {
+  display: flex;
+
+  padding: 2px 25px 0;
+  width: flex;
+  height: flex;
+  background: #fff;
+  border: 3px solid #b9eeff;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.2s ease-in;
+  text-decoration-line: none;
+  list-style: none;
+}
+
+.mypage_comment_list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2px 25px 0;
+  width: flex;
+  height: 200px;
+  background: #fff;
+  border: 3px solid #b9eeff;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.2s ease-in;
+  text-decoration-line: none;
+  list-style: none;
+}

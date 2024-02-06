@@ -13,7 +13,7 @@ import lm.swith.main.model.PostTechStacks;
 import lm.swith.main.model.Skill;
 import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
-import lm.swith.main.model.Users;
+import lm.swith.user.model.SwithUser;
 
 @Mapper
 public interface StudyPostMapper {
@@ -142,7 +142,7 @@ public interface StudyPostMapper {
 
 	// Profile Part================================================================================================================================================
 		// 유저 프로필 확인 OK
-		Users getUserByUserNo (@Param("user_no") Long user_no);
+		SwithUser getUserByUserNo (@Param("user_no") Long user_no);
 		
 	// Admin part =================================================================================================================================================
 		// 닉네임으로 게시글 검색
