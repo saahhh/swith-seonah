@@ -45,6 +45,7 @@ public class StudyPostService {
                 PostTechStacks postTechStacks = new PostTechStacks();
                 postTechStacks.setPost_no(studyPost.getPost_no());
                 postTechStacks.setSkill_no(skill_no);
+                postTechStacks.setUser_no(studyPost.getUser_no());
                 System.out.println("PostTechStacks skill_no: " + postTechStacks.getSkill_no());
          
                 // PostTechStacks를 삽입
@@ -230,13 +231,11 @@ public class StudyPostService {
 
     	System.out.println("서비스 accept"+ accept);
         try {
-           
                 if (accept) { // accept가 true라면 승인 
                     studyPostMapper.acceptApplicant(post_no, user_no);
                 } else {
                 	studyPostMapper.deleteApplicant(post_no, user_no);
                 }
-            
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -320,7 +319,16 @@ public class StudyPostService {
     }
     
     // 유저 삭제(탈퇴)
+    @Transactional
     public void deleteUser(Long user_no) {
+    	studyPostMapper.deleteUserComment(user_no);
+    	studyPostMapper.deleteUserStudyApplication(user_no);
+    	studyPostMapper.deleteUserPostTechStacks(user_no);
+    	studyPostMapper.deleteUserLikes(user_no);
+    	studyPostMapper.deleteUserMoment(user_no);
+    	studyPostMapper.deleteUserRoomNotice(user_no);
+    	studyPostMapper.deleteUserStudyPost(user_no);
     	studyPostMapper.deleteUser(user_no);
     }
+    
 }

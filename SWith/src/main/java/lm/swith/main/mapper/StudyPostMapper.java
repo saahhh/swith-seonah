@@ -154,6 +154,15 @@ public interface StudyPostMapper {
 		// 유저 리스트
 		List<SwithUser> getAllUserList(String nickname);
 		
-		// 유저 삭제
+		// 유저 삭제		
+		void deleteUserComment(@Param("user_no") Long user_no);
+		void deleteUserStudyApplication(@Param("user_no") Long user_no);
+		void deleteUserPostTechStacks(@Param("user_no") Long user_no);
+		void deleteUserLikes(@Param("user_no") Long user_no);
+		void deleteUserMoment(@Param("user_no") Long user_no);
+		void deleteUserRoomNotice(@Param("user_no") Long user_no);
+//		void deleteUserMystudiesByUserNo(@Param("user_no") Long user_no);
+		void deleteUserStudyPost(@Param("user_no") Long user_no);
 		void deleteUser(@Param("user_no") Long user_no);
 	}
+

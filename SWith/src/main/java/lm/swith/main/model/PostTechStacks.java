@@ -9,5 +9,5 @@ import lombok.*;
 public class PostTechStacks {
 	private Long post_no;
 	private Long skill_no;
-
+	private Long user_no;
 }
