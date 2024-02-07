@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import "../css/NewBoard.css";
 import StudyProject from "./StudyProject";
@@ -73,7 +74,7 @@ function NewBoard() {
   const [firstStudy, setFirstStudy] = useState("1");
   const [mentorCount, setMentorCount] = useState("");
   const [menteeCount, setMenteeCount] = useState("");
-  const [applicationCount, setApplicationCount] = useState("");
+  const [applicationCount, setApplicationCount] = useState();
   const [selectedItem1, setSelectedItem1] = useState(null);
   const [submittedData, setSubmittedData] = useState(null);
   const [startDate, setStartDate] = useState("");
@@ -89,7 +90,6 @@ function NewBoard() {
           study_status: studyStatus,
           mentor_count: mentorCount,
           mentee_count: menteeCount,
-
           max_study_applicants: applicationCount,
           // 나머지 데이터도 추가
           // FormFour에서 온 데이터
@@ -110,16 +110,25 @@ function NewBoard() {
         },
         { timeout: 10000 }
       );
-      console.log(response.data);
-
-      console.log("게시물 생성 성공:", response.data);
-      setSubmittedData(response.data); // 생성된 게시물 데이터 저장
+      // 성공 여부에 따라 다른 알림 표시
+      if (response.data === true) {
+        alert("두 날짜는 같습니다.");
+      } else if (response.data === "success") {
+        alert("모집일이 과거의 날짜입니다. 다시 설정해주세요.");
+      } else if (response.data === "false1") {
+        alert("게시물이 성공적으로 생성되었습니다.");
+        console.log("게시물 생성 성공:", response.data);
+        setSubmittedData(response.data); // 생성된 게시물 데이터 저장
+        navigate("/");
+      }
     } catch (error) {
       console.error("게시물 생성 실패:", error);
       console.error("에러 응답 데이터:", error.response?.data);
     }
+    console.log("ㅎㅇ" + techStack);
   };
 
+  const navigate = useNavigate();
   // Submit 버튼 클릭 시 게시물 생성
   const handleCreatePost = () => {
     // 여기서 createPost 함수 호출

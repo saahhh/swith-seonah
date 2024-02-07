@@ -1,6 +1,6 @@
 //admin page, 1. user list  2.post list 3. rating/qna answer
 import { useState, useEffect, useRef } from "react";
-import "../css/MainPageCss.css";
+import "../css/Admin.css";
 import Header from "./Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SearchIcon from "./img/search.png";
@@ -15,6 +15,7 @@ export default function Admin() {
   const [filteredResults, setFilteredResults] = useState([]);
   const [boards, setBoards] = useState([]);
   const [filterComments, setFilteredComments] = useState([]);
+  const [comment, setComment] = useState([]);
 
   const handleSearch = async () => {
     try {
@@ -33,6 +34,7 @@ export default function Admin() {
       const commentResponse = await usersUserinfoAxios.get(
         `/nicknameComments?nickname=${nickname}`
       );
+
       setFilteredComments(commentResponse.data);
     } catch (error) {
       console.log("닉네임, 댓글 검색 시 오류", error);
@@ -65,208 +67,110 @@ export default function Admin() {
   };
 
   return (
-    <div>
+    <div className="admin_page">
       <Header />
-      <div className="search_container">
-        <img className="search_img" src={SearchIcon} alt="search_icon" />
-        <input
-          placeholder="닉네임을 입력하세요."
-          class="searchInput"
-          type="text"
-          value={nickname}
-          onChange={(e) => searchItems(e.target.value)}
-        />
+      <h2 className="admin_page_margin">Admin Page</h2>
+      <div className="admin_search_box">
+        <div className="admin_search_container">
+          <img className="search_img" src={SearchIcon} alt="search_icon" />
+          <input
+            placeholder="닉네임을 입력하세요."
+            class="searchInput"
+            type="text"
+            value={nickname}
+            onChange={(e) => searchItems(e.target.value)}
+          />
+        </div>
       </div>
       <div>
-        <table>
+        <h2 className="admin_page_margin">게시글 목록</h2>
+        <table className="admin_page_margin">
           <thead>
             <tr>
-              <th>번호</th>
-              <th>이름</th>
-              <th>나이</th>
-              <th></th>
+              <th>게시글 번호</th>
+              <th>제목</th>
+              <th>닉네임</th>
             </tr>
           </thead>
           <tbody>
-            {nickname.length > 1 ? (
+            {nickname.length > 0 ? (
               filteredResults.length > 0 ? (
                 filteredResults.map((board) => (
-                  <li key={board.post_no} onClick={(e) => e.stopPropagation()}>
-                    <Link
-                      className=""
-                      to={`/post_detail/${board.post_no}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("Link Clicked");
-                      }}
-                    >
-                      <td className="">{board.recruit_type}</td>
-                      <td className="">{board.recruit_deadline}</td>
-                      <td className="">{board.study_title}</td>
-                      <td>{board.nickname}</td>
-                    </Link>
-                  </li>
+                  <tr key={board.post_no} onClick={(e) => e.stopPropagation()}>
+                    <td>{board.post_no}</td>
+                    <td>
+                      <Link
+                        to={`/post_detail/${board.post_no}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Link Clicked");
+                        }}
+                      >
+                        {board.study_title}
+                      </Link>
+                    </td>
+                    <td>{board.nickname}</td>
+                  </tr>
                 ))
               ) : (
-                <p>조건에 해당하는 게시물이 없습니다.</p>
+                <tr>
+                  <td colSpan="3">조건에 해당하는 게시물이 없습니다.</td>
+                </tr>
               )
             ) : (
               boards.map((board) => (
-                <div key={board.post_no} onClick={(e) => e.stopPropagation()}>
-                  <li>
-                    <td className="">{board.recruit_type}</td>
-                    <td className="">
-                      마감일<p>|</p>
-                      {board.recruit_deadline}
-                    </td>
-                    <td className="">{board.study_title}</td>
-                    {board.studyPostWithSkills !== null && (
-                      <ul className="">
-                        {board.studyPostWithSkills.map((skill, index) => (
-                          <tr key={index}>{skill.skill_name}</tr>
-                        ))}
-                      </ul>
-                    )}
-                    <td>{board.nickname}</td>
-                  </li>
-                </div>
+                <tr key={board.post_no} onClick={(e) => e.stopPropagation()}>
+                  <td>{board.post_no}</td>
+                  <td>{board.study_title}</td>
+                  <td>{board.nickname}</td>
+                </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
-      <h2>게시글 목록</h2>
-      <div className="">
-        <ul className="">
-          {nickname.length > 1 ? (
-            filteredResults.length > 0 ? (
-              filteredResults.map((board) => (
-                <tr key={board.post_no} onClick={(e) => e.stopPropagation()}>
-                  <li>
-                    <div className="">
-                      <td className="">{board.recruit_type}</td>
-                    </div>
-                    <div className="">
-                      <td className="">마감일</td>
-                      <p>|</p>
-                      <td>{board.recruit_deadline}</td>
-                    </div>
-                    <div>
-                      <td className="">{board.study_title}</td>
-                    </div>
 
-                    {board.studyPostWithSkills !== null && (
-                      <ul className="">
-                        {board.studyPostWithSkills.map((skill, index) => (
-                          <tr key={index}>{skill.skill_name}</tr>
-                        ))}
-                      </ul>
-                    )}
-                    <div className=""></div>
-                    <section className="">
-                      <div className="">
-                        <div className="">
-                          <img
-                            className="user_profile_img_set"
-                            width="30px"
-                            height="30px"
-                            src={`data:image/jpeg;base64,${board.user_profile}`}
-                            alt="Profile"
-                          />
-                        </div>
-                        <td>{board.nickname}</td>
-                      </div>
-                      <div className="">
-                        <div className="">
-                          <p>댓글아이콘</p>
-                          <td>{board.commentCount}</td>
-                        </div>
-                      </div>
-                    </section>
-                  </li>
+      <div>
+        <h2 className="admin_page_margin">댓글 목록</h2>
+        <table className="admin_page_margin">
+          <thead>
+            <tr>
+              <th>게시글 번호</th>
+              <th>댓글 내용</th>
+              <th>닉네임</th>
+            </tr>
+          </thead>
+          <tbody>
+            {nickname.length > 0 ? (
+              filterComments.length > 0 ? (
+                filterComments.map((comments) => (
+                  <tr key={comments.post_no}>
+                    <td>{comments.post_no}</td>
+                    <td>
+                      <Link to={`/post_detail/${comments.post_no}`}>
+                        {comments.comment_content}
+                      </Link>
+                    </td>
+                    <td>{comments.nickname}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3">조건에 해당하는 댓글이 없습니다.</td>
+                </tr>
+              )
+            ) : (
+              comment.length > 0 &&
+              comment.map((comments) => (
+                <tr key={comments.post_no}>
+                  <td>{comments.post_no}</td>
+                  <td>{comments.comment_content}</td>
+                  <td>{comments.nickname}</td>
                 </tr>
               ))
-            ) : (
-              <p>조건에 해당하는 게시물이 없습니다.</p>
-            )
-          ) : (
-            boards.map((board) => (
-              <div key={board.post_no} onClick={(e) => e.stopPropagation()}>
-                <Link
-                  className="board_box"
-                  to={`/post_detail/${board.post_no}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log("Link Clicked");
-                  }}
-                >
-                  <li>
-                    <div className="study_sort_badge">
-                      <div className="study_sort_badge_content">
-                        {board.recruit_type}
-                      </div>
-                    </div>
-                    <div className="study_schedule">
-                      <p className="">마감일</p>
-                      <p>|</p>
-                      <p>{board.recruit_deadline}</p>
-                    </div>
-                    <div>
-                      <h1 className="board_title">{board.study_title}</h1>
-                    </div>
-                    {board.studyPostWithSkills !== null && (
-                      <ul className="skill_icon_section">
-                        {board.studyPostWithSkills.map((skill, index) => (
-                          <li key={index}>{skill.skill_name}</li>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="board_content_border"></div>
-                    <section className="board_info_section">
-                      <div className="board_info_left">
-                        <div className="user_profile_img">
-                          <img
-                            className="user_profile_img_set"
-                            width="30px"
-                            height="30px"
-                            src={`data:image/jpeg;base64,${board.user_profile}`}
-                            alt="Profile"
-                          />
-                        </div>
-                        <div>{board.nickname}</div>
-                      </div>
-                      <div className="board_info_right">
-                        <div className="comment_count_section">
-                          <p>댓글아이콘</p>
-                          <p>{board.commentCount}</p>
-                        </div>
-                      </div>
-                    </section>
-                  </li>
-                </Link>
-              </div>
-            ))
-          )}
-        </ul>
-      </div>
-      <div>
-        <h2>댓글 목록</h2>
-        <ul className="mypage_comment_list">
-          {filterComments.length > 0 ? (
-            filterComments.map((comment) => (
-              <li key={comment.comment_no}>
-                <Link to={`/post_detail/${comment.post_no}`}>
-                  <div className="comment_item">
-                    <p>작성자: {comment.nickname}</p>
-                    <p>내용: {comment.comment_content}</p>
-                  </div>
-                </Link>
-              </li>
-            ))
-          ) : (
-            <p>댓글이 없습니다.</p>
-          )}
-        </ul>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

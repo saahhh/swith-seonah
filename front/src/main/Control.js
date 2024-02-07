@@ -43,7 +43,7 @@ export default function Control() {
           <Route path="/study_room/:post_no" element={<StudyRoom />} />
           <Route path="/modify" element={<ModifyPage />} />
           <Route path="/application" element={<StudyApplication />} />
-          <Route path="/searchnickname" element={<Admin />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </BrowserRouter>
     </div>

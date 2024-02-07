@@ -204,6 +204,17 @@ public class StudyPostService {
     }
     
     
+    // 승인된 신청자 수를 가져와서 StudyApplication 모델에 설정
+    public List<StudyApplication> getAllApplicants2(Long post_no) {
+        List<StudyApplication> studyApplicants = studyPostMapper.getAllApplicantsByPostNo(post_no);
+        for (StudyApplication studyApplication : studyApplicants) {
+            studyApplication.setAccepted_applicants(studyPostMapper.getAcceptedApplicants(post_no));
+        }
+        return studyApplicants;
+    }
+    
+    
+    
     // 스터디 승인 인원 카운트
     public int getAcceptedApplicants(Long post_no) {
         return studyPostMapper.getAcceptedApplicants(post_no);

@@ -96,11 +96,17 @@ function StudyDetail() {
 
   // 게시글 삭제
   const handleDeletePost = async () => {
-    try {
-      await usersUserinfoAxios.get(`/delete/${post_no}`);
-      window.location.href = "/";
-    } catch (error) {
-      console.log("Delete Post Error", error);
+    let result = window.confirm("정말로 삭제하시겠습니까?");
+    if (result) {
+      try {
+        await usersUserinfoAxios.get(`/delete/${post_no}`);
+        alert("삭제되었습니다.");
+        window.location.href = "/";
+      } catch (error) {
+        console.log("Delete Post Error", error);
+      }
+    } else {
+      alert("취소되었습니다.");
     }
   };
 
@@ -121,7 +127,8 @@ function StudyDetail() {
           withCredentials: true,
         }
       );
-      console.log("댓글이 성공적으로 등록되었습니다.");
+
+      console.log("댓글 등록 완료.");
 
       // 새로운 댓글 목록을 다시 가져오기
       const updatedDetail = await usersUserinfoAxios.get(
@@ -139,26 +146,34 @@ function StudyDetail() {
 
   // 댓글 삭제하기
   const handleDeleteComment = async (comment) => {
-    console.log("comment.handleDeleteComment : " + comment.comment_no);
-    try {
-      await usersUserinfoAxios.delete(
-        `/delete_comment/${post_no}/${userData.user_no}/${comment.comment_no}`,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log("댓글이 성공적으로 삭제되었습니다.");
-      // 댓글 삭제 후 상태 업데이트
-      const updatedComments = detailPages.comments.filter(
-        (c) => c.comment_no !== comment.comment_no
-      );
-      setDetailPage({ ...detailPages, comments: updatedComments });
-    } catch (error) {
-      console.log("댓글 삭제 에러: ", error);
+    let result = window.confirm("정말로 삭제하시겠습니까?");
+    if (result) {
+      try {
+        await usersUserinfoAxios.delete(
+          `/delete_comment/${post_no}/${userData.user_no}/${comment.comment_no}`,
+          {
+            withCredentials: true,
+          }
+        );
+        alert("삭제되었습니다.");
+        console.log("댓글 삭제 완료.");
+
+        // 댓글 삭제 후 상태 업데이트
+        const updatedComments = detailPages.comments.filter(
+          (c) => c.comment_no !== comment.comment_no
+        );
+        setDetailPage({ ...detailPages, comments: updatedComments });
+      } catch (error) {
+        console.log("댓글 삭제 에러: ", error);
+      }
+
+      console.log(post_no);
+      console.log(comment.comment_no);
+      console.log(userData.user_no);
+      console.log("comment.handleDeleteComment : " + comment.comment_no);
+    } else {
+      alert("취소되었습니다.");
     }
-    console.log(post_no);
-    console.log(comment.comment_no);
-    console.log(userData.user_no);
   };
 
   const [commentToUpdate, setCommentToUpdate] = useState("");

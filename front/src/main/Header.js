@@ -54,6 +54,22 @@ export default function Header() {
             </div>
 
             <ul className="navbar-nav_2">
+              {userData.user_role === "ADMIN" && isTokenAvailable() && (
+                <li className="nav-item">
+                  <div className="write">
+                    <div className="write_1">
+                      <a className="nav-link" href="/admin">
+                        <img
+                          className="write_img"
+                          src={process.env.PUBLIC_URL + "../img/setting.png"}
+                          alt="setting"
+                        />
+                      </a>
+                    </div>
+                  </div>
+                </li>
+              )}
+
               {isTokenAvailable() && (
                 <li className="nav-item">
                   <div className="write">

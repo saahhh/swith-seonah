@@ -432,9 +432,10 @@
 	    WHERE sa.post_no = #{post_no} AND (sa.status = '대기' OR sa.status = '승인')
 	</select>
 	
+	
 	<!-- 스터디 승인 인원 카운트 -->
-	<select id="getAcceptedApplicants" resultMap="StudyApplicationResult" parameterType="Long">
-		SELECT COUNT(USER_NO) FROM STUDY_POST WHERE POST_NO = #{POST_NO} AND STATUS = '승인'
+	<select id="getAcceptedApplicants" resultType="java.lang.Integer" parameterType="Long">
+		SELECT COUNT(USER_NO) FROM STUDY_APPLICATION WHERE POST_NO = #{POST_NO} AND STATUS = '승인'
 	</select>
 	
 	
@@ -518,7 +519,8 @@
 		FROM study_post sp
 		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
 		LEFT JOIN skill s ON pts.skill_no = s.skill_no
-		WHERE sp.nickname = #{nickname}
+		WHERE sp.nickname LIKE '%' || #{nickname}  || '%'
+
 		
 	</select>
 	
@@ -527,7 +529,7 @@
 		SELECT c.*, u.nickname
 		FROM comments c
 		LEFT JOIN users u ON c.user_no = u.user_no
-		WHERE u.nickname = #{nickname}
+		WHERE u.nickname LIKE '%' || #{nickname}  || '%'
 	</select>
 	
 	<!-- 유저 삭제 -->
