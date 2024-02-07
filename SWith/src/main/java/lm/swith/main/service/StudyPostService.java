@@ -73,8 +73,6 @@ public class StudyPostService {
 	
 	// 스터디 목록 불러오기	
     public List<StudyPost> getAllStudyPostWithSkills() {
-    	
-
         System.out.println("code check 	2");
         return studyPostMapper.getAllStudyPostWithSkills();
     }
@@ -316,8 +314,13 @@ public class StudyPostService {
     	return studyPostMapper.getCommentsByNickname(nickname);
     }
     
+    // 유저 리스트
+    public List<SwithUser> getAllUserList(String nickname){
+    	return studyPostMapper.getAllUserList(nickname);
+    }
+    
     // 유저 삭제(탈퇴)
-    public void deleteUser(String nickname) {
-    	studyPostMapper.deleteUser(nickname);
+    public void deleteUser(Long user_no) {
+    	studyPostMapper.deleteUser(user_no);
     }
 }

@@ -72,3 +72,16 @@ td:nth-child(3) {
 .admin_page_margin {
   margin-bottom: 30px;
 }
+
+.admin_page_button {
+  height: 20px;
+  background: #8ee3ff;
+  border-radius: 50px;
+  color: #525252;
+  font-size: 13px;
+  font-family: "SUITE-Regular";
+  padding: 0 20px;
+  border: 0px;
+  text-align: right;
+  margin-left: 20px;
+}

@@ -532,8 +532,14 @@
 		WHERE u.nickname LIKE '%' || #{nickname}  || '%'
 	</select>
 	
+	<!-- 유저 리스트 -->
+	<select id="getAllUserList" parameterType="lm.swith.user.model.SwithUser">
+		SELECT * FROM users
+		WHERE nickname LIKE '%' || #{nickname}  || '%'
+	</select>
+	
 	<!-- 유저 삭제 -->
-	<delete id="deleteUser" parameterType="String">
+	<delete id="deleteUser" parameterType="Long">
 		DELETE FROM USERS WHERE USER_NO = #{user_no}
 	</delete>
 

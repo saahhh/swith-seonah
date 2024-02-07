@@ -151,6 +151,9 @@ public interface StudyPostMapper {
 		// 닉네임으로 댓글 검색
 		List<Comments> getCommentsByNickname(String nickname);
 		
+		// 유저 리스트
+		List<SwithUser> getAllUserList(String nickname);
+		
 		// 유저 삭제
-		void deleteUser(@Param("nickname") String nickname);
+		void deleteUser(@Param("user_no") Long user_no);
 	}

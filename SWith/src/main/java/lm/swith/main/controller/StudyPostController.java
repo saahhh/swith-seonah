@@ -316,12 +316,22 @@ public class StudyPostController {
  		return studyPostService.getCommentsByNickname(nickname);
  	}
  	
- 	// 유저 삭제
- 	@DeleteMapping("/delete_comment/{nickname}")
- 	public String deleteSwithUser(@PathVariable String nickname) {
- 		studyPostService.deleteUser(nickname);
- 		return "redirect:/nicknameStudies/" + nickname;
+ 	// 닉네임 검색 유저 리스트
+ 	@GetMapping("/allUserList")
+ 	public ResponseEntity<List<SwithUser>> getAllUserList(@RequestParam(required = false) String nickname){
+ 		List<SwithUser> users = studyPostService.getAllUserList(nickname);
+ 		  if (!users.isEmpty()) {
+ 	            return ResponseEntity.ok(users);
+ 	        } else {
+ 	            return ResponseEntity.noContent().build();
+ 	        }
  	}
 
-  
+ 	// 닉네임 검색 유저 삭제
+ 	@DeleteMapping("/delete_user/{user_no}")
+ 	public String deleteSwithUser(@PathVariable Long user_no) {
+ 		studyPostService.deleteUser(user_no);
+ 		return "redirect:/admin";
+ 	}
+ 
 }

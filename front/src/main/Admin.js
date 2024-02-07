@@ -14,8 +14,12 @@ export default function Admin() {
   const [nickname, setNickname] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
   const [boards, setBoards] = useState([]);
-  const [filterComments, setFilteredComments] = useState([]);
+  const [filteredComments, setFilteredComments] = useState([]);
   const [comment, setComment] = useState([]);
+
+  const [userData, setUserData] = useState(""); // 로그인된 유저 = userData
+
+  const [filtereduserLists, setFilterdUserLists] = useState(""); // 모든 유저 정보 가져오기
 
   const handleSearch = async () => {
     try {
@@ -36,6 +40,12 @@ export default function Admin() {
       );
 
       setFilteredComments(commentResponse.data);
+
+      const userListResults = await usersUserinfoAxios.get(
+        `/allUserList?nickname=${nickname}`
+      );
+
+      setFilterdUserLists(userListResults.data);
     } catch (error) {
       console.log("닉네임, 댓글 검색 시 오류", error);
     }
@@ -46,8 +56,9 @@ export default function Admin() {
     if (nickname.trim() !== "") {
       handleSearch();
     } else {
-      setFilteredComments([]);
       setFilteredResults([]); // 검색어가 없을 경우 검색 결과를 초기화
+      setFilteredComments([]);
+      setFilterdUserLists([]);
     }
   }, [nickname]);
 
@@ -63,6 +74,45 @@ export default function Admin() {
       setFilteredResults(filteredData);
     } else {
       setFilteredResults(boards);
+    }
+  };
+
+  // 유저 데이터 가져오기
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // 서버에 사용자 정보를 가져오는 요청
+        const response = await usersUserinfoAxios.get("/users/userinfo");
+        setUserData(response.data);
+        console.log("userData.user_role", userData.user_role);
+      } catch (error) {
+        console.error("Failed to fetch user data.", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // 유저 삭제
+
+  const [deleteUsers, setDeleteUsers] = useState("");
+
+  const deleteUser = async (user) => {
+    let result = window.confirm("회원을 탈퇴 시키겠습니까?");
+    if (result) {
+      try {
+        const response = await usersUserinfoAxios.delete(
+          `/delete_user/${user.user_no}`
+        );
+        setDeleteUsers(response.data);
+        alert("유저 삭제 성공");
+        window.location.href = "/admin";
+        console.log("유저 삭제 완료");
+      } catch (error) {
+        console.log("유저 삭제 에러", error);
+      }
+    } else {
+      alert("취소되었습니다.");
     }
   };
 
@@ -142,8 +192,8 @@ export default function Admin() {
           </thead>
           <tbody>
             {nickname.length > 0 ? (
-              filterComments.length > 0 ? (
-                filterComments.map((comments) => (
+              filteredComments.length > 0 ? (
+                filteredComments.map((comments) => (
                   <tr key={comments.post_no}>
                     <td>{comments.post_no}</td>
                     <td>
@@ -166,6 +216,55 @@ export default function Admin() {
                   <td>{comments.post_no}</td>
                   <td>{comments.comment_content}</td>
                   <td>{comments.nickname}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h2 className="admin_page_margin">유저 목록</h2>
+        <table className="admin_page_margin">
+          <thead>
+            <tr>
+              <th>유저 번호</th>
+              <th>이메일</th>
+              <th>닉네임</th>
+            </tr>
+          </thead>
+          <tbody>
+            {nickname.length > 0 ? (
+              filtereduserLists.length > 0 ? (
+                filtereduserLists.map((user) => (
+                  <tr key={user.user_no}>
+                    <td>{user.user_no}</td>
+                    <td>
+                      <Link to={`/delete_comment/${user.nickname}`}>
+                        {user.email}
+                      </Link>
+                      <button
+                        className="admin_page_button"
+                        onClick={() => deleteUser(user)}
+                      >
+                        삭제
+                      </button>
+                    </td>
+                    <td>{user.nickname}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3">조건에 해당하는 회원이 없습니다.</td>
+                </tr>
+              )
+            ) : (
+              userData.length > 0 &&
+              userData.map((user) => (
+                <tr key={user.user_no}>
+                  <td>{user.user_no}</td>
+                  <td>{user.email}</td>
+                  <td>{user.nickname}</td>
                 </tr>
               ))
             )}
