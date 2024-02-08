@@ -49,6 +49,8 @@ public interface StudyPostMapper {
 	// 마감 기한 지난 스터디 상태 업데이트
 	void updateStudyStatus();
 	
+
+	
 	// Study Likes==================================================================================================================================================
 		// 스터디 찜
 		void addLikes (Likes likes);
@@ -139,10 +141,16 @@ public interface StudyPostMapper {
 		// 댓글 삭제
 		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no, @Param("comment_no") Long comment_no);
 
-
+		// 댓글 카운트
+		int commentsCount (@Param("post_no") Long post_no);
+		
+		// 메인페이지 댓글 갯수
+		List<Comments> getCommentList();
+		
 	// Profile Part================================================================================================================================================
 		// 유저 프로필 확인 OK
 		SwithUser getUserByUserNo (@Param("user_no") Long user_no);
+		
 		
 	// Admin part =================================================================================================================================================
 		// 닉네임으로 게시글 검색
@@ -164,5 +172,6 @@ public interface StudyPostMapper {
 //		void deleteUserMystudiesByUserNo(@Param("user_no") Long user_no);
 		void deleteUserStudyPost(@Param("user_no") Long user_no);
 		void deleteUser(@Param("user_no") Long user_no);
+
 	}
 

@@ -68,8 +68,8 @@ function RegisterUser() {
     e.preventDefault();
     const { nickname } = swithUser;
     const maxLength = 10;
-    if (nickname.length > maxLength) {
-      alert(`닉네임은 ${maxLength}자 이하로 입력해주세요.`);
+    if (nickname.length > maxLength || nickname.length === 0) {
+      alert(`닉네임은 ${maxLength}자 이하, 0자 이상으로 입력해주세요.`);
       return;
     }
     try {

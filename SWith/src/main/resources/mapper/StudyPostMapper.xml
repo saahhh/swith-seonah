@@ -83,6 +83,7 @@
 		<id property="post_no" column="POST_NO" />
 		<result property="user_no" column="USER_NO" />
 		<result property="nickname" column="NICKNAME" />
+		<result property="user_profile" column="USER_PROFILE" />
 		<result property="study_title" column="STUDY_TITLE" />
 		<result property="study_content" column="STUDY_CONTENT" />
 		<result property="study_method" column="STUDY_METHOD" />
@@ -96,12 +97,13 @@
 		<result property="study_post_time" column="STUDY_POST_TIME" />
 		<result property="mentor_count" column="mentor_count" />
 		<result property="mentee_count" column="mentee_count" />
-		<result property="application_count" column="application_count" />
+		<result property="application_count" column="application_count" />		
 		<association property="user" resultMap="UsersResult" />
 		<association property="mentor" resultMap="MentorResult" />
 		<association property="mentee" resultMap="MenteeResult" />
 		<association property="studyApplication"
 			resultMap="StudyApplicationResult" />
+		<association property="comments" resultMap="commentWithUser" />
 		<collection property="studyPostWithSkills"
 			resultMap="SkillResult" />
 	</resultMap>
@@ -109,19 +111,26 @@
 	<!-- ********************************************************* Main Page 
 		Part ********************************************************************************* -->
 	<!-- 스터디 전체 목록 OK -->
-	<select id="getAllStudyPostWithSkills"
-		resultMap="studyPostWithSkills">
-		SELECT sp.*, s.skill_name, s.skill_img,
-		(
-		SELECT COUNT(*)
-		FROM likes l
-		WHERE post_no = sp.post_no
-		) AS likes_count
-		FROM STUDY_POST sp
-		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-		LEFT JOIN skill s ON pts.skill_no = s.skill_no
-		LEFT JOIN likes l ON sp.post_no = l.post_no
-		WHERE sp.study_status = 'O'
+	<select id="getAllStudyPostWithSkills" resultMap="studyPostWithSkills">
+	    SELECT sp.*, s.skill_name, s.skill_img, u.*, c.*,
+	    ( 
+	    	SELECT COUNT(*)
+	    	FROM likes l
+	    	WHERE post_no = sp.post_no
+	    ) AS likes_count
+	    FROM STUDY_POST sp
+	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+	    LEFT JOIN skill s ON pts.skill_no = s.skill_no
+	    LEFT JOIN likes l ON sp.post_no = l.post_no
+	    LEFT JOIN users u ON sp.user_no = u.user_no
+	    LEFT JOIN comments c ON sp.post_no = c.post_no
+	    WHERE sp.study_status = 'O'
+	</select>
+
+	
+	<!-- 댓글 리스트 -->
+	<select id="getCommentList" parameterType="lm.swith.main.model.Comments">
+		SELECT * FROM COMMENTS
 	</select>
 
 
@@ -223,6 +232,7 @@
 	<select id="getAllCafes" resultType="lm.swith.main.model.Cafes">
 		SELECT * FROM CAFES
 	</select>
+	
 
 
 	<!-- ********************************************************* Likes Part 
@@ -282,13 +292,14 @@
 	<!-- 내가 참여한 스터디 목록 OK -->
 	<select id="getAllStudiesWithUserNo"
 		resultMap="studyPostWithSkills">
-		SELECT sp.*, s.skill_name, s.skill_img
+		SELECT sp.*, s.skill_name, s.skill_img, u.*
 		FROM study_post sp
 		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
 		LEFT JOIN
 		skill s ON pts.skill_no = s.skill_no
 		LEFT JOIN study_application sa ON
 		sp.post_no = sa.POST_NO
+		LEFT JOIN users u ON u.user_no = sp.user_no 
 		WHERE sa.user_no = #{user_no} AND sa.status =
 		'승인'
 		ORDER BY sp.study_start DESC
@@ -551,8 +562,7 @@
 		AND COMMENT_NO =
 		#{comment_no}
 	</delete>
-
-
+	
 
 
 	<!-- ********************************************************** Users Part 
@@ -565,6 +575,7 @@
 		WHERE
 		USER_NO = #{user_no}
 	</select>
+
 
 	<!-- 유저가 참여했던 스터디 목록은 mypage의 getAllStudiesWithUserNo 사용 -->
 
@@ -625,6 +636,7 @@
 	<delete id="deleteUserRoomNotice" parameterType="Long">
 		DELETE FROM STUDY_ROOM_NOTICE WHERE USER_NO = #{user_no}
 	</delete>
+
 
 	
 	<delete id="deleteUserStudyPost" parameterType="Long">

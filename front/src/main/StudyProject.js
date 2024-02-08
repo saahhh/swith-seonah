@@ -51,7 +51,7 @@ const StudyProject = ({ handleDataFromChild }) => {
     setStudy_place(cafe.sitewhladdr);
     closeModal();
   };
-  const [applicationCount, setApplicationCount] = useState("");
+  const [applicationCount, setApplicationCount] = useState();
 
   const [duration, setDuration] = useState("");
   const [techStack, setTechStack] = useState([]);
@@ -100,7 +100,7 @@ const StudyProject = ({ handleDataFromChild }) => {
       // 5개를 넘을 경우 알림창 표시
       alert("최대 5개까지만 선택 가능합니다.");
     }
-    console.log("기술: " + techStack);
+    console.log("기술1 : " + techStack);
   };
 
   const handleDeleteTech = (deletedTech) => {
@@ -123,7 +123,8 @@ const StudyProject = ({ handleDataFromChild }) => {
       study_place,
       startDate,
     });
-    console.log("기술: " + techStack);
+    console.log("기술2 : " + techStack);
+    console.log("지역2 : " + region);
   };
 
   // 기술스택의 숫자 값과 텍스트를 매핑하는 객체
@@ -147,19 +148,20 @@ const StudyProject = ({ handleDataFromChild }) => {
     17: "MongoDB",
     18: "mySql",
     19: "NestJS",
-    20: "NodeJS",
-    21: "Php",
-    22: "Python",
-    23: "R",
-    24: "React",
-    25: "React Native",
-    26: "Spring",
-    27: "Svelte",
-    28: "Swift",
-    29: "Type Script",
-    30: "Unity",
-    31: "Vue",
-    32: "Zeplin",
+    20: "NextJS",
+    21: "NodeJS",
+    22: "Php",
+    23: "Python",
+    24: "R",
+    25: "React",
+    26: "React Native",
+    27: "Spring",
+    28: "Svelte",
+    29: "Swift",
+    30: "Type Script",
+    31: "Unity",
+    32: "Vue",
+    33: "Zeplin",
   };
 
   console.log("스터디프로젝트js: " + studyMethod);
@@ -240,6 +242,7 @@ const StudyProject = ({ handleDataFromChild }) => {
               onChange={handleTechStackChange}
               onBlur={handleDataChange}
             >
+              <option value="0" style={{ display: "none" }}></option>
               {Object.entries(techStackOptions).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
@@ -293,6 +296,7 @@ const StudyProject = ({ handleDataFromChild }) => {
               onChange={(e) => setRegion(e.target.value)}
               onBlur={handleDataChange}
             >
+              <option value="0" style={{ display: "none" }}></option>
               <option value="강남/역삼/삼성">강남/역삼/삼성</option>
               <option value="신사/청담/압구정">신사/청담/압구정</option>
               <option value="서초/교대/사당">서초/교대/사당</option>

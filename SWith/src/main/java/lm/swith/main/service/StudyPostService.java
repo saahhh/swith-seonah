@@ -3,6 +3,7 @@ package lm.swith.main.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,6 @@ public class StudyPostService {
 	
 	// 스터디 목록 불러오기	
     public List<StudyPost> getAllStudyPostWithSkills() {
-        System.out.println("code check 	2");
         return studyPostMapper.getAllStudyPostWithSkills();
     }
     
@@ -104,8 +104,8 @@ public class StudyPostService {
     public void runUpdateStudyStatus() {
     	updateStudyStatus();
     }
-    	
     
+	
     
     // MyPage Part
     // 내가 쓴 스터디 목록
@@ -293,6 +293,11 @@ public class StudyPostService {
     	studyPostMapper.deleteComment(post_no, user_no, comment_no);
     }
     
+    // 메인페이지 댓글 갯수
+    public List<Comments> getCommentList() {
+    	return studyPostMapper.getCommentList();
+    	}
+
     
     
     // Profile Part
@@ -330,5 +335,7 @@ public class StudyPostService {
     	studyPostMapper.deleteUserStudyPost(user_no);
     	studyPostMapper.deleteUser(user_no);
     }
+
+
     
 }

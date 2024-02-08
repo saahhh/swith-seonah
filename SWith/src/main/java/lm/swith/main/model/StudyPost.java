@@ -15,6 +15,7 @@ public class StudyPost {
 	private Long user_no;
 	private Long comment_no;
 	private String nickname;
+	private byte[] user_profile;
 	private String study_title;
 	private String study_content;
 	private String study_method; // 스터디 방식 (오프라인/온라인/온.오프라인)
@@ -50,5 +51,6 @@ public class StudyPost {
     private Mentor mentor; // 멘토 테이블
     private Mentee mentee; // 멘티 테이블
     private StudyApplication studyApplication; // 스터디 참가 현황 테이블
+		
+	}
     
-}
