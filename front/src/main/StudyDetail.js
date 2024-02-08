@@ -306,6 +306,42 @@ function StudyDetail() {
 
   const [userNo, setUserNo] = useState(""); // user_no를 상태로 관리
 
+  //////////////////////////////////////
+  useEffect(() => {
+    const fetchApplicantData = async () => {
+      try {
+        const response = await usersUserinfoAxios.get(
+          `/application_update/${post_no}`
+        );
+        setApplicantData(response.data);
+
+        // 데이터의 길이와 속성이 존재하는지 확인
+        if (
+          response.data.length > 0 &&
+          response.data[0].max_study_applicants !== undefined &&
+          response.data[0].accepted_applicants !== undefined
+        ) {
+          setPossibleApplicant(
+            response.data[0].max_study_applicants >
+              response.data[0].accepted_applicants
+          );
+        }
+      } catch (error) {
+        console.error("Failed applicant 데이터 가져오기 실패", error);
+      }
+    };
+
+    fetchApplicantData();
+  }, [post_no]);
+
+  const [possibleApplicant, setPossibleApplicant] = useState(true);
+
+  console.log("신청가능한지: " + possibleApplicant);
+
+  const impossibleMessage = (
+    <button className="commentInput_buttonComplete_done">모집완료</button>
+  );
+
   return (
     <div>
       <Header />
@@ -342,7 +378,7 @@ function StudyDetail() {
               className="register_swithButton"
               style={{ marginLeft: "auto" }}
             >
-              {isApplicant && (
+              {possibleApplicant && isApplicant && (
                 <button
                   className="commentInput_buttonComplete"
                   onClick={handleApplicantButton}
@@ -351,11 +387,12 @@ function StudyDetail() {
                 </button>
               )}
 
-              {!isApplicant && (
-                <button className="commentInput_buttonComplete">
+              {possibleApplicant && !isApplicant && (
+                <button className="commentInput_buttonComplete_done">
                   지원완료
                 </button>
               )}
+              {!possibleApplicant && impossibleMessage}
             </div>
           </div>
           <section>
@@ -388,14 +425,13 @@ function StudyDetail() {
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집인원</span>
                 <span className="studyInfo_title_a">
-                  {detailPages.studyApplication &&
-                    detailPages.studyApplication.max_study_applicants}
+                  {applicantData?.[0]?.max_study_applicants}명
                 </span>
               </li>
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">시작예정일</span>
                 <span className="studyInfo_title_a">
-                  {detailPages.study_start}
+                  {new Date(detailPages.study_start).toLocaleDateString()}
                 </span>
               </li>
               <li className="studyContent_contentWrapper">
@@ -407,7 +443,7 @@ function StudyDetail() {
               <li className="studyContent_contentWrapper">
                 <span className="studyInfo_title">모집마감</span>
                 <span className="studyInfo_title_a">
-                  {detailPages.recruit_deadline}
+                  {new Date(detailPages.recruit_deadline).toLocaleDateString()}
                 </span>
               </li>
               <li className="studyContent_contentWrapper">

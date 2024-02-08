@@ -5,6 +5,7 @@ import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
 import Modal from "react-modal";
 import DeleteIcon from "./img/delete.png";
+import Footer from "./Footer";
 
 const StudyProject = ({ handleDataFromChild }) => {
   // formData에 저장된 데이터 사용
@@ -100,7 +101,7 @@ const StudyProject = ({ handleDataFromChild }) => {
       // 5개를 넘을 경우 알림창 표시
       alert("최대 5개까지만 선택 가능합니다.");
     }
-    console.log("기술1 : " + techStack);
+    console.log("기술: " + techStack);
   };
 
   const handleDeleteTech = (deletedTech) => {
@@ -123,8 +124,7 @@ const StudyProject = ({ handleDataFromChild }) => {
       study_place,
       startDate,
     });
-    console.log("기술2 : " + techStack);
-    console.log("지역2 : " + region);
+    console.log("기술: " + techStack);
   };
 
   // 기술스택의 숫자 값과 텍스트를 매핑하는 객체
@@ -144,24 +144,25 @@ const StudyProject = ({ handleDataFromChild }) => {
     13: "GraphQL",
     14: "Java Script",
     15: "Java",
-    16: "Kubernetes",
-    17: "MongoDB",
-    18: "mySql",
-    19: "NestJS",
-    20: "NextJS",
-    21: "NodeJS",
-    22: "Php",
-    23: "Python",
-    24: "R",
-    25: "React",
-    26: "React Native",
-    27: "Spring",
-    28: "Svelte",
-    29: "Swift",
-    30: "Type Script",
-    31: "Unity",
-    32: "Vue",
-    33: "Zeplin",
+    16: "Kotlin",
+    17: "Kubernetes",
+    18: "MongoDB",
+    19: "mySql",
+    20: "NestJS",
+    21: "NextJS",
+    22: "NodeJS",
+    23: "Php",
+    24: "Python",
+    25: "R",
+    26: "React",
+    27: "React Native",
+    28: "Spring",
+    29: "Svelte",
+    30: "Swift",
+    31: "Type Script",
+    32: "Unity",
+    33: "Vue",
+    34: "Zeplin",
   };
 
   console.log("스터디프로젝트js: " + studyMethod);

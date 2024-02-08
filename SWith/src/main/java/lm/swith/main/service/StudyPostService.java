@@ -186,8 +186,10 @@ public class StudyPostService {
     public void deleteStudyPost(Long post_no) {
     	studyPostMapper.deleteComments(post_no);
     	studyPostMapper.deleteStudyApplication(post_no);
+    	studyPostMapper.deletePostLikes(post_no);
     	studyPostMapper.deletePostTechStacks(post_no);
     	studyPostMapper.deleteStudyPost(post_no);
+    	
     }
     
  

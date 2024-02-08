@@ -15,13 +15,8 @@ export default function StudyApplication({
   swithUser,
 }) {
   const { post_no } = useParams(); // 동적 라우트 매개변수 가져오기
-  const [isEditing, setIsEditing] = useState(false);
 
   const [adminUser, setAdminUser] = useState(false);
-
-  function handleEditClick() {
-    setIsEditing((editing) => !editing);
-  }
 
   const [applicantData, setApplicantData] = useState([]);
 
@@ -38,11 +33,13 @@ export default function StudyApplication({
       } else {
         setAdminUser(false);
       }
+
       console.log("보이니", response.data);
     } catch (error) {
       console.error("Failed applicant 데이터 가져오기 실패", error);
     }
   };
+
   useEffect(() => {
     fetchApplicantData();
 
@@ -69,9 +66,15 @@ export default function StudyApplication({
   };
 
   console.log("adminUser: " + adminUser);
+
   return (
     <div className="studyApplication">
-      <p className="studyApplication_title">S.With 신청 현황 (2/5)</p>
+      <p className="studyApplication_title">
+        {applicantData.length > 0 &&
+          applicantData[0].accepted_applicants &&
+          applicantData[0].max_study_applicants &&
+          `S.With 신청 현황 (${applicantData[0].accepted_applicants}/${applicantData[0].max_study_applicants})`}
+      </p>
       <div className="studyApplaction_user">
         {applicantData &&
           applicantData.map((users, index) => (

@@ -14,6 +14,8 @@ import { useParams, Link } from "react-router-dom";
 import Modal from "./Modal";
 import ProfileModal from "./ProfileModal";
 import Footer from "./Footer";
+import CommentIcon from "./img/comment.png";
+import { Pagination } from "react-bootstrap";
 
 function MainContent() {
   const [isSkillVisible, setSkillVisible] = useState(false);
@@ -525,6 +527,21 @@ function MainContent() {
   ///////////////////////////////////////////////
   const [profile, setProfile] = useState(false);
   const [profileUserNo, setProfileUserNo] = useState(null);
+  ////////////////////////////////////////////////////////////////////////
+  //페이지네이션//
+  const [currentPage, setCurentPage] = useState(1); //현재 페이지
+  const [momentPerPage] = useState(12); //한 페이지당 보여줄 수
+  //페이지를 변경하기위한 핸들러 추가
+  const handlePageChange = (pageNumber) => {
+    setCurentPage(pageNumber);
+  };
+  const indexOfLastMoment = currentPage * momentPerPage;
+  const indexFirstMoment = indexOfLastMoment - momentPerPage;
+  const currentMoment = updatedBoards.slice(
+    indexFirstMoment,
+    indexOfLastMoment
+  );
+
   return (
     <div className="Welcome">
       <div className="banner">
@@ -859,7 +876,11 @@ function MainContent() {
                       <div className="study_schedule">
                         <p className="">마감일</p>
                         <p>|</p>
-                        <p>{board.recruit_deadline}</p>
+                        <p>
+                          {new Date(
+                            board.recruit_deadline
+                          ).toLocaleDateString()}
+                        </p>
                       </div>
                       <div>
                         <h1 className="board_title">{board.study_title}</h1>
@@ -867,7 +888,7 @@ function MainContent() {
                       <ul className="skill_icon_section">
                         {board.studyPostWithSkills.map((skill, index) => (
                           <img
-                            src={`https://2mihye.github.io/Skill_IMG/images/${skillInfo[index].imageId}`}
+                            src={`https://2mihye.github.io/Skill_IMG/images/${skill.skill_name}.png`}
                             alt={skill.skill_name}
                             width="30"
                             height="30"
@@ -878,20 +899,35 @@ function MainContent() {
                       <section className="board_info_section">
                         <div className="board_info_left">
                           <div className="user_profile_img">
-                            {board.user_profile && (
-                              <img
-                                className="user_img"
-                                width="30px"
-                                height="30px"
-                                src={`data:image/jpeg;base64,${board.user_profile}`}
-                                alt="Profile"
-                              />
-                            )}
+                            <img
+                              className="user_profile_img_set"
+                              width="30px"
+                              height="30px"
+                              src={`data:image/jpeg;base64,${board.user_profile}`}
+                              alt="Profile"
+                              onClick={(e) => {
+                                e.preventDefault(); // 기본 동작 막기 (링크 이동 방지)
+                                e.stopPropagation(); // 이벤트 전파 방지
+
+                                // 클릭한 유저의 user_no를 상태에 저장
+                                const clickedUserNo = board.user_no;
+
+                                // 모달 열기 및 user_no 전달
+                                setProfileUserNo(clickedUserNo);
+                                setProfile(!profile);
+                              }}
+                            />
                           </div>
                           <div>{board.nickname}</div>
                         </div>
                         <div className="board_info_right">
                           <div className="comment_count_section">
+                            <img
+                              width="30px"
+                              height="30px"
+                              src={CommentIcon}
+                              alt="Comment"
+                            />
                             <p> {getCommentCount(board.post_no)}</p>
                           </div>
                         </div>
@@ -904,7 +940,7 @@ function MainContent() {
               <p>조건에 해당하는 게시물이 없습니다.</p>
             )
           ) : (
-            updatedBoards.map((board) => (
+            currentMoment.map((board) => (
               <div key={board.post_no} onClick={(e) => e.stopPropagation()}>
                 <Link
                   className="board_box"
@@ -939,7 +975,9 @@ function MainContent() {
                     <div className="study_schedule">
                       <p className="">마감일</p>
                       <p>|</p>
-                      <p>{board.recruit_deadline}</p>
+                      <p>
+                        {new Date(board.recruit_deadline).toLocaleDateString()}
+                      </p>
                     </div>
                     <div>
                       <h1 className="board_title">{board.study_title}</h1>
@@ -947,7 +985,7 @@ function MainContent() {
                     <ul className="skill_icon_section">
                       {board.studyPostWithSkills.map((skill, index) => (
                         <img
-                          src={`https://2mihye.github.io/Skill_IMG/images/${skillInfo[index].imageId}`}
+                          src={`https://2mihye.github.io/Skill_IMG/images/${skill.skill_name}.png`}
                           alt={skill.skill_name}
                           width="30"
                           height="30"
@@ -981,7 +1019,15 @@ function MainContent() {
                       </div>
                       <div className="board_info_right">
                         <div className="comment_count_section">
-                          <p> {getCommentCount(board.post_no)}</p>
+                          <img
+                            width="30px"
+                            height="30px"
+                            src={CommentIcon}
+                            alt="Comment"
+                          />
+                          <p className="comment_count">
+                            {getCommentCount(board.post_no)}
+                          </p>
                         </div>
                       </div>
                     </section>
@@ -991,6 +1037,21 @@ function MainContent() {
             ))
           )}
         </ul>
+        <div className="main_pagenation">
+          <Pagination>
+            {[...Array(Math.ceil(boards.length / momentPerPage)).keys()].map(
+              (number) => (
+                <Pagination.Item
+                  key={number + 1}
+                  active={number + 1 === currentPage}
+                  onClick={() => handlePageChange(number + 1)}
+                >
+                  {number + 1}
+                </Pagination.Item>
+              )
+            )}
+          </Pagination>
+        </div>
       </main>
       {profile && (
         <Modal closeModal={() => setProfile(!profile)}>

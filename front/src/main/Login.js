@@ -37,7 +37,7 @@ function Login() {
   const checkLoginStatus = async () => {
     try {
       // 서버에 현재 인증된 사용자의 정보를 가져오는 요청을 보냅니다.
-      const response = await LoginAxios.get("/userinfo");
+      const response = await LoginAxios.get("/users/userinfo");
 
       // 서버에서 반환된 사용자 정보를 가져옵니다.
       const user = response.data;

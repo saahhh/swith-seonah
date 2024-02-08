@@ -6,6 +6,7 @@ import StudyProject from "./StudyProject";
 import FormFour from "./FormFour";
 import MentoMenti from "./MentoMenti";
 import usersUserinfoAxios from "../token/tokenAxios";
+import Footer from "./Footer";
 
 function NewBoard() {
   // FormFour에서 사용하는 상태들을 초기화
@@ -212,7 +213,13 @@ function NewBoard() {
         </section>
       </div>
       {/* 추가: Submit 버튼 */}
-      <button onClick={handleCreatePost}>게시물 생성</button>
+      <button onClick={handleCreatePost} className="buttonComplete">
+        게시물 생성
+      </button>
+      <br />
+      <br />
+      <br />
+      <br />
     </div>
   );
 }

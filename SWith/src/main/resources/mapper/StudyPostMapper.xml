@@ -53,6 +53,7 @@
 		<result property="useraddress" column="useraddress" />
 		<result property="user_introduction" column="user_introduction" />
 		<result property="user_role" column="user_role" />
+
 	</resultMap>
 
 	<resultMap type="lm.swith.main.model.Comments"
@@ -64,6 +65,7 @@
 		<result property="comment_post_time" column="COMMENT_POST_TIME" />
 		<result property="user_profile" column="USER_PROFILE" />
 		<result property="nickname" column="NICKNAME" />
+		<association property="user" resultMap="UsersResult" />
 	</resultMap>
 
 	<resultMap type="lm.swith.user.model.SwithUser"
@@ -112,7 +114,7 @@
 		Part ********************************************************************************* -->
 	<!-- 스터디 전체 목록 OK -->
 	<select id="getAllStudyPostWithSkills" resultMap="studyPostWithSkills">
-	    SELECT sp.*, s.skill_name, s.skill_img, u.*, c.*,
+	    SELECT sp.*,s.skill_no, s.skill_name, s.skill_img, u.*, c.*,
 	    ( 
 	    	SELECT COUNT(*)
 	    	FROM likes l
@@ -456,6 +458,11 @@
 		DELETE FROM
 		POST_TECH_STACKS WHERE POST_NO = #{post_no}
 	</delete>
+	<!-- 찜 테이블 삭제 -->
+	<delete id="deletePostLikes" parameterType="long">
+		DELETE FROM
+		LIKES WHERE POST_NO = #{post_no}
+	</delete>
 	<!-- 스터디(게시글) 테이블에서 해당 post_no에 대한 스터디 정보 삭제 -->
 	<delete id="deleteStudyPost" parameterType="Long">
 		DELETE FROM
@@ -531,10 +538,8 @@
 	</insert>
 
 	<select id="getCommentsByPostNo" resultMap="commentWithUser">
-		SELECT c.*,
-		u.nickname, u.user_profile FROM COMMENTS c
-		LEFT JOIN users u ON
-		c.user_no = u.user_no
+		SELECT c.*, u.nickname, u.user_profile FROM COMMENTS c
+		LEFT JOIN users u ON c.user_no = u.user_no
 		WHERE POST_NO = #{post_no} ORDER BY
 		comment_post_time DESC
 	</select>
