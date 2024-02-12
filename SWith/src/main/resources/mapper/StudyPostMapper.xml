@@ -372,23 +372,19 @@
 		<!-- 첫 번째 쿼리: study_post 테이블에 스터디 정보 업데이트 -->
 		UPDATE study_post
 		SET
-		USER_NO = #{user_no},
-		NICKNAME = #{nickname},
 		STUDY_TITLE = #{study_title},
 		STUDY_CONTENT = #{study_content},
-		STUDY_METHOD = #{study_method},
 		RECRUIT_TYPE = #{recruit_type},
 		STUDY_PERIOD = #{study_period},
 		STUDY_START = #{study_start},
 		RECRUIT_DEADLINE = #{recruit_deadline},
 		STUDY_STATUS = #{study_status},
-		STUDY_LOCATION = #{study_location},
-		FRIST_STUDY = #{first_study}
+		STUDY_LOCATION = #{study_location}
 		WHERE
-		POST_NO = #{post_no} AND USER_NO = #{user_no}
+		POST_NO = #{post_no}
 	</update>
 
-	<!-- 두 번째 쿼리: 기술 스택 정보 업데이트 기존 스킬 정보를 삭제 후 다시 저장 -->
+	<!-- 두 번째 쿼리: 기술 스택 정보 업데이트 기존 스킬 정보를 삭제 후 다시 저장	
 	<delete id="deletePostTechStacksUpdate" parameterType="long">
 		DELETE
 		FROM post_tech_stacks WHERE post_no = #{post_no}
@@ -401,28 +397,46 @@
 			(#{post_no}, #{skill})
 		</foreach>
 	</insert>
+ -->
+
+	<!-- application 정보 update -->
+	<update id="studyApplicationUpdate"
+		parameterType="lm.swith.main.model.StudyApplication">
+		UPDATE STUDY_APPLICATION SET
+		STATUS = '승인',
+		MAX_STUDY_APPLICANTS = #{max_study_applicants}
+		WHERE
+		POST_NO = #{post_no} AND USER_NO = #{user_no}
+	</update>
 
 
 	<!-- 세 번째 쿼리: users 테이블에서 nickname 정보 가져와서 업데이트 -->
-	<update id="updateStudyPostUser"
-		parameterType="lm.swith.main.model.StudyPost">
-		UPDATE study_post sp
-		SET sp.nickname = (SELECT nickname FROM users u
-		WHERE u.user_no =
-		sp.user_no)
-		WHERE sp.post_no = #{post_no}
 
-		<if test="mentor_check">
+    <update id="updateStudyPostUser"
+        parameterType="lm.swith.main.model.StudyPost">
+        UPDATE study_post sp
+        SET sp.nickname = (SELECT nickname FROM users u
+        WHERE u.user_no =
+        sp.user_no)
+        WHERE sp.post_no = #{post_no}
+	</update>
+
+
+	<!--	<if test="mentor_check">
 			UPDATE mentor SET USER_NO = #{user_no} WHERE POST_NO =
 			#{post_no}
 		</if>
 		<if test="mentee_check">
 			UPDATE mentee SET USER_NO = #{user_no} WHERE POST_NO =
 			#{post_no}
-		</if>
-	</update>
-
-	<!-- -->
+		</if> 
+		
+			UPDATE study_post sp
+		SET sp.nickname = (SELECT nickname FROM users u
+		WHERE u.user_no =
+		sp.user_no)
+		WHERE sp.post_no = #{post_no}
+		-->
 
 	<!-- 마감 기한 지난 스터디 목록 -->
 	<select id="findExpiredStudyStatus"

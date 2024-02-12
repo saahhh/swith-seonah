@@ -284,21 +284,23 @@ public class StudyPostController {
     }
 
 	// 스터디 수정 페이지 이동
-	@GetMapping("/update/{post_no}")
-	public String showUpdateFrom (@PathVariable Long post_no, Model model) {
+    @GetMapping("/update/{post_no}")
+    public ResponseEntity<StudyPost> showUpdateFrom(@PathVariable Long post_no, Model model) {
         // 스터디 정보 및 관련 스킬 정보를 불러오는 서비스 메서드 호출
         StudyPost studyPost = studyPostService.getStudyPostByPostNo(post_no);
         model.addAttribute("studyPost", studyPost);
-        return "/update_study";
-	}
+        return ResponseEntity.ok(studyPost);
+    }
 	
 	// 스터디 수정 적용
 	@PostMapping("/update/{post_no}")
-	public String updateStudyPost(@ModelAttribute StudyPost studyPost, @PathVariable Long post_no) {
+	public ResponseEntity<?> updateStudyPost(@PathVariable Long post_no, @RequestBody StudyPost studyPost) {
 		  // 스터디 정보 및 관련 스킬 정보를 불러오는 서비스 메서드 호출
-        studyPostService.getStudyPostByPostNo(post_no);
+		System.out.println(studyPost.getMax_study_applicants());
+		System.out.println(studyPost.getFirst_study());
+		System.out.println(studyPost.getRecruit_deadline());
 		studyPostService.updateStudyPost(studyPost);
-		return "redirect:/post_detail/" + studyPost.getPost_no();
+		 return ResponseEntity.ok("studyPost successfully");
 	}
 	
 	

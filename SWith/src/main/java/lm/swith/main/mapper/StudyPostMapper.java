@@ -79,14 +79,15 @@ public interface StudyPostMapper {
 		StudyPost getStudyPostByPostNo(@Param("post_no") Long post_no);
 		
 		// 스터디 수정
-		void updateStudyPost (StudyPost studyPost);
-		void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
-		void updateSkill(List<Skill> skill);
-		void upadateStudyApplication(StudyApplication studyApplication);
-		void deletePostLikes(@Param("post_no") Long post_no);
-		void insertPostTechStacksUpdate(PostTechStacks postTechStacks);
-		void updateStudyPostUser(@Param("user_no") Long user_no);
 		
+		void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
+//		void updateSkill(List<Skill> skill);
+//		void upadateStudyApplication(StudyApplication studyApplication);
+		void deletePostLikes(@Param("post_no") Long post_no);
+//		void insertPostTechStacksUpdate(PostTechStacks postTechStacks);
+//		void updateStudyPostUser(@Param("user_no") Long user_no);
+		void updateStudyPost (StudyPost studyPost);
+		void studyApplicationUpdate(Long user_no, Long post_no, int max_study_applicants);
 		
 
 		

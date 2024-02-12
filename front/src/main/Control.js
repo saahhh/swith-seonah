@@ -14,6 +14,7 @@ import StudyRoom from "./StudyRoom";
 import ModifyPage from "./ModifyPage";
 import StudyApplication from "./StudyApplication";
 import Admin from "./Admin";
+import FindUser from "./FindUser";
 // function AuthenticatedRoute({ children }) {
 //   const authContext = useAuth();
 
@@ -44,6 +45,7 @@ export default function Control() {
           <Route path="/modify" element={<ModifyPage />} />
           <Route path="/application" element={<StudyApplication />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/find" element={<FindUser />} />
         </Routes>
       </BrowserRouter>
     </div>
