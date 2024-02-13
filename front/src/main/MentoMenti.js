@@ -7,6 +7,23 @@ import usersUserinfoAxios from "../token/tokenAxios";
 import axios from "axios";
 
 export default function MentoMenti() {
+  // FormFour 컴포넌트에서 전달되는 데이터를 저장할 state
+  const [formData, setFormData] = useState({
+    studyTitle: "",
+    studyContent: "",
+  });
+
+  // FormFour 컴포넌트에서 호출되는 함수로 데이터를 업데이트
+  const handleFormFourDataChange = (newData) => {
+    setFormData({
+      ...formData,
+      ...newData,
+    });
+  };
+
+  // formData에 저장된 데이터 사용
+  console.log("Study Title:", formData.studyTitle);
+  console.log("Study Content:", formData.studyContent);
   const customStyles = {
     content: {
       width: "50%", // 모달의 가로 크기를 조절합니다.
@@ -43,6 +60,10 @@ export default function MentoMenti() {
     } catch (error) {
       console.error("Error searching cafes:", error);
     }
+  };
+  const handleItemClick = (cafe) => {
+    setKeyword(cafe.bplcnm);
+    closeModal();
   };
   const [recruitmentCount, setRecruitmentCount] = useState("");
 
@@ -199,8 +220,7 @@ export default function MentoMenti() {
               {/* Add more options as needed */}
             </select>
           </label>
-
-          <label className="stack_box_2">
+          <label className="stack_box">
             <div className="selected">
               <br />
               {techStack.map((stack, index) => (
@@ -226,7 +246,6 @@ export default function MentoMenti() {
               onChange={(e) => setDeadline(e.target.value)}
             />
           </label>
-
           <label className="post_3_label">
             지역구분 :
             <select value={region} onChange={(e) => setRegion(e.target.value)}>
@@ -253,6 +272,8 @@ export default function MentoMenti() {
                   type="text"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
+                  className="cafeSearchInput"
+                  placeholder="카페이름이나 지역을 입력하세요."
                 />
                 <button
                   onClick={() => {
@@ -278,8 +299,14 @@ export default function MentoMenti() {
                     </button>
                     <ul>
                       {cafes.map((cafe) => (
-                        <li key={cafe.id}>
-                          <p>{cafe.bplcnm}</p> - {cafe.sitewhladdr}
+                        <li
+                          key={cafe.id}
+                          onClick={() => handleItemClick(cafe)}
+                          className="cafe_p"
+                        >
+                          <p className="cafe_p">
+                            {cafe.bplcnm} ( {cafe.sitewhladdr} )
+                          </p>
                         </li>
                       ))}
                     </ul>
@@ -304,7 +331,7 @@ export default function MentoMenti() {
       <br />
       <br />
       <br />
-      <FormFour />
+      <FormFour onDataChange={handleFormFourDataChange} />
     </div>
   );
 }

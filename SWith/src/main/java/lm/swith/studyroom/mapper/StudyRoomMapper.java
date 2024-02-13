@@ -1,9 +1,19 @@
 package lm.swith.studyroom.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
+import java.sql.Date;
+import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Select;
+
+import lm.swith.main.model.StudyPost;
+import lm.swith.studyroom.model.Calendar;
+import lm.swith.studyroom.model.MessageRequestDto;
 import lm.swith.studyroom.model.StudyMoment;
 import lm.swith.studyroom.model.StudyRoomNotice;
+import lm.swith.studyroom.model.Todo;
 
 @Mapper
 public interface StudyRoomMapper {
@@ -12,10 +22,10 @@ public interface StudyRoomMapper {
 	void createStudyRoomNotice(StudyRoomNotice studyRoomNotice);
 	
 	// SELECT
-	StudyRoomNotice findByStudyRoomNotice(StudyRoomNotice studyRoomNotice);
+	List<StudyRoomNotice> findByStudyNoticeWithNickname(Long post_no);
 	
 	//DELETE
-	void deleteStudyRoom(StudyRoomNotice studyRoomNotice);
+	void deleteStudyRoomNotice(Long notice_no, String notice_password);
 	
 	
 // StudyMoment Mapper
@@ -23,11 +33,38 @@ public interface StudyRoomMapper {
 	void createStudyMoment(StudyMoment studyMoment);
 	
 	// SELECT
-	StudyMoment findByStudyMoment(StudyMoment studyMoment);
+	List<StudyMoment> findByStudyMoment(Long post_no); //생각해보기
 	
 	//DELETE
-	void deleteStudyMoment(StudyMoment studyMoment);
+	void deleteStudyMoment(Long moment_no, Long user_no);//생각해보기
+	
+	
+// Chatting
+	
+	void insertMessage(MessageRequestDto chatMessage);
+
+	List<MessageRequestDto> selectMessagesByPostNo(Long post_no);
+    
+//Calendar
+    //INSERT
+	void createCalendarEvent(Calendar calendar);
+	
+//TodoLsit
+	//INSERT
+	void createTodoList(Todo todo);
+
+	List<Todo> getTodoListByDate(Date todo);
+
+//title
+	//SELECT
+	StudyPost getStudyRoomTitle(Long post_no);
+	
+	//UPDATE
+	void updateStudyRoomTitle(Long post_no,Long user_no, String study_title); //update는 void나 int형식으로 반환해야함
 }
+
+
+
 	
 	
 	

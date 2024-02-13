@@ -1,8 +1,8 @@
-import { Editor } from "react-draft-wysiwyg";
-import React, { useState } from "react";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "../css/NewBoard.css";
-import { EditorState } from "draft-js";
+import { Editor } from 'react-draft-wysiwyg';
+import React, { useState } from 'react';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import '../css/NewBoard.css';
+import { EditorState } from 'draft-js';
 
 const FormFour = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -40,7 +40,7 @@ const FormFour = () => {
           }}
           placeholder="내용을 작성해주세요."
           localization={{
-            locale: "ko",
+            locale: 'ko',
           }}
           editorState={editorState}
           onEditorStateChange={onEditorStateChange}

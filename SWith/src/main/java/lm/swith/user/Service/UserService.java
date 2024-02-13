@@ -17,6 +17,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import lm.swith.main.model.Likes;
 import lm.swith.user.mapper.UsersMapper;
 import lm.swith.user.model.SwithUser;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +50,8 @@ public class UserService {
 		return usersMapper.findByEmailAndPassword(email, password);
 	}
 	//find role
-	public SwithUser findUserRole(String role) {
-		return usersMapper.findUserRole(role);
+	public SwithUser findUserRole(String user_role) {
+		return usersMapper.findUserRole(user_role);
 	}
 	public List<SwithUser> findUsersAll(){
 		return usersMapper.findUsersAll();
@@ -76,10 +77,7 @@ public class UserService {
 	public SwithUser getUserByNickname(String nickname) {
         return usersMapper.findByNickname(nickname);
     }
-	//원정연 파트 (update)
-	//public void updateIntroduction(String email, String newIntroduction) {
-        //usersMapper.updateIntroduction(email, newIntroduction);
-    //}
+	
 	
 	//update user profile
 	public void updateUserProfile(SwithUser swithUser) {
@@ -100,10 +98,16 @@ public class UserService {
 	//delete user by Email
 	public void deleteUser(SwithUser swithUser) {
 		usersMapper.deleteUser(swithUser);
+		
+	}
+	public void deleteUserLikes(Likes likes) {
+		usersMapper.deleteUserLikes(likes);
 	}
 	
 	// select user_no
 	public SwithUser findByUserNo(Long user_no) {
 		return usersMapper.findByUserNo(user_no);
 	}
+	
+	
 }

@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lm.swith.main.model.Likes;
 import lm.swith.user.Service.KakaoService;
 import lm.swith.user.Service.MailService;
 import lm.swith.user.Service.UserService;
@@ -64,7 +65,6 @@ public class RegisterController {
 	        System.out.println(user.getUser_no());
 	        System.out.println(user.getNickname());
 	        System.out.println(user.getUser_profile());
-	        System.out.println("getRole" + user.getUser_role());
 	        return ResponseEntity.ok(user);
 	    } else {
 	        return ResponseEntity.notFound().build();
@@ -79,7 +79,7 @@ public class RegisterController {
 		System.out.println(user.getSignout());
 		// 사용자의 id, pwd 일치할 경우
 		if (user != null) {
-			if (user.getSignout().equals("FALSE")) { //signout status
+			if (user.getSignout().equals("FALSE")) { // signout status
 				// 토큰 생성
 				final String token = tokenProvider.createAccessToken(user);
 				final SwithDTO responseUserDTO = SwithDTO.builder().email(user.getEmail()).user_no(user.getUser_no())
@@ -96,7 +96,7 @@ public class RegisterController {
 		}
 
 	}
-	
+
 	@GetMapping("/userinfo")
 	public ResponseEntity<?> getUserInfo() {
         // 현재 인증된 사용자의 정보를 가져오는 로직
@@ -131,6 +131,8 @@ public class RegisterController {
         }
     }
 	
+	
+	
 	  @GetMapping("/")
 	  public String MailPage(){
 	      return "/";
@@ -155,16 +157,39 @@ public class RegisterController {
 		     return ResponseEntity.ok(num);
 	  	 }
 	  }
+	  
+	  @ResponseBody
+	  @PostMapping("/findPassword")
+	  public ResponseEntity<String> findPassword(@RequestBody SwithUser swithUser){
+		  MailService mailService = new MailService(javaMailSender);
+		  int number = mailService.sendMail(swithUser.getEmail());
+		     String num = "" + number;
+		     return ResponseEntity.ok(num);
+	  }
+	  
+	  //email(아이디)찾기
+	  @PostMapping("/ExistEmail")
+	  public ResponseEntity<String> checkEmail(@RequestBody SwithUser swithUser){
+		  SwithUser user = userService.getUserByEmail(swithUser.getEmail());
+		  //값이 db에 존재하는지 아닌지
+		  if(user != null && user.getEmail()==null) { // 존재한다면
+			  String existsEmail = "existsEmail";
+			  return ResponseEntity.ok(existsEmail);
+		  }else {
+			  String None = "none";
+			  return ResponseEntity.ok(None);
+		  }
+	  }
+	  //닉네임 중복 체크 
 	  @PostMapping("/nickname")
 	  public ResponseEntity<String> checkNickname(@RequestBody SwithUser swithUser){
 	  	
 	  	SwithUser user = userService.getUserByNickname(swithUser.getNickname()); 
-	  
+	  	
 	  	//넣은 값이 db에 존재하는지, 넣은 값이 null이 아닌 
-	  	if(user != null && user.getNickname() != null) { //find해서 값이 존재하면 거부, null이면 
+	  	if(user != null && user.getNickname() == null) { //find해서 값이 존재하면 거부, null이면 
 	  		String existsNick = "existsNick";
 	  		 return ResponseEntity.ok(existsNick);
-	     
 	  	 }else {
 	  		String newNickname = "new";
 	  		 return ResponseEntity.ok(newNickname);
@@ -224,13 +249,16 @@ public class RegisterController {
 			SwithUser createUser = userService.signUpUser(swithUser);
 			return ResponseEntity.ok(createUser);
 		}
-
+	//원정연 파트 (update)
+		
+	//update 하은이 파트 
 	    
 	    //update user profile
 	    @PostMapping("/updateUserProfile")
 	    public ResponseEntity<String> updateUserProfile(@RequestBody SwithUser swithUser) throws IOException{
 	    	 System.out.println("getUser_profile : " + swithUser.getUser_profile());
-	     	if (swithUser.getImg() != null && !swithUser.getImg().isEmpty()) {
+	     	
+	    	 if (swithUser.getImg() != null && !swithUser.getImg().isEmpty()) {
 	 			// resource 폴더에 경로를 읽는다
 	         	System.out.println("null아님");
 	         	String imageData = swithUser.getImg().split(",")[1];
@@ -272,16 +300,22 @@ public class RegisterController {
 	    //update user password
 	    @PostMapping("/updatePassword")
 	    public ResponseEntity<String> updatePassword(@RequestBody SwithUser swithUser){
-	    	System.out.println(swithUser.getPassword());
+	    	
 	    	
 	    	userService.updatePassword(swithUser);
 	        return ResponseEntity.ok("User's password updated successfully");
 	    }
-	    
+	    //delete User 관련
 	    @PostMapping("/deleteUser")
 	    public ResponseEntity<String> deleteUser(@RequestBody SwithUser swithUser){
 	    	userService.deleteUser(swithUser);
 	    	return ResponseEntity.ok("Delete User");
+	    }
+	    
+	    @PostMapping("/deleteLikes")
+	    public ResponseEntity<?> deleteUserLikes(@RequestBody Likes likes){
+	    	userService.deleteUserLikes(likes);
+	    	return ResponseEntity.ok("Delete User's Like");
 	    }
 	    
 	    
@@ -334,28 +368,4 @@ public class RegisterController {
                 .body(responseMsg);
                 */
     }
-    
-      @ResponseBody
-  	  @PostMapping("/findPassword")
-  	  public ResponseEntity<String> findPassword(@RequestBody SwithUser swithUser){
-  		  MailService mailService = new MailService(javaMailSender);
-  		  int number = mailService.sendMail(swithUser.getEmail());
-  		     String num = "" + number;
-  		     return ResponseEntity.ok(num);
-  	  
-    }
-      //email(아이디)찾기
-	  @PostMapping("/ExistEmail")
-	  public ResponseEntity<String> checkEmail(@RequestBody SwithUser swithUser){
-		  SwithUser user = userService.getUserByEmail(swithUser.getEmail());
-		  //값이 db에 존재하는지 아닌지
-		  if(user != null && user.getEmail()==null) { // 존재한다면
-			  String existsEmail = "existsEmail";
-			  return ResponseEntity.ok(existsEmail);
-		  }else {
-			  String None = "none";
-			  return ResponseEntity.ok(None);
-		  }
-	  }
-    
 }

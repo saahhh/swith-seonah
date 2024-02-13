@@ -291,7 +291,6 @@ function StudyDetailUpdate() {
               />
             </span>
           </li>
-          12:48
           <li className="studyContent_contentWrapper">
             <span className="studyInfo_title">시작예정일</span>
             <span className="studyInfo_title_a">

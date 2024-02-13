@@ -220,6 +220,18 @@
   border: 0px;
 }
 
+.commentInput_buttonComplete_done {
+  height: 40px;
+  background: #ff7057;
+  border-radius: 50px;
+  font-weight: 700;
+  color: #525252;
+  font-size: 16px;
+  font-family: "SUITE-Regular";
+  padding: 0 20px;
+  border: 0px;
+}
+
 .commentDelete_buttonComplete {
   height: 20px;
   background: #8ee3ff;
@@ -233,6 +245,32 @@
   margin-left: 550px;
 }
 
+.commentDelete_buttonComplete_list {
+  height: 20px;
+  background: #8ee3ff;
+  border-radius: 50px;
+  color: #525252;
+  font-size: 13px;
+  font-family: "SUITE-Regular";
+  padding: 0 20px;
+  border: 0px;
+  text-align: right;
+  margin-left: 400px;
+}
+
+.commentDelete_buttonComplete_list2 {
+  height: 20px;
+  background: #8ee3ff;
+  border-radius: 50px;
+  color: #525252;
+  font-size: 13px;
+  font-family: "SUITE-Regular";
+  padding: 0 20px;
+  border: 0px;
+  text-align: right;
+  margin-left: 10px;
+}
+
 .commentItem_CommentList {
   display: flex;
   justify-content: space-between;
@@ -242,6 +280,13 @@
   color: #333;
   font-family: "SUITE-Regular";
   font-weight: 700;
+}
+
+.commentItem_userNickname_list {
+  color: #333;
+  font-family: "SUITE-Regular";
+  font-weight: 700;
+  width: 100px;
 }
 
 .commentItem_registeredDate {
@@ -266,6 +311,10 @@
 
 .commentList_CommentList {
   width: 100%;
+}
+
+.comment_list_box {
+  margin-left: 37px;
 }
 
 .studyApplication {
@@ -348,37 +397,4 @@
   margin-left: 2rem;
   position: fixed;
   top: 350px;
-}
-
-.mypage_post_list {
-  display: flex;
-
-  padding: 2px 25px 0;
-  width: flex;
-  height: flex;
-  background: #fff;
-  border: 3px solid #b9eeff;
-  border-radius: 30px;
-  position: relative;
-  cursor: pointer;
-  transition: 0.2s ease-in;
-  text-decoration-line: none;
-  list-style: none;
-}
-
-.mypage_comment_list {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 2px 25px 0;
-  width: flex;
-  height: 200px;
-  background: #fff;
-  border: 3px solid #b9eeff;
-  border-radius: 30px;
-  position: relative;
-  cursor: pointer;
-  transition: 0.2s ease-in;
-  text-decoration-line: none;
-  list-style: none;
 }

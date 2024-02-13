@@ -1,6 +1,8 @@
 package lm.swith.main.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lm.swith.alarm.service.AlarmService;
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
 import lm.swith.main.model.Likes;
@@ -26,37 +29,48 @@ import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
 import lm.swith.main.service.StudyPostService;
 import lm.swith.user.model.SwithUser;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/")
+@RequiredArgsConstructor
 @CrossOrigin(origins="http://localhost:3000", allowCredentials="true", allowedHeaders="*")
 public class StudyPostController {
 	private final StudyPostService studyPostService;
+	private final AlarmService alarmService;
 	
-    public StudyPostController(StudyPostService studyPostService) {
-        this.studyPostService = studyPostService;
-    }
+ 
     
-	
-	// 스터디 목록 + 댓글 목록
-    @GetMapping("/post_list")
-    public ResponseEntity<Map<String, Object>> getAllStudyPostWithSkills() {
-        List<StudyPost> studyPost = studyPostService.getAllStudyPostWithSkills();
-        List<Comments> comment = studyPostService.getCommentList();
-        studyPostService.runUpdateStudyStatus();
-        studyPostService.updateStudyStatus();
+	// 스터디 목록
+	@GetMapping("/post_list")
+	public ResponseEntity<Map<String, Object>> getAllStudyPostWithSkills() {
+	    List<StudyPost> studyPost = studyPostService.getAllStudyPostWithSkills();
+	    List<Comments> comment = studyPostService.getCommentList();
+	    LocalDateTime now = LocalDateTime.now(); // 현재 시간을 가져옴
+	    LocalDateTime deadLine;
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("studyPosts", studyPost);
-        responseMap.put("comments", comment);
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        if (!studyPost.isEmpty()) {
-            return ResponseEntity.ok(responseMap);
-        } else {
-            return ResponseEntity.noContent().build();
-        }
-    }
+	    for (StudyPost studyArlam : studyPost) {
+	        deadLine = LocalDateTime.parse(studyArlam.getRecruit_deadline(), formatter); // 문자열을 날짜 형식으로 가져옴
+	        int compareResult = deadLine.compareTo(now); // deadLine의 날짜와 현재시간을 비교 deadLine이 크면 큰만큼 양수 작으면 음수 같으면 0을 표기
+	        if (compareResult == 7) {
+	        	System.out.println("확인 : " + studyArlam.getPost_no());
+	            alarmService.isLikeAlarm(studyArlam.getPost_no());
+	        }
+	    }
+	    studyPostService.runUpdateStudyStatus();
+	    //studyPostService.updateStudyStatus();
+	    Map<String, Object> responseMap = new HashMap<>();
+	    responseMap.put("studyPosts", studyPost);
+	    responseMap.put("comments", comment);
 
+	    if (!studyPost.isEmpty()) {
+	        return ResponseEntity.ok(responseMap);
+	    } else {
+	        return ResponseEntity.noContent().build();
+	    }
+	}
     // 찜하기
     @PostMapping("/likesUpdate")
     public String likesUpdate( @RequestParam("user_no") Long user_no, @RequestParam("post_no") Long post_no) {
@@ -77,6 +91,7 @@ public class StudyPostController {
         return ResponseEntity.ok(isLiked);
     }
     
+   
     
     // 스터디 상세 페이지 + 댓글
     @GetMapping("/post_detail/{post_no}")
@@ -98,57 +113,59 @@ public class StudyPostController {
 		return "/post_form";
 	}
 	
-	// 스터디 신청
-	 	@PostMapping("/add_applicants")
-	 	public String addUsersByPostNo ( @RequestParam("user_no") Long user_no, @RequestParam("post_no") Long post_no) {
-	 		studyPostService.addUsersByPostNo(post_no, user_no);
-	 		return "redirect:/post_detail/" + post_no;
-	 	}
-		
-		
-		// 스터디 신청자 목록
-		@GetMapping("/application_update/{post_no}")
-	    public ResponseEntity<List<StudyApplication>> getAllApplicantsByPostNo(@PathVariable Long post_no) {
-	        List<StudyApplication> studyApplicants = studyPostService.getAllApplicants2(post_no);
-	        if (!studyApplicants.isEmpty()) {
-	            return ResponseEntity.ok(studyApplicants);
+	
+ // 스터디 신청
+ 	@PostMapping("/add_applicants")
+ 	public String addUsersByPostNo ( @RequestParam("user_no") Long user_no, @RequestParam("post_no") Long post_no) {
+ 		studyPostService.addUsersByPostNo(post_no, user_no);
+ 		return "redirect:/post_detail/" + post_no;
+ 	}
+	
+	
+	// 스터디 신청자 목록
+	@GetMapping("/application_update/{post_no}")
+    public ResponseEntity<List<StudyApplication>> getAllApplicantsByPostNo(@PathVariable Long post_no) {
+        List<StudyApplication> studyApplicants = studyPostService.getAllApplicants2(post_no);
+        if (!studyApplicants.isEmpty()) {
+            return ResponseEntity.ok(studyApplicants);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+	
+	// 스터디 신청 목록 업데이트 (승인/거절)
+	@PostMapping("/application_update/{post_no}/{user_no}")
+	public ResponseEntity<List<StudyApplication>> updateApplication(
+			@PathVariable("post_no") Long post_no,
+			@PathVariable("user_no") Long user_no,
+			@RequestParam("action") String action) { // action은 HTTP 요청에서 "action"이라는 이름의 파라미터를 String 타입으로 받아옴 (accept 혹은 reject로)
+	    List<StudyApplication> studyApplication = studyPostService.getAllApplicants(post_no);
+  
+	    try {
+	        boolean accept = true;
+	        System.out.println("action: " + action);
+	        if ("accept".equals(action)) {
+	        
+	            studyPostService.updateApplicantsStatus(user_no, post_no, accept);
+	            List<StudyApplication> updatedApplications = studyPostService.getAllApplicants(post_no);
+	            
+	            return ResponseEntity.ok(updatedApplications); // 처리 성공
+	        } else if("reject".equals(action)) {
+	        	System.out.println("여기는 거절");
+	            accept = false;
+	            studyPostService.updateApplicantsStatus(user_no, post_no, accept);
+	            List<StudyApplication> updatedApplications = studyPostService.getAllApplicants(post_no);
+	            
+	            return ResponseEntity.ok(updatedApplications); // 처리 성공
 	        } else {
-	            return ResponseEntity.noContent().build();
+	        	 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	        }
+	        
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 예외인 경우 HTTP 500 서버 에러 오류 상태코드 반환
 	    }
-		
-		// 스터디 신청 목록 업데이트 (승인/거절)
-		@PostMapping("/application_update/{post_no}/{user_no}")
-		public ResponseEntity<List<StudyApplication>> updateApplication(
-				@PathVariable("post_no") Long post_no,
-				@PathVariable("user_no") Long user_no,
-				@RequestParam("action") String action) { // action은 HTTP 요청에서 "action"이라는 이름의 파라미터를 String 타입으로 받아옴 (accept 혹은 reject로)
-		    List<StudyApplication> studyApplication = studyPostService.getAllApplicants(post_no);
-	  
-		    try {
-		        boolean accept = true;
-		        System.out.println("action: " + action);
-		        if ("accept".equals(action)) {
-		        
-		            studyPostService.updateApplicantsStatus(user_no, post_no, accept);
-		            List<StudyApplication> updatedApplications = studyPostService.getAllApplicants(post_no);
-		            
-		            return ResponseEntity.ok(updatedApplications); // 처리 성공
-		        } else if("reject".equals(action)) {
-		        	System.out.println("여기는 거절");
-		            accept = false;
-		            studyPostService.updateApplicantsStatus(user_no, post_no, accept);
-		            List<StudyApplication> updatedApplications = studyPostService.getAllApplicants(post_no);
-		            
-		            return ResponseEntity.ok(updatedApplications); // 처리 성공
-		        } else {
-		        	 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		        }
-		        
-		    } catch (Exception e) {
-		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 예외인 경우 HTTP 500 서버 에러 오류 상태코드 반환
-		    }
-		}
+	}
+
 	
 	  // 댓글 등록
     @PostMapping("/add_comment/{post_no}/{user_no}")
@@ -159,7 +176,7 @@ public class StudyPostController {
         comm.setComment_no(user_no);
         comm.setComment_content(comment.getComment_content());
         studyPostService.insertComment(comm);
-//      System.out.println(comment.getComment_content());
+//        System.out.println(comment.getComment_content());
 
         return ResponseEntity.ok("댓글이 등록되었습니다.");
     }
@@ -186,8 +203,7 @@ public class StudyPostController {
     }
     
 
-
-
+	
     
     // 카페 리스트
     @GetMapping ("/cafe_list")
@@ -203,7 +219,7 @@ public class StudyPostController {
     }
     
 	
-    // 스터디 생성 처리
+ // 스터디 생성 처리
     @PostMapping("/create")
     public ResponseEntity<?> insertStudyPost(@RequestBody StudyPost studyPost) {
     	  LocalDate now = LocalDate.now(); // now(현재날짜) 
@@ -283,7 +299,7 @@ public class StudyPostController {
         return "/";
     }
 
-	// 스터디 수정 페이지 이동
+ // 스터디 수정 페이지 이동
     @GetMapping("/update/{post_no}")
     public ResponseEntity<StudyPost> showUpdateFrom(@PathVariable Long post_no, Model model) {
         // 스터디 정보 및 관련 스킬 정보를 불러오는 서비스 메서드 호출
@@ -293,30 +309,46 @@ public class StudyPostController {
     }
 	
 	// 스터디 수정 적용
-	@PatchMapping("/update/{post_no}")
+    @PatchMapping("/update/{post_no}")
 	public ResponseEntity<?> updateStudyPost(@PathVariable Long post_no, @RequestBody StudyPost studyPost) {
 		  // 스터디 정보 및 관련 스킬 정보를 불러오는 서비스 메서드 호출
 		System.out.println(studyPost.getMax_study_applicants());
 		System.out.println(studyPost.getFirst_study());
 		System.out.println(studyPost.getRecruit_deadline());
-		System.out.println(studyPost.getStudy_title());
-	
 		studyPostService.updateStudyPost(studyPost);
 		 return ResponseEntity.ok("studyPost successfully");
 	}
 	
 	
 	
-	// 조건 스터디 목록    
-    @GetMapping("/getSelectedList")
-    public ResponseEntity<List<StudyPost>> getStudiesBySelect(@RequestParam Map<String, Object> params) {
-        List<StudyPost> studyPost = studyPostService.getStudiesBySelect(params);
-        if (!studyPost.isEmpty()) {
-            return ResponseEntity.ok(studyPost);
-        } else {
-            return ResponseEntity.noContent().build();
-        }
-    }
+	// 조건 스터디 목록  
+	@GetMapping("/getSelectedList")
+	public ResponseEntity<List<StudyPost>> getStudiesBySelect(
+	    @RequestParam(value = "skill_no", required = false) List<Long> skill_no,
+	    @RequestParam(value = "recruit_type", required = false) String recruit_type,
+	    @RequestParam(value = "study_method", required = false) String study_method,
+	    @RequestParam(value = "study_location", required = false) String study_location) {
+
+	    Map<String, Object> params = new HashMap<>();
+
+	    params.put("skill_no", skill_no);
+	    params.put("recruit_type", recruit_type);
+	    params.put("study_method", study_method);
+	    params.put("study_location", study_location);
+
+	    List<StudyPost> studyPost = studyPostService.getStudiesBySelect(
+	    	    (List<Long>) params.get("skill_no"),
+	    	    (String) params.get("recruit_type"),
+	    	    (String) params.get("study_method"),
+	    	    (String) params.get("study_location")
+	    	);
+
+	    if (!studyPost.isEmpty()) {
+	        return ResponseEntity.ok(studyPost);
+	    } else {
+	        return ResponseEntity.noContent().build();
+	    }
+	}
     
     // 검색 스터디 목록
     @GetMapping("/KeywordStudy")
@@ -356,5 +388,8 @@ public class StudyPostController {
  		studyPostService.deleteUser(user_no);
  		return "redirect:/admin";
  	}
+ 	
+ 	
+ 	
  
 }

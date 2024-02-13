@@ -1,14 +1,20 @@
 package lm.swith.main.service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lm.swith.alarm.mapper.AlarmMapper;
+import lm.swith.alarm.model.Alarm;
 import lm.swith.main.mapper.StudyPostMapper;
 import lm.swith.main.model.Cafes;
 import lm.swith.main.model.Comments;
@@ -16,16 +22,24 @@ import lm.swith.main.model.Likes;
 import lm.swith.main.model.PostTechStacks;
 import lm.swith.main.model.StudyApplication;
 import lm.swith.main.model.StudyPost;
+import lm.swith.user.mapper.UsersMapper;
 import lm.swith.user.model.SwithUser;
 @Service
 public class StudyPostService {
-	@Autowired
-	private final StudyPostMapper studyPostMapper;
-	
-    @Autowired
-    public StudyPostService(StudyPostMapper studyPostMapper) {
-        this.studyPostMapper = studyPostMapper;
-    }
+	  @Autowired
+	  private final StudyPostMapper studyPostMapper;
+	  @Autowired
+	  private final AlarmMapper alarmMapper;
+
+	  @Autowired
+	  private final UsersMapper usersMapper;
+
+	  @Autowired
+	  public StudyPostService(StudyPostMapper studyPostMapper,  AlarmMapper alarmMapper, UsersMapper usersMapper) {
+	      this.studyPostMapper = studyPostMapper;
+	  this.alarmMapper = alarmMapper;
+	  this.usersMapper = usersMapper;
+	  }
 	// Main Part
     
     // 스터디 등록하기
@@ -33,7 +47,9 @@ public class StudyPostService {
     public void insertStudyPost(StudyPost studyPost) {
         try {
             // StudyPost 삽입
+        	studyPost.setStudy_period(studyPost.getStudy_period() + "개월");
             studyPostMapper.insertStudyPost(studyPost);
+            
 
             // PostTechStacks 삽입
             System.out.println("Original skill_no list: " + studyPost.getSkills());
@@ -80,7 +96,14 @@ public class StudyPostService {
     
 
     // 스터디 조건 검색
-    public List<StudyPost> getStudiesBySelect(Map<String, Object> params) {
+    public List<StudyPost> getStudiesBySelect(List<Long> skill_no,String recruit_type,String study_method,String study_location) {
+	    Map<String, Object> params = new HashMap<>();
+	    // skill_no가 비어있지 않은 경우에만 파라미터로 추가
+	    params.put("skill_no", skill_no);
+	   
+	    params.put("recruit_type", recruit_type);
+	    params.put("study_method", study_method);
+	    params.put("study_location", study_location);
     	return studyPostMapper.getStudiesBySelect(params);
     }
     
@@ -92,20 +115,49 @@ public class StudyPostService {
     @Transactional
     public void updateStudyStatus() {
         List<StudyPost> expiredPosts = studyPostMapper.findExpiredStudyStatus();
-
+        Alarm alarm = new Alarm();
+        List<StudyApplication> userNumber; // 보류 (user_no는 보내줄 사람)
+        SwithUser userNickName;
+        Calendar cal = Calendar.getInstance(); // 날짜 함수 선언
+        LocalDateTime start; // start 을 날짜형식으로 받기위해 선언
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // yyyy-mm-dd 형식으로 받아오기위해 선언
+        SimpleDateFormat format = new SimpleDateFormat(); // 날짜 형식 선언
+        format.applyPattern("yyyy-MM-dd");  // 형식을 선언
+        String a = null;
+        int period; // 스터디 시작일의 숫자 추출
+        
         for (StudyPost post : expiredPosts) {
+        	 start = LocalDateTime.parse( post.getStudy_start(), formatter); // start을 formatter 형식으로 변환함
+        	 period = Integer.parseInt(post.getStudy_period().replaceAll("[^0-9]",""));  // 스터디 진행기간의 숫자만 추출
+        	 Calendar calendar = convertToLocalDateTimeToCalendar(start); // calendar에 start의 값을 넣어줌
+        	 calendar.add(Calendar.MONDAY, period); // 시작일 부터 진행기간 + 한 값
+        	 System.out.println(format.format(calendar.getTime()) + " text");
+        	 post.setStudyroomend(format.format(calendar.getTime())); // 위에 진행기간을 YYYY-MM-DD 형식으로 넣어줌
+        	// 스터디방 종료 날짜 선언        	
+        	studyPostMapper.updateStudyRoomEnd(post.getPost_no(), post.getStudyroomend());
+        	userNumber = studyPostMapper.getAllApplicantsByPostNoStudyRoom(post.getPost_no());
+        	for(StudyApplication stap : userNumber) {
+        	alarm.setPost_no(post.getPost_no()); // postNo주입
+        	alarm.setAlarm_message(post.getStudy_title() + "의 " + post.getRecruit_deadline() + "이 지나 스터디방이 활성화 됩니다.");
+        	alarm.setUser_no(stap.getUser_no());
+        	alarmMapper.insertAlarm(alarm);
+        	}
+        	
+        	
             // 상태를 업데이트하는 작업 수행
             studyPostMapper.updateStudyStatus();
         }
     }
+    
+    
     
     // 자정마다 마감기한 지난 스터디 상태 변경 실행 -> 백에서 자동 실행이기 때문에 controller 필요x
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정 실행
     public void runUpdateStudyStatus() {
     	updateStudyStatus();
     }
+    	
     
-	
     
     // MyPage Part
     // 내가 쓴 스터디 목록
@@ -163,9 +215,10 @@ public class StudyPostService {
 //            postTechStacks.setSkill_no(skill_no);
 //            System.out.println("PostTechStacks skill_no: " + postTechStacks.getSkill_no());
 //            // PostTechStacks를 삭제 후 다시 저장
-//
+//            studyPostMapper.deletePostTechStacksUpdate(postTechStacks);
+//            
+//            studyPostMapper.insertPostTechStacksUpdate(postTechStacks);
 //        }
-//        studyPostMapper.updateSkill(studyPost.getStudyPostWithSkills());
 
         // StudyApplication 삽입
 //        StudyApplication studyApplication = new StudyApplication();
@@ -187,16 +240,23 @@ public class StudyPostService {
     public void deleteStudyPost(Long post_no) {
     	studyPostMapper.deleteComments(post_no);
     	studyPostMapper.deleteStudyApplication(post_no);
-    	studyPostMapper.deletePostLikes(post_no);
     	studyPostMapper.deletePostTechStacks(post_no);
     	studyPostMapper.deleteStudyPost(post_no);
-    	
     }
     
  
     
     // 스터디 신청
     public void addUsersByPostNo(Long post_no, Long user_no) {
+    	// Alarm 찾기
+    	Alarm alarm = new Alarm();
+    	// post_no : 게시글 작성자 의 user_no 찾아서 보내주기
+    	StudyPost userNumber = studyPostMapper.selectUserNoByPostNo(post_no);
+    	alarm.setUser_no(userNumber.getUser_no()); // 게시글 작성자에게 보내줌
+    	alarm.setPost_no(post_no); // 어떤 게시물에 대한건지 
+    	SwithUser userNickName = usersMapper.findByUserNo(user_no); // user_no를 가진신청자 이름 불F러오기
+    	alarm.setAlarm_message(userNickName.getNickname() + "님이 참가 신청 하였습니다."); // 누가 신청했는지 메세지 설정
+    	alarmMapper.insertAlarm(alarm);
     	studyPostMapper.addUsersByPostNo(post_no, user_no);
     }
     
@@ -206,7 +266,7 @@ public class StudyPostService {
     }
     
     
-    // 승인된 신청자 수를 가져와서 StudyApplication 모델에 설정
+    // 승인된 신청자 수를 가져오기
     public List<StudyApplication> getAllApplicants2(Long post_no) {
         List<StudyApplication> studyApplicants = studyPostMapper.getAllApplicantsByPostNo(post_no);
         for (StudyApplication studyApplication : studyApplicants) {
@@ -229,20 +289,29 @@ public class StudyPostService {
     
     
     // 스터디 신청 상태 업데이트 (승인/거절)
-    public void updateApplicantsStatus(Long user_no, Long post_no, boolean accept) {
-    
-
-    	System.out.println("서비스 accept"+ accept);
-        try {
-                if (accept) { // accept가 true라면 승인 
-                    studyPostMapper.acceptApplicant(post_no, user_no);
-                } else {
-                	studyPostMapper.deleteApplicant(post_no, user_no);
-                }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
+  public void updateApplicantsStatus(Long user_no, Long post_no, boolean accept) {
+  	Alarm alarm = new Alarm();
+  	
+  	alarm.setPost_no(post_no);
+  	alarm.setUser_no(user_no);
+  	StudyPost studyPostInfo = studyPostMapper.selectUserNoByPostNo(post_no);
+  	
+  	System.out.println("서비스 accept"+ accept);
+      try {   
+              if (accept) { // accept가 true라면 승인 
+                  studyPostMapper.acceptApplicant(post_no, user_no);
+                  alarm.setAlarm_message(studyPostInfo.getStudy_title() + "의 참가 신청 되었습니다.");
+                  alarmMapper.insertAlarm(alarm);
+              } else {
+              	studyPostMapper.deleteApplicant(post_no, user_no);
+              	alarm.setAlarm_message(studyPostInfo.getStudy_title() + "의 참가 거절 되었습니다.");
+              	alarmMapper.insertAlarm(alarm);
+              }
+          
+      } catch (Exception e) {
+          throw new RuntimeException(e.getMessage());
+      }
+  }
     
     
     
@@ -250,6 +319,8 @@ public class StudyPostService {
     public List<Likes> isLiked(Long post_no, Long user_no) {
         return studyPostMapper.isLiked(post_no, user_no);
     }
+    
+    
     
     
     
@@ -268,6 +339,19 @@ public class StudyPostService {
         }
     }
     
+    
+    //찜 카운트
+    public List<Likes> likesCount(Long post_no) {
+        List<Likes> likes = studyPostMapper.getLikesList(); // 알맞은 방법으로 Likes 목록을 가져와야 합니다.
+
+        for (Likes like : likes) {
+            like.setLikesCount(studyPostMapper.likesCount(post_no));
+        }
+
+        return likes;
+    }
+  
+   
 
     // 스터디 게시글 작성 내 첫모임 장소 검색
     public List<Cafes> searchCafes(String keyword) {
@@ -300,7 +384,6 @@ public class StudyPostService {
     public List<Comments> getCommentList() {
     	return studyPostMapper.getCommentList();
     	}
-
     
     
     // Profile Part
@@ -338,7 +421,14 @@ public class StudyPostService {
     	studyPostMapper.deleteUserStudyPost(user_no);
     	studyPostMapper.deleteUser(user_no);
     }
+    
+    private static Calendar convertToLocalDateTimeToCalendar(LocalDateTime localDateTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, localDateTime.getYear());
+        calendar.set(Calendar.MONTH, localDateTime.getMonthValue() - 1); // Calendar에서는 월이 0부터 시작하므로 1을 빼줍니다.
+        calendar.set(Calendar.DAY_OF_MONTH, localDateTime.getDayOfMonth());
 
-
+        return calendar;
+    }
     
 }

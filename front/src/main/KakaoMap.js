@@ -38,9 +38,9 @@ const KakaoMap = () => {
       try {
         // 서버에 first_study 정보를 가져오는 요청
         const response = await usersUserinfoAxios.get("/post_list");
-        setBplcnms(response.data.map((item) => item.first_study)); // first_study의 bplcnm 설정
-        setPostNo(response.data.map((item) => item.post_no));
-        console.log(response.data.map((item) => item.first_study));
+        setBplcnms(response.data.studyPosts.map((item) => item.first_study)); // first_study의 bplcnm 설정
+        setPostNo(response.data.studyPosts.map((item) => item.post_no));
+        console.log(response.data.studyPosts.map((item) => item.first_study));
       } catch (error) {
         console.error("Failed to fetch first study data.", error);
       }
@@ -117,7 +117,7 @@ const KakaoMap = () => {
             marker.setMap(map, marker); // 홈 마커 지도에 표시
             map.setCenter(coords); // 사용자의 집 위치를 중심으로 지도 표시
 
-            // 카페의 주소로 마커를 생성하고 post_no를 연결하는 부분
+            // 마커를 생성하고 post_no를 연결하는 부분
             const cafeMarkers = bplcnms.map((bplcnm) => {
               return new Promise((resolve) => {
                 geocoder.addressSearch(bplcnm, (result, status) => {
@@ -151,7 +151,7 @@ const KakaoMap = () => {
                       cafeMarker,
                       "click",
                       () => {
-                        // 클릭된 마커의 post_no를 가져오기 위해 해당 마커의 인덱스를 사용
+                        // 클릭된 마커의 post_no를 가져오기 위해 해당 마커의 인덱스를 사용합니다.
                         const clickedMarkerIndex = bplcnms.findIndex(
                           (item) => item === bplcnm
                         );

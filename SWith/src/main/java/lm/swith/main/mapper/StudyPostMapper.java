@@ -49,17 +49,21 @@ public interface StudyPostMapper {
 	// 마감 기한 지난 스터디 상태 업데이트
 	void updateStudyStatus();
 	
-
-	
 	// Study Likes==================================================================================================================================================
 		// 스터디 찜
 		void addLikes (Likes likes);
+		
+		//스터디 찜 목록
+		List<Likes> getLikesList();
 		
 		// 스터디 찜 목록
 		List<Likes> isLiked (@Param("post_no") Long post_no, @Param("user_no") Long user_no);
 		
 		// 스터디 찜 삭제
 		void deleteLikes (@Param("post_no") Long post_no, @Param("user_no") Long user_no);
+		
+		// 스터디 찜 카운트
+		int likesCount(Long post_no);
 	
 
 	// My page Part=================================================================================================================================================
@@ -80,15 +84,15 @@ public interface StudyPostMapper {
 		
 		// 스터디 수정
 		
-//		void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
-		void updateSkill(List<Skill> skill);
-//		void upadateStudyApplication(StudyApplication studyApplication);
-
-//		void insertPostTechStacksUpdate(PostTechStacks postTechStacks);
-//		void updateStudyPostUser(@Param("user_no") Long user_no);
-		void updateStudyPost (StudyPost studyPost);
-		void studyApplicationUpdate(Long user_no, Long post_no, int max_study_applicants);
-
+				void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
+//				void updateSkill(List<Skill> skill);
+//				void upadateStudyApplication(StudyApplication studyApplication);
+				void deletePostLikes(@Param("post_no") Long post_no);
+//				void insertPostTechStacksUpdate(PostTechStacks postTechStacks);
+//				void updateStudyPostUser(@Param("user_no") Long user_no);
+				void updateStudyPost (StudyPost studyPost);
+				void studyApplicationUpdate(Long user_no, Long post_no, int max_study_applicants);
+		
 
 		
 		// 스터디 삭제 OK
@@ -103,8 +107,7 @@ public interface StudyPostMapper {
 		// 스터디 기술스텍 삭제
 		void deletePostTechStacks(@Param("post_no") Long post_no);
 
-		// 스터디 찜 삭제
-		void deletePostLikes(@Param("post_no") Long post_no);
+	
 	
 		
 
@@ -130,8 +133,11 @@ public interface StudyPostMapper {
 		// 스터디 확정 멤버
 		List<StudyApplication> getAllMembersByPostNo(@Param("post_no") Long post_no);
 		
+		// 내가 참여한 스터디 목록 OK
+		List<StudyApplication> getAllApplicantsByPostNoStudyRoom(Long user_no);
 
-	
+
+
 	// Comment Part
 		// 댓글 등록
 		void insertComment (Comments comments);
@@ -145,9 +151,7 @@ public interface StudyPostMapper {
 		// 댓글 삭제
 		void deleteComment(@Param("post_no") Long post_no, @Param("user_no") Long user_no, @Param("comment_no") Long comment_no);
 
-		// 댓글 카운트
-		int commentsCount (@Param("post_no") Long post_no);
-		
+
 		// 메인페이지 댓글 갯수
 		List<Comments> getCommentList();
 		
@@ -176,6 +180,20 @@ public interface StudyPostMapper {
 //		void deleteUserMystudiesByUserNo(@Param("user_no") Long user_no);
 		void deleteUserStudyPost(@Param("user_no") Long user_no);
 		void deleteUser(@Param("user_no") Long user_no);
-
+		
+		
+		
+		// 게시글 작성자의 user_no 찾기
+		StudyPost selectUserNoByPostNo(Long post_no);
+		
+		// 알람(찜한사람)
+		List<Likes> alarmLikeInfo(Long post_no);
+		
+		// 스터디방 종료날짜 선언
+		void updateStudyRoomEnd(Long post_no, String studyroomend);
+		
+		
+	
+	
 	}
 

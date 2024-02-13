@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import lm.swith.main.model.Likes;
 import lm.swith.user.model.SwithUser;
 
 @Mapper
@@ -30,7 +31,13 @@ public interface UsersMapper {
 	
 	void updateUserProfile(SwithUser swithUser);
 	
+	
+	//delete User 
 	void deleteUser(SwithUser swithUser);
 	
+	void deleteUserLikes(Likes likes);// delete user's info from LIKES
+	
 	SwithUser findByUserNo(Long user_no);
+	
+	
 }
