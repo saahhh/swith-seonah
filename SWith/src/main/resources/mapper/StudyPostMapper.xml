@@ -99,13 +99,14 @@
 		<result property="study_post_time" column="STUDY_POST_TIME" />
 		<result property="mentor_count" column="mentor_count" />
 		<result property="mentee_count" column="mentee_count" />
-		<result property="application_count" column="application_count" />		
+		<result property="application_count" column="application_count" />
 		<association property="user" resultMap="UsersResult" />
 		<association property="mentor" resultMap="MentorResult" />
 		<association property="mentee" resultMap="MenteeResult" />
 		<association property="studyApplication"
 			resultMap="StudyApplicationResult" />
-		<association property="comments" resultMap="commentWithUser" />
+		<association property="comments"
+			resultMap="commentWithUser" />
 		<collection property="studyPostWithSkills"
 			resultMap="SkillResult" />
 	</resultMap>
@@ -113,25 +114,27 @@
 	<!-- ********************************************************* Main Page 
 		Part ********************************************************************************* -->
 	<!-- 스터디 전체 목록 OK -->
-	<select id="getAllStudyPostWithSkills" resultMap="studyPostWithSkills">
-	    SELECT sp.*,s.skill_no, s.skill_name, s.skill_img, u.*, c.*,
-	    ( 
-	    	SELECT COUNT(*)
-	    	FROM likes l
-	    	WHERE post_no = sp.post_no
-	    ) AS likes_count
-	    FROM STUDY_POST sp
-	    LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-	    LEFT JOIN skill s ON pts.skill_no = s.skill_no
-	    LEFT JOIN likes l ON sp.post_no = l.post_no
-	    LEFT JOIN users u ON sp.user_no = u.user_no
-	    LEFT JOIN comments c ON sp.post_no = c.post_no
-	    WHERE sp.study_status = 'O'
+	<select id="getAllStudyPostWithSkills"
+		resultMap="studyPostWithSkills">
+		SELECT sp.*,s.skill_no, s.skill_name, s.skill_img, u.*, c.*,
+		(
+		SELECT COUNT(*)
+		FROM likes l
+		WHERE post_no = sp.post_no
+		) AS likes_count
+		FROM STUDY_POST sp
+		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
+		LEFT JOIN skill s ON pts.skill_no = s.skill_no
+		LEFT JOIN likes l ON sp.post_no = l.post_no
+		LEFT JOIN users u ON sp.user_no = u.user_no
+		LEFT JOIN comments c ON sp.post_no = c.post_no
+		WHERE sp.study_status = 'O'
 	</select>
 
-	
+
 	<!-- 댓글 리스트 -->
-	<select id="getCommentList" parameterType="lm.swith.main.model.Comments">
+	<select id="getCommentList"
+		parameterType="lm.swith.main.model.Comments">
 		SELECT * FROM COMMENTS
 	</select>
 
@@ -141,7 +144,8 @@
 		resultType="lm.swith.main.model.StudyPost">
 		SELECT * FROM (
 		SELECT sp.*, s.skill_name, s.skill_img, s.skill_no
-		FROM study_post sp
+		FROM
+		study_post sp
 		JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
 		LEFT JOIN skill s ON pts.skill_no = s.skill_no
 		WHERE
@@ -167,8 +171,10 @@
 		SELECT sp.*, s.skill_name, s.skill_img
 		FROM study_post sp
 		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-		LEFT JOIN skill s ON pts.skill_no = s.skill_no
-		WHERE sp.study_title LIKE '%' || #{keyword} || '%'
+		LEFT JOIN
+		skill s ON pts.skill_no = s.skill_no
+		WHERE sp.study_title LIKE '%' ||
+		#{keyword} || '%'
 		OR sp.study_content LIKE '%' || #{keyword} || '%'
 	</select>
 
@@ -184,14 +190,18 @@
 		</selectKey>
 		<!-- 첫 번째 쿼리: study_post 테이블에 스터디 정보 삽입 -->
 		INSERT INTO study_post (
-		POST_NO, USER_NO, NICKNAME, STUDY_TITLE, STUDY_CONTENT, RECRUIT_DEADLINE,
-		STUDY_METHOD, RECRUIT_TYPE, STUDY_PERIOD,
+		POST_NO, USER_NO, NICKNAME, STUDY_TITLE,
+		STUDY_CONTENT, RECRUIT_DEADLINE,
+		STUDY_METHOD, RECRUIT_TYPE,
+		STUDY_PERIOD,
 		STUDY_LOCATION, FIRST_STUDY, STUDY_START
 		) VALUES (
-		#{post_no}, #{user_no}, (SELECT NICKNAME FROM USERS WHERE USER_NO = #{user_no}),
+		#{post_no}, #{user_no}, (SELECT NICKNAME FROM USERS WHERE USER_NO =
+		#{user_no}),
 		#{study_title}, #{study_content}, #{recruit_deadline},
 		#{study_method}, #{recruit_type}, #{study_period},
-		#{study_location}, #{first_study}, #{study_start}
+		#{study_location},
+		#{first_study}, #{study_start}
 		)
 	</insert>
 
@@ -199,23 +209,27 @@
 	<insert id="insertSkill"
 		parameterType="lm.swith.main.model.Skill">
 		INSERT INTO skill (skill_no, skill_name)
-		VALUES (#{skill_no}, #{skill_name})
+		VALUES
+		(#{skill_no}, #{skill_name})
 	</insert>
 
 	<!-- application 정보 insert -->
 	<insert id="insertStudyApplication"
 		parameterType="lm.swith.main.model.StudyApplication">
 		INSERT INTO STUDY_APPLICATION (
-		POST_NO, USER_NO, STATUS, MAX_STUDY_APPLICANTS
+		POST_NO, USER_NO, STATUS,
+		MAX_STUDY_APPLICANTS
 		) VALUES (
-		#{post_no}, #{user_no}, '승인', #{max_study_applicants}
+		#{post_no}, #{user_no}, '승인',
+		#{max_study_applicants}
 		)
 	</insert>
 
 	<!-- 기술 스택 정보 insert -->
 	<insert id="insertPostTechStacks"
 		parameterType="lm.swith.main.model.PostTechStacks">
-		INSERT INTO POST_TECH_STACKS (POST_NO, SKILL_NO, USER_NO) VALUES (#{post_no},
+		INSERT INTO POST_TECH_STACKS (POST_NO, SKILL_NO,
+		USER_NO) VALUES (#{post_no},
 		#{skill_no}, #{user_no})
 	</insert>
 
@@ -234,7 +248,7 @@
 	<select id="getAllCafes" resultType="lm.swith.main.model.Cafes">
 		SELECT * FROM CAFES
 	</select>
-	
+
 
 
 	<!-- ********************************************************* Likes Part 
@@ -285,8 +299,10 @@
 		SELECT sp.*, s.skill_name, s.skill_img
 		FROM study_post sp
 		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-		LEFT JOIN skill s ON pts.skill_no = s.skill_no
-		LEFT JOIN likes l ON sp.post_no = l.post_no
+		LEFT JOIN
+		skill s ON pts.skill_no = s.skill_no
+		LEFT JOIN likes l ON sp.post_no =
+		l.post_no
 		WHERE l.user_no = #{user_no} AND sp.study_status = 'O'
 	</select>
 
@@ -295,16 +311,18 @@
 	<select id="getAllStudiesWithUserNo"
 		resultMap="studyPostWithSkills">
 		SELECT sp.*, s.skill_name, s.skill_img, u.*
-		FROM study_post sp
+		FROM study_post
+		sp
 		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
 		LEFT JOIN
 		skill s ON pts.skill_no = s.skill_no
 		LEFT JOIN study_application sa ON
 		sp.post_no = sa.POST_NO
-		LEFT JOIN users u ON u.user_no = sp.user_no 
+		LEFT JOIN users u ON u.user_no = sp.user_no
 		WHERE sa.user_no = #{user_no} AND sa.status =
 		'승인'
-		ORDER BY sp.study_start DESC
+		ORDER BY
+		sp.study_start DESC
 	</select>
 
 	<!-- *********************************************************** Study Detail 
@@ -319,13 +337,16 @@
 		sp.*,
 		s.skill_name,
 		s.skill_img,
-		m.USER_NO AS mentor_user_no,
+		m.USER_NO AS
+		mentor_user_no,
 		m.MENTOR_STATUS,
 		m.MAX_MENTOR_APPLICANTS,
-		me.USER_NO AS mentee_user_no,
+		me.USER_NO AS
+		mentee_user_no,
 		me.MENTEE_STATUS,
 		me.MAX_MENTEE_APPLICANTS,
-		sa.USER_NO AS application_user_no,
+		sa.USER_NO AS
+		application_user_no,
 		sa.STATUS,
 		sa.MAX_STUDY_APPLICANTS,
 		c.comment_no,
@@ -333,19 +354,25 @@
 		c.comment_content,
 		c.comment_post_time,
 		(
-		SELECT COUNT(DISTINCT m.USER_NO)
+		SELECT COUNT(DISTINCT
+		m.USER_NO)
 		FROM mentor m
-		WHERE m.POST_NO = sp.post_no AND m.MENTOR_STATUS = '승인'
+		WHERE m.POST_NO = sp.post_no AND
+		m.MENTOR_STATUS = '승인'
 		) AS mentor_count,
 		(
-		SELECT COUNT(DISTINCT me.USER_NO)
+		SELECT COUNT(DISTINCT
+		me.USER_NO)
 		FROM mentee me
-		WHERE me.POST_NO = sp.post_no AND me.MENTEE_STATUS = '승인'
+		WHERE me.POST_NO = sp.post_no AND
+		me.MENTEE_STATUS = '승인'
 		) AS mentee_count,
 		(
-		SELECT COUNT(DISTINCT sa.USER_NO)
+		SELECT COUNT(DISTINCT
+		sa.USER_NO)
 		FROM study_application sa
-		WHERE sa.POST_NO = sp.post_no AND sa.STATUS = '승인'
+		WHERE sa.POST_NO = sp.post_no AND
+		sa.STATUS = '승인'
 		) AS application_count,
 		(
 		SELECT COUNT(*)
@@ -353,12 +380,16 @@
 		WHERE post_no = sp.post_no
 		) AS likes_count
 		FROM study_post sp
-		LEFT JOIN post_tech_stacks pts ON sp.post_no = pts.post_no
-		LEFT JOIN skill s ON pts.skill_no = s.skill_no
+		LEFT JOIN
+		post_tech_stacks pts ON sp.post_no = pts.post_no
+		LEFT JOIN skill s ON
+		pts.skill_no = s.skill_no
 		LEFT JOIN mentor m ON sp.post_no = m.POST_NO
 		LEFT JOIN mentee me ON sp.post_no = me.POST_NO
-		LEFT JOIN study_application sa ON sp.post_no = sa.POST_NO
-		LEFT JOIN likes l ON sp.post_no = l.post_no
+		LEFT JOIN
+		study_application sa ON sp.post_no = sa.POST_NO
+		LEFT JOIN likes l ON
+		sp.post_no = l.post_no
 		LEFT JOIN comments c ON c.post_no = sp.post_no
 		WHERE sp.post_no = #{post_no}
 	</select>
@@ -374,30 +405,25 @@
 		SET
 		STUDY_TITLE = #{study_title},
 		STUDY_CONTENT = #{study_content},
+		RECRUIT_DEADLINE = #{recruit_deadline},
+		STUDY_METHOD = #{study_method},
 		RECRUIT_TYPE = #{recruit_type},
 		STUDY_PERIOD = #{study_period},
-		STUDY_START = #{study_start},
-		RECRUIT_DEADLINE = #{recruit_deadline},
-		STUDY_STATUS = #{study_status},
-		STUDY_LOCATION = #{study_location}
+		STUDY_LOCATION = #{study_location},
+		FIRST_STUDY = #{first_study},
+		STUDY_START = #{study_start}
 		WHERE
-		POST_NO = #{post_no}
+		POST_NO = #{post_no} AND USER_NO = #{user_no};
 	</update>
 
-	<!-- 두 번째 쿼리: 기술 스택 정보 업데이트 기존 스킬 정보를 삭제 후 다시 저장	
-	<delete id="deletePostTechStacksUpdate" parameterType="long">
-		DELETE
-		FROM post_tech_stacks WHERE post_no = #{post_no}
-	</delete>
 
-	<insert id="insertPostTechStacksUpdate"
-		parameterType="lm.swith.main.model.PostTechStacks">
-		INSERT INTO post_tech_stacks (post_no, skill_no) VALUES
-		<foreach collection="skills" item="skill" separator=",">
-			(#{post_no}, #{skill})
-		</foreach>
-	</insert>
- -->
+	<!-- skill 정보 update -->
+	<update id="updateSkill"
+		parameterType="lm.swith.main.model.Skill">
+		UPDATE skill SET 
+		skill_no = #{skill_no},
+		skill_name = #{skill_name}
+	</update>
 
 	<!-- application 정보 update -->
 	<update id="studyApplicationUpdate"
@@ -406,37 +432,45 @@
 		STATUS = '승인',
 		MAX_STUDY_APPLICANTS = #{max_study_applicants}
 		WHERE
-		POST_NO = #{post_no} AND USER_NO = #{user_no}
+		POST_NO =
+		#{post_no} AND USER_NO = #{user_no}
 	</update>
+
+	<!-- 기술 스택 정보 update -->
+	<update id="updatePostTechStacks"
+		parameterType="lm.swith.main.model.PostTechStacks">
+		UPDATE POST_TECH_STACKS SET
+		POST_NO = #{post_no},
+		SKILL_NO = #{skill_no},
+		USER_NO = #{user_no}
+	</update>
+
+	<!-- 두 번째 쿼리: 기술 스택 정보 업데이트 기존 스킬 정보를 삭제 후 다시 저장 <delete id="deletePostTechStacksUpdate" 
+		parameterType="long"> DELETE FROM post_tech_stacks WHERE post_no = #{post_no} 
+		</delete> <insert id="insertPostTechStacksUpdate" parameterType="lm.swith.main.model.PostTechStacks"> 
+		INSERT INTO post_tech_stacks (post_no, skill_no) VALUES <foreach collection="skills" 
+		item="skill" separator=","> (#{post_no}, #{skill}) </foreach> </insert> -->
+
+
 
 
 	<!-- 세 번째 쿼리: users 테이블에서 nickname 정보 가져와서 업데이트 -->
 
-    <update id="updateStudyPostUser"
-        parameterType="lm.swith.main.model.StudyPost">
-        UPDATE study_post sp
-        SET sp.nickname = (SELECT nickname FROM users u
-        WHERE u.user_no =
-        sp.user_no)
-        WHERE sp.post_no = #{post_no}
-	</update>
-
-
-	<!--	<if test="mentor_check">
-			UPDATE mentor SET USER_NO = #{user_no} WHERE POST_NO =
-			#{post_no}
-		</if>
-		<if test="mentee_check">
-			UPDATE mentee SET USER_NO = #{user_no} WHERE POST_NO =
-			#{post_no}
-		</if> 
-		
-			UPDATE study_post sp
+	<update id="updateStudyPostUser"
+		parameterType="lm.swith.main.model.StudyPost">
+		UPDATE study_post sp
 		SET sp.nickname = (SELECT nickname FROM users u
 		WHERE u.user_no =
 		sp.user_no)
 		WHERE sp.post_no = #{post_no}
-		-->
+	</update>
+
+
+	<!-- <if test="mentor_check"> UPDATE mentor SET USER_NO = #{user_no} WHERE 
+		POST_NO = #{post_no} </if> <if test="mentee_check"> UPDATE mentee SET USER_NO 
+		= #{user_no} WHERE POST_NO = #{post_no} </if> UPDATE study_post sp SET sp.nickname 
+		= (SELECT nickname FROM users u WHERE u.user_no = sp.user_no) WHERE sp.post_no 
+		= #{post_no} -->
 
 	<!-- 마감 기한 지난 스터디 목록 -->
 	<select id="findExpiredStudyStatus"
@@ -475,7 +509,8 @@
 	<!-- 찜 테이블 삭제 -->
 	<delete id="deletePostLikes" parameterType="long">
 		DELETE FROM
-		LIKES WHERE POST_NO = #{post_no}
+		LIKES
+		WHERE POST_NO = #{post_no}
 	</delete>
 	<!-- 스터디(게시글) 테이블에서 해당 post_no에 대한 스터디 정보 삭제 -->
 	<delete id="deleteStudyPost" parameterType="Long">
@@ -493,7 +528,8 @@
 	<insert id="addUsersByPostNo"
 		parameterType="lm.swith.main.model.StudyPost">
 		INSERT INTO study_application (POST_NO, USER_NO)
-		VALUES (#{post_no}, #{user_no})
+		VALUES
+		(#{post_no}, #{user_no})
 	</insert>
 
 	<!-- 스터디 참가 신청자 목록 -->
@@ -502,8 +538,10 @@
 		SELECT sa.*,
 		u.nickname
 		FROM study_application sa
-		LEFT JOIN users u ON sa.user_no = u.user_no
-		WHERE sa.post_no = #{post_no} AND (sa.status = '대기' OR sa.status = '승인')
+		LEFT JOIN users u ON sa.user_no =
+		u.user_no
+		WHERE sa.post_no = #{post_no} AND (sa.status = '대기' OR
+		sa.status = '승인')
 	</select>
 
 
@@ -524,9 +562,11 @@
 
 	<!-- 스터디 참가 승인 -->
 	<update id="acceptApplicant" parameterType="Long">
-		UPDATE study_application SET
+		UPDATE
+		study_application SET
 		status = '승인'
-		WHERE post_no = #{post_no} AND user_no = #{user_no} AND status = '대기'
+		WHERE post_no = #{post_no} AND
+		user_no = #{user_no} AND status = '대기'
 	</update>
 
 	<!-- 스터디 참가 거절 -->
@@ -552,8 +592,10 @@
 	</insert>
 
 	<select id="getCommentsByPostNo" resultMap="commentWithUser">
-		SELECT c.*, u.nickname, u.user_profile FROM COMMENTS c
-		LEFT JOIN users u ON c.user_no = u.user_no
+		SELECT c.*,
+		u.nickname, u.user_profile FROM COMMENTS c
+		LEFT JOIN users u ON
+		c.user_no = u.user_no
 		WHERE POST_NO = #{post_no} ORDER BY
 		comment_post_time DESC
 	</select>
@@ -581,7 +623,7 @@
 		AND COMMENT_NO =
 		#{comment_no}
 	</delete>
-	
+
 
 
 	<!-- ********************************************************** Users Part 
@@ -633,37 +675,45 @@
 
 	<!-- 유저 삭제 -->
 	<delete id="deleteUserComment" parameterType="Long">
-		DELETE FROM COMMENTS WHERE USER_NO = #{user_no}
+		DELETE FROM
+		COMMENTS WHERE USER_NO = #{user_no}
 	</delete>
-	
+
 	<delete id="deleteUserStudyApplication" parameterType="Long">
-		DELETE FROM STUDY_APPLICATION WHERE USER_NO = #{user_no}
+		DELETE
+		FROM STUDY_APPLICATION WHERE USER_NO = #{user_no}
 	</delete>
-	
+
 	<delete id="deleteUserPostTechStacks" parameterType="Long">
-		DELETE FROM POST_TECH_STACKS WHERE USER_NO = #{user_no}
+		DELETE FROM
+		POST_TECH_STACKS WHERE USER_NO = #{user_no}
 	</delete>
-	
+
 	<delete id="deleteUserLikes" parameterType="Long">
-		DELETE FROM LIKES WHERE USER_NO = #{user_no}
+		DELETE FROM LIKES
+		WHERE USER_NO = #{user_no}
 	</delete>
-	
+
 	<delete id="deleteUserMoment" parameterType="Long">
-		DELETE FROM STUDY_MOMENT WHERE USER_NO = #{user_no}
+		DELETE FROM
+		STUDY_MOMENT WHERE USER_NO = #{user_no}
 	</delete>
-	
+
 	<delete id="deleteUserRoomNotice" parameterType="Long">
-		DELETE FROM STUDY_ROOM_NOTICE WHERE USER_NO = #{user_no}
+		DELETE FROM
+		STUDY_ROOM_NOTICE WHERE USER_NO = #{user_no}
 	</delete>
 
 
-	
+
 	<delete id="deleteUserStudyPost" parameterType="Long">
-		DELETE FROM STUDY_POST WHERE USER_NO = #{user_no}
+		DELETE FROM
+		STUDY_POST WHERE USER_NO = #{user_no}
 	</delete>
-	
+
 	<delete id="deleteUser" parameterType="Long">
-		DELETE FROM USERS WHERE USER_NO = #{user_no}
+		DELETE FROM USERS WHERE
+		USER_NO = #{user_no}
 	</delete>
 
 

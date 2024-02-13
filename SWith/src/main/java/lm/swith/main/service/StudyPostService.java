@@ -149,7 +149,7 @@ public class StudyPostService {
     		   
         	studyPostMapper.updateStudyPost(studyPost);
         	System.out.println(studyPost);
-    		studyPostMapper.studyApplicationUpdate(studyPost.getUser_no(), studyPost.getPost_no(), studyPost.getMax_study_applicants());
+//    		studyPostMapper.studyApplicationUpdate(studyPost.getUser_no(), studyPost.getPost_no(), studyPost.getMax_study_applicants());
     	  // PostTechStacks 삽입
 //        System.out.println("Original skill_no list: " + studyPost.getSkills());
 //        List<Long> postTechStacksList = studyPost.getSkills();
@@ -163,16 +163,15 @@ public class StudyPostService {
 //            postTechStacks.setSkill_no(skill_no);
 //            System.out.println("PostTechStacks skill_no: " + postTechStacks.getSkill_no());
 //            // PostTechStacks를 삭제 후 다시 저장
-//            studyPostMapper.deletePostTechStacksUpdate(postTechStacks);
-//            
-//            studyPostMapper.insertPostTechStacksUpdate(postTechStacks);
+//
 //        }
+//        studyPostMapper.updateSkill(studyPost.getStudyPostWithSkills());
 
         // StudyApplication 삽입
-        StudyApplication studyApplication = new StudyApplication();
-        studyApplication.setPost_no(studyPost.getPost_no());
-        studyApplication.setUser_no(studyPost.getUser_no());
-     
+//        StudyApplication studyApplication = new StudyApplication();
+//        studyApplication.setPost_no(studyPost.getPost_no());
+//        studyApplication.setUser_no(studyPost.getUser_no());
+//     
 //        studyPostMapper.upadateStudyApplication(studyApplication);
 //        studyPostMapper.updateStudyPostUser(studyPost.getUser_no());
     } catch (Exception e) {

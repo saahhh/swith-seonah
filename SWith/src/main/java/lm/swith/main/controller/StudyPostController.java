@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -293,12 +293,14 @@ public class StudyPostController {
     }
 	
 	// 스터디 수정 적용
-	@PostMapping("/update/{post_no}")
+	@PatchMapping("/update/{post_no}")
 	public ResponseEntity<?> updateStudyPost(@PathVariable Long post_no, @RequestBody StudyPost studyPost) {
 		  // 스터디 정보 및 관련 스킬 정보를 불러오는 서비스 메서드 호출
 		System.out.println(studyPost.getMax_study_applicants());
 		System.out.println(studyPost.getFirst_study());
 		System.out.println(studyPost.getRecruit_deadline());
+		System.out.println(studyPost.getStudy_title());
+	
 		studyPostService.updateStudyPost(studyPost);
 		 return ResponseEntity.ok("studyPost successfully");
 	}

@@ -28,13 +28,13 @@ public class SwithUser {
 	private String useraddress;//address
 	private String user_introduction;//introduction
 	private String user_role;// authorization(user / admin) kakao,github
-	
+	private String signout; // manage signout
 	
 	public SwithUser() {};
 	
 	
 	public SwithUser(Long user_no, String email, String password, String username, String nickname,
-			byte[] user_profile,String img, String useraddress, String user_introduction, String user_role) {
+			byte[] user_profile,String img, String useraddress, String user_introduction, String role,String signout) {
 				this.user_no = user_no;
 				this.email = email;
 				this.password = password;
@@ -45,6 +45,7 @@ public class SwithUser {
 				this.useraddress = useraddress;
 				this.user_introduction = user_introduction;
 				this.user_role = user_role;
+				this.signout=signout;
 		}
 	
 	

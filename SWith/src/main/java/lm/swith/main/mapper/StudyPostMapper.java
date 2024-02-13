@@ -80,15 +80,15 @@ public interface StudyPostMapper {
 		
 		// 스터디 수정
 		
-		void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
-//		void updateSkill(List<Skill> skill);
+//		void deletePostTechStacksUpdate(PostTechStacks postTechStacks);
+		void updateSkill(List<Skill> skill);
 //		void upadateStudyApplication(StudyApplication studyApplication);
-		void deletePostLikes(@Param("post_no") Long post_no);
+
 //		void insertPostTechStacksUpdate(PostTechStacks postTechStacks);
 //		void updateStudyPostUser(@Param("user_no") Long user_no);
 		void updateStudyPost (StudyPost studyPost);
 		void studyApplicationUpdate(Long user_no, Long post_no, int max_study_applicants);
-		
+
 
 		
 		// 스터디 삭제 OK
@@ -103,7 +103,8 @@ public interface StudyPostMapper {
 		// 스터디 기술스텍 삭제
 		void deletePostTechStacks(@Param("post_no") Long post_no);
 
-	
+		// 스터디 찜 삭제
+		void deletePostLikes(@Param("post_no") Long post_no);
 	
 		
 
