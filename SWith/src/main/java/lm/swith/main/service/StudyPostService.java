@@ -111,43 +111,37 @@ public class StudyPostService {
     public List<StudyPost> getStudiesByKeyword(String keyword) {
         return studyPostMapper.getStudiesByKeyword(keyword);}
     
-    // 마감기한 지난 스터디 상태 변경
+ // 마감기한 지난 스터디 상태 변경
     @Transactional
     public void updateStudyStatus() {
         List<StudyPost> expiredPosts = studyPostMapper.findExpiredStudyStatus();
-        Alarm alarm = new Alarm();
-        List<StudyApplication> userNumber; // 보류 (user_no는 보내줄 사람)
+      Alarm alarm = new Alarm(); // 알람 데이터 넣어줄 객체
+       List<StudyApplication> userNumber; // 보류 (user_no는 보내줄 사람) (신청한 사람들)
         SwithUser userNickName;
-        Calendar cal = Calendar.getInstance(); // 날짜 함수 선언
-        LocalDateTime start; // start 을 날짜형식으로 받기위해 선언
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // yyyy-mm-dd 형식으로 받아오기위해 선언
-        SimpleDateFormat format = new SimpleDateFormat(); // 날짜 형식 선언
-        format.applyPattern("yyyy-MM-dd");  // 형식을 선언
-        String a = null;
-        int period; // 스터디 시작일의 숫자 추출
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
+        LocalDateTime deadLine;
+        int compare = 0;
         for (StudyPost post : expiredPosts) {
-        	 start = LocalDateTime.parse( post.getStudy_start(), formatter); // start을 formatter 형식으로 변환함
-        	 period = Integer.parseInt(post.getStudy_period().replaceAll("[^0-9]",""));  // 스터디 진행기간의 숫자만 추출
-        	 Calendar calendar = convertToLocalDateTimeToCalendar(start); // calendar에 start의 값을 넣어줌
-        	 calendar.add(Calendar.MONDAY, period); // 시작일 부터 진행기간 + 한 값
-        	 System.out.println(format.format(calendar.getTime()) + " text");
-        	 post.setStudyroomend(format.format(calendar.getTime())); // 위에 진행기간을 YYYY-MM-DD 형식으로 넣어줌
-        	// 스터디방 종료 날짜 선언        	
-        	studyPostMapper.updateStudyRoomEnd(post.getPost_no(), post.getStudyroomend());
-        	userNumber = studyPostMapper.getAllApplicantsByPostNoStudyRoom(post.getPost_no());
-        	for(StudyApplication stap : userNumber) {
-        	alarm.setPost_no(post.getPost_no()); // postNo주입
-        	alarm.setAlarm_message(post.getStudy_title() + "의 " + post.getRecruit_deadline() + "이 지나 스터디방이 활성화 됩니다.");
-        	alarm.setUser_no(stap.getUser_no());
-        	alarmMapper.insertAlarm(alarm);
-        	}
-        	
-        	
-            // 상태를 업데이트하는 작업 수행
-            studyPostMapper.updateStudyStatus();
+        	deadLine = LocalDateTime.parse(post.getRecruit_deadline(), formatter);
+        	compare = deadLine.compareTo(now);
+           // 마감기한 지난 스터디의 신청자 찾기
+         userNumber = studyPostMapper.getAllApplicantsByPostNoStudyRoom(post.getPost_no()); 
+         for(StudyApplication stap : userNumber) { 
+          alarm.setPost_no(post.getPost_no()); // postNo주입
+          alarm.setAlarm_message(post.getStudy_title() + "의 " + post.getRecruit_deadline() + "이 지나 스터디방이 활성화 됩니다.");
+          alarm.setUser_no(stap.getUser_no()); // 신청자의
+         alarmMapper.insertAlarm(alarm);
+          }
+          
+          
+           // 상태를 업데이트하는 작업 수행
+         if (compare == 0) {
+           studyPostMapper.updateStudyStatus();
+         }
         }
-    }
+   }
     
     
     

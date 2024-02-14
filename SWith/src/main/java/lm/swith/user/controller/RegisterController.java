@@ -180,6 +180,7 @@ public class RegisterController {
 			  return ResponseEntity.ok(None);
 		  }
 	  }
+	  
 	  //닉네임 중복 체크 
 	  @PostMapping("/nickname")
 	  public ResponseEntity<String> checkNickname(@RequestBody SwithUser swithUser){
