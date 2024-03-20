@@ -44,8 +44,49 @@ SpirngBoot + React 지역 사회 활성화 스터디 플랫폼
 
 
 
+
 ### 📌 주요 기능
+
+#### Swith의 MainPage
+![메인페이지](https://github.com/saahhh/swith-seonah/blob/master/wholepage.png)
+
+---
+
+
+![로그인전메인페이지](https://github.com/saahhh/swith-seonah/blob/master/main%20before%20login.png)
+
+---
+
+
+![로그인후메인페이지](https://github.com/saahhh/swith-seonah/blob/master/main%20after%20login.PNG)
+
+---
+
+
+![게시글작성페이지](https://github.com/saahhh/swith-seonah/blob/master/create.PNG)
+
+---
+
+
+![게시글작성페이지-첫모임장소키워드검색](https://github.com/saahhh/swith-seonah/blob/master/create%20with%20search.PNG)
+
+---
+
+
+![게시글작성페이지-검색완료](https://github.com/saahhh/swith-seonah/blob/master/create%20full.PNG)
+
+---
+
+
+![메인페이지-키워드검색](https://github.com/saahhh/swith-seonah/blob/master/search.png)
+
+---
+
+
+![메인페이지-검색바](https://github.com/saahhh/swith-seonah/blob/master/search1.png)
 
 
 ---
+
+
 
