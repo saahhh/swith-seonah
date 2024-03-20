@@ -11,16 +11,7 @@ SpirngBoot + React 지역 사회 활성화 스터디 플랫폼
 ---
 
 ## 💻 개발환경
-*Version : <img src="https://img.shields.io/badge/JAVA-007396?
-          style=flat&logo=Java&logoColor=white"/> 
-          
-
-          
-          <img src="https://img.shields.io/badge/javascript-F7DF1E?
-          style=for-the-badge
-          &logo=javascript
-          &logoColor=F7DF1E"/>
-          jQuery, HTML5, CSS3, Ajax, 
+*Version : Java
       
 *WAS : Tomcat
 
@@ -31,6 +22,17 @@ SpirngBoot + React 지역 사회 활성화 스터디 플랫폼
 ---
 
 ## ⚙️ 기술 스택
+<p><img src= "https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
+<img src="https://img.shields.io/badge/MyBatis-09B6A2?style=for-the-badge&logo=MyBatis&logoColor=white">
+<img src="https://img.shields.io/badge/Javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+<img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white">
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=white">
+<img src="https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white">  
+<img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
+<img src="https://img.shields.io/badge/Apache Tomcat-F8DC75?style=for-the-badge&logo=apachetomcat&logoColor=black">
+<img src="https://img.shields.io/badge/Eclipse IDE-2C2255?style=for-the-badge&logo=eclipseide&logoColor=white">
+<img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white"> 
+<img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></p>
 
 ---
 
